@@ -1,0 +1,9 @@
+# Build artefacts
+*.plasmoid
+contents/locale/
+# Editors
+*.swp
+.idea/
+.vscode/
+# Node
+node_modules/
