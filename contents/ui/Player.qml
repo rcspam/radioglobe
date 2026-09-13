@@ -44,6 +44,7 @@ Item {
     property var _pendingStation: null
     property bool _userStopping: false
     property var _connectedModel: null
+    property int _launchEpoch: 0
 
     onMprisChanged: root._watchModel()
     Component.onCompleted: {
@@ -137,8 +138,12 @@ Item {
         staleTimer.stop();
         root._userStopping = true;
         root._pendingStation = null;
-        if (root._player)
+        if (root._player) {
             root._player.Quit();
+        } else if (root.currentPid() > 0 && root.exec) {
+            // Launched but never seen on the bus: only its PID can stop it.
+            root.exec("kill " + root.currentPid(), function () {});
+        }
         root._detach();
         root._setPid(0);
         root._setState("idle");
@@ -230,9 +235,13 @@ Item {
             return;
         }
         root._setState("starting");
+        // Each start gets an epoch: a later start invalidates the replies of an
+        // earlier one, which "starting" alone cannot tell apart.
+        root._launchEpoch += 1;
+        const epoch = root._launchEpoch;
         const binary = root._mpvBinary();
         root.exec("command -v " + root._shellQuote(binary), (exitCode, stdout) => {
-            if (root._state !== "starting")
+            if (root._state !== "starting" || epoch !== root._launchEpoch)
                 return;
             if (exitCode !== 0) {
                 root._fail("mpv-missing");
@@ -240,9 +249,9 @@ Item {
             }
             root.exec(root._launchCommand(binary), (launchCode, output) => {
                 const pid = parseInt(String(output).trim(), 10);
-                if (root._state !== "starting") {
-                    // Stopped or quit while mpv was starting: kill the latecomer
-                    // instead of leaving a process nobody knows about.
+                if (root._state !== "starting" || epoch !== root._launchEpoch) {
+                    // Stopped, quit or superseded by a newer start: kill the
+                    // latecomer instead of leaving a process nobody knows about.
                     if (pid > 0)
                         root.exec("kill " + pid, function () {});
                     return;
@@ -272,6 +281,8 @@ Item {
     function _launchCommand(binary) {
         const options = ["--idle=yes", "--no-video", "--no-terminal", "--force-window=no", "--audio-display=no", "--ytdl=no", "--cache=yes", "--stream-lavf-o=reconnect=1,reconnect_streamed=1,reconnect_delay_max=5", "--audio-client-name=RadioGlobe", "--user-agent=" + root.userAgent];
         const quoted = options.map(option => root._shellQuote(option)).join(" ");
+        // Backgrounded from a non-interactive sh, the child is not a process-group
+        // leader, so setsid execs mpv in place: $! is mpv's own PID.
         const script = "setsid " + root._shellQuote(binary) + " " + quoted + " >/dev/null 2>&1 & echo $!";
         return "sh -c " + root._shellQuote(script);
     }

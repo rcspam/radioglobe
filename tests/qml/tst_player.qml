@@ -90,7 +90,10 @@ TestCase {
 
     function fakeExec(cmd, callback) {
         execLog.push(cmd);
-        execReplies.push(callback);
+        // "kill" is fire-and-forget in Player.qml: no test ever answers it, so
+        // keeping its callback would desynchronise the reply queue.
+        if (cmd.indexOf("kill ") !== 0)
+            execReplies.push(callback);
     }
 
     function replyExec(exitCode, stdout) {
@@ -384,6 +387,54 @@ TestCase {
         compare(player.state, "stopped");
         c.setStatus(1);
         compare(player.state, "stopped");
+        c.setStatus(2);
+        compare(player.state, "playing");
+    }
+
+    function test_relaunch_during_pending_check_kills_the_first_mpv() {
+        player.play(fip);
+        replyExec(0, "/usr/bin/mpv\n");
+        const first = execLog.length;
+        player.stop();
+        player.play(fip);
+        compare(player.state, "starting");
+        compare(execLog.length, first + 1);
+        // The first launch answers late: same state, older epoch.
+        replyExec(0, "111\n");
+        compare(execLog[execLog.length - 1], "kill 111");
+        compare(player.state, "starting");
+        compare(cfg.mpvPid, 0);
+        replyExec(0, "/usr/bin/mpv\n");
+        replyExec(0, "222\n");
+        compare(cfg.mpvPid, 222);
+    }
+
+    function test_quit_before_attach_kills_the_launched_mpv() {
+        player.play(fip);
+        replyExec(0, "/usr/bin/mpv\n");
+        replyExec(0, "333\n");
+        compare(cfg.mpvPid, 333);
+        player.quit();
+        compare(execLog[execLog.length - 1], "kill 333");
+        compare(cfg.mpvPid, 0);
+        compare(player.state, "idle");
+    }
+
+    function test_status_echoes_after_forced_stop_do_not_flip_state() {
+        const c = startAndAttach(1);
+        c.setTrack("fip-midfi.mp3");
+        c.setStatus(1);
+        player.resetErrorForTests();
+        player.stop();
+        compare(player.state, "stopped");
+        // Echoes of the Pause/Play we sent to make Stop() land.
+        c.setStatus(3);
+        compare(player.state, "stopped");
+        c.setStatus(2);
+        compare(player.state, "stopped");
+        c.setStatus(1);
+        compare(player.state, "stopped");
+        // Genuine external start, once the container really reported Stopped.
         c.setStatus(2);
         compare(player.state, "playing");
     }
