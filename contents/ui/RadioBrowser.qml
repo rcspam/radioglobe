@@ -278,9 +278,9 @@ Item {
         root._discovering = true;
         const epoch = root._epoch;
         root.request(root.allMirror + "/json/servers", (status, text) => {
-            root._discovering = false;
             if (epoch !== root._epoch)
                 return;
+            root._discovering = false;
             const names = [];
             try {
                 const rows = status === 200 ? JSON.parse(text) : [];

@@ -358,4 +358,45 @@ TestCase {
         compare(updates.count, 0);
         verify(store["world"] === undefined);
     }
+
+    function test_stale_discovery_response_keeps_discovering_flag() {
+        rb.start();
+        // Discovery request "A" is now pending. Reset before it answers, then
+        // start() again: this issues a second, live discovery request "B".
+        rb.reset();
+        rb.start();
+        compare(pending.length, 2);
+        // Answer the stale one first (it is first in the queue): its epoch no
+        // longer matches, so it must be ignored without touching the
+        // discovering flag that belongs to the still-in-flight "B".
+        answer("/json/servers", 200, []);
+        compare(pending.length, 1);
+        // Any further request while "B" is still in flight must not start a
+        // third discovery: that would happen if the stale response above had
+        // cleared the discovering flag.
+        rb.loadCountry("FR", () => {});
+        compare(pending.length, 1, "a stale discovery response must not re-open the discovering gate");
+        verify(pending[0].url.indexOf("/json/servers") >= 0, pending[0].url);
+        // Resolving "B" flushes both queued callers (the original world fetch
+        // and the loadCountry() call above); neither is a further discovery.
+        answer("/json/servers", 200, []);
+        compare(pending.length, 2);
+        const urls = pending.map(p => p.url);
+        verify(urls.some(u => u.indexOf("/json/stations/search") >= 0), urls.join(", "));
+        verify(urls.every(u => u.indexOf("/json/servers") < 0), urls.join(", "));
+    }
+
+    function test_non_retryable_status_calls_back_null_without_failover() {
+        rb.start();
+        answer("/json/servers", 200, [
+            {
+                name: "de1.api.radio-browser.info"
+            }
+        ]);
+        const url = answer("/json/stations/search", 404, "");
+        verify(url.indexOf("https://de1.api.radio-browser.info") === 0, url);
+        compare(pending.length, 0);
+        compare(rb.worldStations.length, 0);
+        compare(rb.lastError, "");
+    }
 }
