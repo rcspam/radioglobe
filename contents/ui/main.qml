@@ -15,7 +15,9 @@ PlasmoidItem {
     // qmllint enable unresolved-type
     readonly property string userAgent: "RadioGlobe/" + appVersion
 
-    // Persisted JSON lists (Plasmoid.configuration holds strings).
+    // Persisted JSON lists (Plasmoid.configuration holds strings). The binding
+    // only seeds the initial value: the first write replaces it by a plain
+    // assignment, config staying the persistence and root.* the live copy.
     property var favorites: root._parseList(Plasmoid.configuration.favorites)
     property var history: root._parseList(Plasmoid.configuration.history)
 
@@ -90,8 +92,11 @@ PlasmoidItem {
             name: name
         };
         root.currentTab = 0;
+        // Claim the source before the request goes out, so a world refresh
+        // arriving meanwhile does not send _refreshList back through here.
+        root.listSource = "country";
         radioBrowser.loadCountry(code, (stations, source) => {
-            if (root.currentCountry && root.currentCountry.code === code) {
+            if (root.currentTab === 0 && root.currentCountry && root.currentCountry.code === code) {
                 root.listStations = stations;
                 root.listSource = "country";
             }
@@ -110,8 +115,9 @@ PlasmoidItem {
             return;
         }
         root.currentTab = 0;
+        root.listSource = "search";
         radioBrowser.search(text, (stations, isFinal) => {
-            if (root.searchText === text) {
+            if (root.currentTab === 0 && root.searchText === text) {
                 root.listStations = stations;
                 root.listSource = "search";
             }
@@ -142,11 +148,6 @@ PlasmoidItem {
             root.listStations = root.worldStations;
             root.listSource = "world";
         }
-    }
-
-    // Single-quotes a value for /bin/sh: nothing inside can be expanded.
-    function _shellQuote(value) {
-        return "'" + String(value).replace(/'/g, "'\\''") + "'";
     }
 
     function _parseList(text) {
@@ -215,20 +216,40 @@ PlasmoidItem {
         // is set, which plasmashell does not do, so the bundled GeoJSON is read
         // through the same executable engine the player already relies on.
         const path = decodeURIComponent(String(Qt.resolvedUrl("../data/countries.json")).replace(/^file:\/\//, ""));
-        exec.run("cat " + root._shellQuote(path), (exitCode, stdout) => {
-            try {
-                root.countries = JSON.parse(stdout).features;
-            } catch (error) {
-                console.warn("[RadioGlobe] countries.json unreadable", error);
+        exec.run("cat " + RadioModel.shellQuote(path), (exitCode, stdout) => {
+            if (exitCode !== 0 || !stdout) {
+                // No borders and no country centroids: stations without their own
+                // coordinates simply never make it onto the globe.
+                console.warn("[RadioGlobe] cannot read countries.json (exit " + exitCode + "), continuing without borders");
+            } else {
+                try {
+                    const parsed = JSON.parse(stdout);
+                    if (parsed && Array.isArray(parsed.features))
+                        root.countries = parsed.features;
+                    else
+                        console.warn("[RadioGlobe] countries.json has no feature array");
+                } catch (error) {
+                    console.warn("[RadioGlobe] countries.json unreadable", error);
+                }
             }
             radioBrowser.start();
             if (Plasmoid.formFactor === PlasmaCore.Types.Planar || root.expanded)
                 radioBrowser.expandWorld();
         });
-        const last = Plasmoid.configuration.lastStation;
-        if (last && player.attached && !player.station) {
+    }
+
+    // Mpris2Model fills asynchronously, so the mpv that outlived plasmashell is
+    // only found some time after startup: the station name is restored when the
+    // player actually attaches, not in Component.onCompleted.
+    Connections {
+        target: player
+        function onAttachedChanged() {
+            if (!player.attached || player.station)
+                return;
             try {
-                player.adoptStation(JSON.parse(last));
+                const last = JSON.parse(Plasmoid.configuration.lastStation || "null");
+                if (last && last.url)
+                    player.adoptStation(last);
             } catch (error) {}
         }
     }

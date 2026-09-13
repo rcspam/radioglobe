@@ -133,3 +133,10 @@ test("spreadOverlapping nudges stations sharing the exact same point", () => {
     assert.equal(out[4].latitude, null);
     assert.equal(rows[1].latitude, 48.85, "input rows are not mutated");
 });
+
+test("shellQuote wraps a value and escapes embedded single quotes", () => {
+    assert.equal(model.shellQuote("mpv"), "'mpv'");
+    assert.equal(model.shellQuote("/opt/my player/mpv"), "'/opt/my player/mpv'");
+    assert.equal(model.shellQuote("it's"), "'it'\\''s'");
+    assert.equal(model.shellQuote(42), "'42'");
+});

@@ -253,7 +253,7 @@ Item {
         root._launchEpoch += 1;
         const epoch = root._launchEpoch;
         const binary = root._mpvBinary();
-        root.exec("command -v " + root._shellQuote(binary), (exitCode, stdout) => {
+        root.exec("command -v " + RadioModel.shellQuote(binary), (exitCode, stdout) => {
             if (root._state !== "starting" || epoch !== root._launchEpoch)
                 return;
             if (exitCode !== 0) {
@@ -285,19 +285,13 @@ Item {
         return custom ? custom : "mpv";
     }
 
-    // Single-quotes a value for /bin/sh: nothing inside can be expanded, and an
-    // embedded quote is closed, escaped and reopened.
-    function _shellQuote(value) {
-        return "'" + String(value).replace(/'/g, "'\\''") + "'";
-    }
-
     function _launchCommand(binary) {
         const options = ["--idle=yes", "--no-video", "--no-terminal", "--force-window=no", "--audio-display=no", "--ytdl=no", "--cache=yes", "--stream-lavf-o=reconnect=1,reconnect_streamed=1,reconnect_delay_max=5", "--audio-client-name=RadioGlobe", "--user-agent=" + root.userAgent];
-        const quoted = options.map(option => root._shellQuote(option)).join(" ");
+        const quoted = options.map(option => RadioModel.shellQuote(option)).join(" ");
         // Backgrounded from a non-interactive sh, the child is not a process-group
         // leader, so setsid execs mpv in place: $! is mpv's own PID.
-        const script = "setsid " + root._shellQuote(binary) + " " + quoted + " >/dev/null 2>&1 & echo $!";
-        return "sh -c " + root._shellQuote(script);
+        const script = "setsid " + RadioModel.shellQuote(binary) + " " + quoted + " >/dev/null 2>&1 & echo $!";
+        return "sh -c " + RadioModel.shellQuote(script);
     }
 
     function _attach(container) {

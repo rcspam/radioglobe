@@ -727,6 +727,12 @@ function isRawTitle(track, url) {
     return segment !== "" && title === segment;
 }
 
+// Single-quotes a value for /bin/sh: nothing inside can be expanded, and an
+// embedded quote is closed, escaped and reopened.
+function shellQuote(value) {
+    return "'" + String(value).replace(/'/g, "'\\''") + "'";
+}
+
 function validMirrorName(name) {
     return /^[a-z0-9-]+\.api\.radio-browser\.info$/.test(String(name || ""));
 }

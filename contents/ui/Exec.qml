@@ -12,6 +12,8 @@ Item {
 
     property var _callbacks: ({})
 
+    // Two identical commands still in flight are one source for the engine, so
+    // they share a single run and every waiting callback gets that same result.
     function run(cmd, callback) {
         if (root._callbacks[cmd] === undefined)
             root._callbacks[cmd] = [];
