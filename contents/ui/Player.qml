@@ -69,6 +69,11 @@ Item {
         root._track = "";
         root._errorKind = "";
         root._userStopping = false;
+        if (root._state === "starting") {
+            // mpv is already being launched: the attach will open this station.
+            root._pendingStation = station;
+            return;
+        }
         if (root._player) {
             root._openUri();
             return;
@@ -131,6 +136,7 @@ Item {
         attachTimer.stop();
         staleTimer.stop();
         root._userStopping = true;
+        root._pendingStation = null;
         if (root._player)
             root._player.Quit();
         root._detach();
@@ -225,7 +231,7 @@ Item {
         }
         root._setState("starting");
         const binary = root._mpvBinary();
-        root.exec("command -v " + binary, (exitCode, stdout) => {
+        root.exec("command -v " + root._shellQuote(binary), (exitCode, stdout) => {
             if (root._state !== "starting")
                 return;
             if (exitCode !== 0) {
@@ -233,9 +239,14 @@ Item {
                 return;
             }
             root.exec(root._launchCommand(binary), (launchCode, output) => {
-                if (root._state !== "starting")
-                    return;
                 const pid = parseInt(String(output).trim(), 10);
+                if (root._state !== "starting") {
+                    // Stopped or quit while mpv was starting: kill the latecomer
+                    // instead of leaving a process nobody knows about.
+                    if (pid > 0)
+                        root.exec("kill " + pid, function () {});
+                    return;
+                }
                 if (launchCode !== 0 || !(pid > 0)) {
                     root._fail("mpv-missing");
                     return;
@@ -249,14 +260,20 @@ Item {
 
     function _mpvBinary() {
         const custom = root.cfg ? String(root.cfg.mpvPath || "").trim() : "";
-        if (custom && custom.indexOf("'") < 0 && custom.indexOf(" ") < 0)
-            return custom;
-        return "mpv";
+        return custom ? custom : "mpv";
+    }
+
+    // Single-quotes a value for /bin/sh: nothing inside can be expanded, and an
+    // embedded quote is closed, escaped and reopened.
+    function _shellQuote(value) {
+        return "'" + String(value).replace(/'/g, "'\\''") + "'";
     }
 
     function _launchCommand(binary) {
-        const options = ["--idle=yes", "--no-video", "--no-terminal", "--force-window=no", "--audio-display=no", "--ytdl=no", "--cache=yes", "--stream-lavf-o=reconnect=1,reconnect_streamed=1,reconnect_delay_max=5", "--audio-client-name=RadioGlobe", "--user-agent=" + root.userAgent.replace(/[^A-Za-z0-9./() -]/g, "")];
-        return "sh -c 'setsid " + binary + " " + options.join(" ") + " >/dev/null 2>&1 & echo $!'";
+        const options = ["--idle=yes", "--no-video", "--no-terminal", "--force-window=no", "--audio-display=no", "--ytdl=no", "--cache=yes", "--stream-lavf-o=reconnect=1,reconnect_streamed=1,reconnect_delay_max=5", "--audio-client-name=RadioGlobe", "--user-agent=" + root.userAgent];
+        const quoted = options.map(option => root._shellQuote(option)).join(" ");
+        const script = "setsid " + root._shellQuote(binary) + " " + quoted + " >/dev/null 2>&1 & echo $!";
+        return "sh -c " + root._shellQuote(script);
     }
 
     function _attach(container) {
@@ -339,6 +356,12 @@ Item {
         } else if (root._state === "playing" && status === root.statusPaused) {
             root._setState("paused");
         } else if (root._state === "paused" && status === root.statusPlaying) {
+            root._setState("playing");
+        } else if (root._state === "stopped" && status === root.statusStopped) {
+            // Our own Stop() landed: later status changes come from elsewhere.
+            root._userStopping = false;
+        } else if (root._state === "stopped" && status === root.statusPlaying && !root._userStopping) {
+            // Started from outside: media keys or another MPRIS client.
             root._setState("playing");
         }
     }

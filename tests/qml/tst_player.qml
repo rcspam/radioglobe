@@ -137,11 +137,34 @@ TestCase {
                 volume: 0.75
             });
         player.cfg = cfg;
+        player.mpris = model;
+        player.userAgent = "RadioGlobe/test";
         started.clear();
         player.resetForTests();
     }
 
     property int nextPid: 4000
+
+    // Everything /bin/sh would still interpret: single-quoted spans are dropped,
+    // and a backslash escape outside them protects the next character.
+    function unquotedPart(command) {
+        let out = "";
+        let quoted = false;
+        for (let i = 0; i < command.length; i++) {
+            const ch = command.charAt(i);
+            if (!quoted && ch === "\\") {
+                i++;
+                continue;
+            }
+            if (ch === "'") {
+                quoted = !quoted;
+                continue;
+            }
+            if (!quoted)
+                out += ch;
+        }
+        return out;
+    }
 
     // Drives a full happy-path start: play -> mpv check -> launch -> attach.
     // Each call launches a distinct fake PID, like a real relaunch would.
@@ -149,12 +172,17 @@ TestCase {
         const pid = ++nextPid;
         player.play(fip);
         compare(player.state, "starting");
-        compare(execLog[execLog.length - 1], "command -v mpv");
+        compare(execLog[execLog.length - 1], "command -v 'mpv'");
         replyExec(0, "/usr/bin/mpv\n");
         const launch = execLog[execLog.length - 1];
-        verify(launch.indexOf("setsid mpv --idle=yes --no-video --no-terminal") > 0, launch);
-        verify(launch.indexOf("--user-agent=RadioGlobe/test") > 0);
-        verify(launch.indexOf("--audio-client-name=RadioGlobe") > 0);
+        verify(launch.indexOf("sh -c ") === 0, launch);
+        verify(launch.indexOf("setsid '") > 0, launch);
+        verify(launch.indexOf("'mpv'") > 0, launch);
+        verify(launch.indexOf("'--idle=yes'") > 0, launch);
+        verify(launch.indexOf("'--no-video'") > 0, launch);
+        verify(launch.indexOf("'--no-terminal'") > 0, launch);
+        verify(launch.indexOf("'--user-agent=RadioGlobe/test'") > 0, launch);
+        verify(launch.indexOf("'--audio-client-name=RadioGlobe'") > 0, launch);
         replyExec(0, pid + "\n");
         compare(cfg.mpvPid, pid);
         const c = makeContainer(pid, status === undefined ? 1 : status);
@@ -179,7 +207,6 @@ TestCase {
         compare(player.state, "error");
         compare(player.errorKind, "mpris-module-missing");
         compare(execLog.length, 0);
-        player.mpris = model;
     }
 
     function test_launch_attach_and_fix_status_on_load() {
@@ -293,6 +320,72 @@ TestCase {
         player.toggleMute();
         compare(player.volume, 0.4);
         compare(c.volume, 0.4);
+    }
+
+    function test_second_play_while_starting_does_not_relaunch() {
+        const other = ({
+                uuid: "b",
+                name: "B",
+                url: "https://s/other.mp3"
+            });
+        const pid = ++nextPid;
+        player.play(fip);
+        replyExec(0, "/usr/bin/mpv\n");
+        compare(execLog.length, 2);
+        player.play(other);
+        compare(execLog.length, 2);
+        compare(player.state, "starting");
+        replyExec(0, pid + "\n");
+        const c = makeContainer(pid, 1);
+        addContainer(c);
+        compare(player.state, "loading");
+        compare(player.station.url, "https://s/other.mp3");
+        compare(c.calls[c.calls.length - 1], "OpenUri:https://s/other.mp3");
+    }
+
+    function test_quit_during_launch_kills_the_late_mpv() {
+        player.play(fip);
+        replyExec(0, "/usr/bin/mpv\n");
+        player.quit();
+        replyExec(0, "555\n");
+        compare(execLog[execLog.length - 1], "kill 555");
+        compare(cfg.mpvPid, 0);
+        compare(player.state, "idle");
+    }
+
+    function test_launch_command_quotes_user_agent_and_binary() {
+        player.userAgent = "RadioGlobe/1.0 (+https://x)";
+        cfg.mpvPath = "/opt/my mpv/bin/mpv";
+        player.play(fip);
+        compare(execLog[execLog.length - 1], "command -v '/opt/my mpv/bin/mpv'");
+        replyExec(0, "/opt/my mpv/bin/mpv\n");
+        const launch = execLog[execLog.length - 1];
+        verify(launch.indexOf("'/opt/my mpv/bin/mpv'") > 0, launch);
+        verify(launch.indexOf("'--user-agent=RadioGlobe/1.0 (+https://x)'") > 0, launch);
+        verify(unquotedPart(launch).indexOf("(") < 0, launch);
+        compare(unquotedPart(launch), "sh -c ");
+    }
+
+    function test_toggle_pause_switches_between_pause_and_resume() {
+        const c = startAndAttach(2);
+        c.setTrack("fip-midfi.mp3");
+        player.togglePause();
+        compare(c.calls[c.calls.length - 1], "Pause");
+        compare(player.state, "paused");
+        player.togglePause();
+        compare(c.calls[c.calls.length - 1], "Play");
+        compare(player.state, "playing");
+    }
+
+    function test_external_play_after_stop_returns_to_playing() {
+        const c = startAndAttach(2);
+        c.setTrack("fip-midfi.mp3");
+        player.stop();
+        compare(player.state, "stopped");
+        c.setStatus(1);
+        compare(player.state, "stopped");
+        c.setStatus(2);
+        compare(player.state, "playing");
     }
 
     function test_quit_and_external_disappearance() {
