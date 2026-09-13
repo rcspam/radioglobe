@@ -66,7 +66,7 @@ Item {
         const xhr = root.xhrFactory();
         job.xhr = xhr;
         xhr.onreadystatechange = function () {
-            if (xhr.readyState !== 4 || job.settled || job !== root._current)
+            if (xhr.readyState !== 4 || job.settled || job !== root._current || xhr !== job.xhr)
                 return;
             job.settled = true;
             root._finish(job, xhr.status, xhr.responseText);
@@ -80,7 +80,16 @@ Item {
     function _finish(job, status, text) {
         timeout.stop();
         if (status === 0 && job.attempts < root.maxAttempts) {
-            Qt.callLater(root._send);
+            // job.settled was set true by the caller (onreadystatechange or the
+            // timeout) to mark this attempt as processed; reset it here so the
+            // deferred check below can tell a still-pending retry (settled
+            // false) apart from a job abortAll() has since taken over (settled
+            // true again, and _current no longer this job either).
+            job.settled = false;
+            Qt.callLater(() => {
+                if (root._current === job && !job.settled)
+                    root._send();
+            });
             return;
         }
         root._current = null;

@@ -113,4 +113,36 @@ TestCase {
         compare(http.busy, false);
         compare(created.length, 1);
     }
+
+    function test_stale_xhr_from_first_attempt_is_ignored_after_retry() {
+        let got = -1;
+        http.request("https://a/x", status => {
+            got = status;
+        });
+        created[0].respond(0, "");
+        tryCompare(created, "length", 2);
+        created[0].respond(200, "stale");
+        compare(got, -1);
+        compare(http.busy, true);
+        created[1].respond(200, "fresh");
+        compare(got, 200);
+    }
+
+    function test_pending_retry_does_not_resend_a_new_request_after_abortAll() {
+        let got = -1;
+        http.request("https://a/1", () => {});
+        created[0].respond(0, "");
+        http.abortAll();
+        http.request("https://a/2", status => {
+            got = status;
+        });
+        // Short wait: long enough for the stale Qt.callLater to run, well
+        // under timeoutMs (40) so the fresh /2 request's own timeout does
+        // not fire and mask the assertion with a legitimate retry.
+        wait(10);
+        compare(created.length, 2);
+        compare(created[1].url, "https://a/2");
+        created[1].respond(200, "ok");
+        compare(got, 200);
+    }
 }
