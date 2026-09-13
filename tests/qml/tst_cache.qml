@@ -43,4 +43,24 @@ TestCase {
         cache.debugWriteRaw("bad", "{not json", 5);
         compare(cache.get("bad"), null);
     }
+
+    function test_set_survives_a_failing_write() {
+        cache._db = {
+            transaction: () => {
+                throw new Error("disk full");
+            },
+            readTransaction: () => {
+                throw new Error("disk full");
+            }
+        };
+        let threw = false;
+        try {
+            cache.set("k", 1, 1);
+        } catch (error) {
+            threw = true;
+        }
+        verify(!threw);
+        cache._db = null;
+        cache.clear();
+    }
 }

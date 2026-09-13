@@ -44,10 +44,16 @@ QtObject {
         debugWriteRaw(key, JSON.stringify(value), Number(nowMs) || 0);
     }
 
+    // Raw write primitive, exposed so tests can inject a corrupt row; not
+    // meant to be called by anything other than set().
     function debugWriteRaw(key, text, savedAt) {
-        _open().transaction(tx => {
-            tx.executeSql("INSERT OR REPLACE INTO cache(key, value, savedAt) VALUES(?, ?, ?)", [key, text, savedAt]);
-        });
+        try {
+            _open().transaction(tx => {
+                tx.executeSql("INSERT OR REPLACE INTO cache(key, value, savedAt) VALUES(?, ?, ?)", [key, text, savedAt]);
+            });
+        } catch (error) {
+            console.warn("[RadioGlobe] cache write failed for", key, error);
+        }
     }
 
     function remove(key) {
