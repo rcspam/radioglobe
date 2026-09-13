@@ -4,16 +4,236 @@ import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.kirigami as Kirigami
+import "RadioModel.js" as RadioModel
 
 PlasmoidItem {
     id: root
 
+    // qmllint disable unresolved-type
+    // KPluginMetaData is a C++ type Plasma does not expose declaratively.
+    readonly property string appVersion: Plasmoid.metaData.version
+    // qmllint enable unresolved-type
+    readonly property string userAgent: "RadioGlobe/" + appVersion
+
+    // Persisted JSON lists (Plasmoid.configuration holds strings).
+    property var favorites: root._parseList(Plasmoid.configuration.favorites)
+    property var history: root._parseList(Plasmoid.configuration.history)
+
+    // What the right-hand list shows and where it comes from.
+    property var listStations: []
+    property string listSource: "world"
+    property int currentTab: 0
+    property var currentCountry: null
+    property string searchText: ""
+
+    // Playback queue: the list displayed when the user picked a station.
+    property var queue: []
+    property var worldStations: radioBrowser.worldStations
+    property var countries: []
+    readonly property bool mprisAvailable: mprisLoader.status === Loader.Ready
+
     switchWidth: Kirigami.Units.gridUnit * 30
     switchHeight: Kirigami.Units.gridUnit * 20
 
-    toolTipMainText: i18n("RadioGlobe")
-    toolTipSubText: i18n("No station playing")
+    toolTipMainText: player.station ? player.station.name : i18n("RadioGlobe")
+    toolTipSubText: {
+        if (!player.station)
+            return i18n("No station playing");
+        if (player.state === "playing")
+            return player.track || i18n("Playing");
+        if (player.state === "paused")
+            return i18n("Paused");
+        if (player.state === "error")
+            return i18n("Playback failed");
+        return i18n("Stopped");
+    }
+    Plasmoid.status: player.state === "playing" ? PlasmaCore.Types.ActiveStatus : PlasmaCore.Types.PassiveStatus
 
+    function playFrom(list, station) {
+        root.queue = Array.isArray(list) && list.length > 0 ? list.slice() : [station];
+        player.play(station);
+    }
+
+    function next() {
+        const target = RadioModel.neighbourStation(root.queue, player.station ? player.station.uuid : "", 1);
+        if (target)
+            player.play(target);
+    }
+
+    function previous() {
+        const target = RadioModel.neighbourStation(root.queue, player.station ? player.station.uuid : "", -1);
+        if (target)
+            player.play(target);
+    }
+
+    function playRandom() {
+        const recent = root.history.map(entry => entry.uuid);
+        const target = RadioModel.pickRandomStation(root.worldStations, recent);
+        if (target)
+            root.playFrom(root.worldStations, target);
+    }
+
+    function toggleFavorite(station) {
+        root.favorites = RadioModel.toggleFavorite(root.favorites, station);
+        Plasmoid.configuration.favorites = JSON.stringify(root.favorites);
+        if (root.currentTab === 1)
+            root._refreshList();
+    }
+
+    function isFavorite(uuid) {
+        return RadioModel.indexByUuid(root.favorites, uuid) >= 0;
+    }
+
+    function openCountry(code, name) {
+        root.currentCountry = {
+            code: code,
+            name: name
+        };
+        root.currentTab = 0;
+        radioBrowser.loadCountry(code, (stations, source) => {
+            if (root.currentCountry && root.currentCountry.code === code) {
+                root.listStations = stations;
+                root.listSource = "country";
+            }
+        });
+    }
+
+    function clearCountry() {
+        root.currentCountry = null;
+        root._refreshList();
+    }
+
+    function runSearch(text) {
+        root.searchText = text;
+        if (!text.trim()) {
+            root._refreshList();
+            return;
+        }
+        root.currentTab = 0;
+        radioBrowser.search(text, (stations, isFinal) => {
+            if (root.searchText === text) {
+                root.listStations = stations;
+                root.listSource = "search";
+            }
+        });
+    }
+
+    function clearSearch() {
+        root.searchText = "";
+        root._refreshList();
+    }
+
+    function stopAll() {
+        player.quit();
+    }
+
+    function _refreshList() {
+        if (root.currentTab === 1) {
+            root.listStations = root.favorites;
+            root.listSource = "favorites";
+        } else if (root.currentTab === 2) {
+            root.listStations = root.history;
+            root.listSource = "history";
+        } else if (root.currentCountry) {
+            root.openCountry(root.currentCountry.code, root.currentCountry.name);
+        } else if (root.searchText.trim()) {
+            root.runSearch(root.searchText);
+        } else {
+            root.listStations = root.worldStations;
+            root.listSource = "world";
+        }
+    }
+
+    // Single-quotes a value for /bin/sh: nothing inside can be expanded.
+    function _shellQuote(value) {
+        return "'" + String(value).replace(/'/g, "'\\''") + "'";
+    }
+
+    function _parseList(text) {
+        try {
+            const value = JSON.parse(String(text || "[]"));
+            return Array.isArray(value) ? value : [];
+        } catch (error) {
+            return [];
+        }
+    }
+
+    onCurrentTabChanged: root._refreshList()
+    onWorldStationsChanged: if (root.listSource === "world")
+        root._refreshList()
+    onExpandedChanged: if (root.expanded)
+        radioBrowser.expandWorld()
+
+    Loader {
+        id: mprisLoader
+        source: "MprisSource.qml"
+        onStatusChanged: if (status === Loader.Error)
+            console.warn("[RadioGlobe] org.kde.plasma.private.mpris is not available")
+    }
+
+    Exec {
+        id: exec
+    }
+
+    Http {
+        id: http
+        userAgent: root.userAgent
+    }
+
+    Cache {
+        id: cache
+    }
+
+    RadioBrowser {
+        id: radioBrowser
+        request: http.request
+        cache: cache
+        countries: root.countries
+        worldLimit: Plasmoid.configuration.maxWorldStations
+        sendClicks: Plasmoid.configuration.sendClicks
+        userAgentVersion: root.appVersion
+    }
+
+    Player {
+        id: player
+        mpris: mprisLoader.item
+        exec: exec.run
+        cfg: Plasmoid.configuration
+        userAgent: root.userAgent
+        onPlayingStarted: station => {
+            radioBrowser.click(station.uuid);
+            root.history = RadioModel.pushHistory(root.history, station, Date.now(), 20);
+            Plasmoid.configuration.history = JSON.stringify(root.history);
+            Plasmoid.configuration.lastStation = JSON.stringify(station);
+            if (root.currentTab === 2)
+                root._refreshList();
+        }
+    }
+
+    Component.onCompleted: {
+        // Qt refuses XMLHttpRequest on local files unless QML_XHR_ALLOW_FILE_READ
+        // is set, which plasmashell does not do, so the bundled GeoJSON is read
+        // through the same executable engine the player already relies on.
+        const path = decodeURIComponent(String(Qt.resolvedUrl("../data/countries.json")).replace(/^file:\/\//, ""));
+        exec.run("cat " + root._shellQuote(path), (exitCode, stdout) => {
+            try {
+                root.countries = JSON.parse(stdout).features;
+            } catch (error) {
+                console.warn("[RadioGlobe] countries.json unreadable", error);
+            }
+            radioBrowser.start();
+            if (Plasmoid.formFactor === PlasmaCore.Types.Planar || root.expanded)
+                radioBrowser.expandWorld();
+        });
+        const last = Plasmoid.configuration.lastStation;
+        if (last && player.attached && !player.station) {
+            try {
+                player.adoptStation(JSON.parse(last));
+            } catch (error) {}
+        }
+    }
+
+    // Placeholders until Tasks 9 and 10 provide the real representations.
     compactRepresentation: Kirigami.Icon {
         source: "radio"
         MouseArea {

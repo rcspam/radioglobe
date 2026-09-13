@@ -46,7 +46,11 @@ Item {
     property var _connectedModel: null
     property int _launchEpoch: 0
 
-    onMprisChanged: root._watchModel()
+    onMprisChanged: {
+        root._watchModel();
+        // A model that arrives after the player was created still needs a scan.
+        root.rescan();
+    }
     Component.onCompleted: {
         root._watchModel();
         if (root.cfg)
@@ -81,6 +85,15 @@ Item {
         }
         root._pendingStation = station;
         root._ensureMpv();
+    }
+
+    // Reattached to an mpv that outlived plasmashell: remember which station it
+    // is playing without restarting anything.
+    function adoptStation(station) {
+        if (station && station.url && !root._station) {
+            root._station = station;
+            root._updateTrack();
+        }
     }
 
     function retry() {
