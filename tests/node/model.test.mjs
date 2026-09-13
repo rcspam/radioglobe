@@ -142,7 +142,7 @@ test("radio atlas model", () => {
   assert.equal(model.pointInPolygon(0, 0, square), true)
   assert.equal(model.pointInPolygon(20, 0, square), false)
 
-  const countries = JSON.parse(fs.readFileSync(path.join(testDir, "fixtures", "countries.json"), "utf8")).features
+  const countries = JSON.parse(fs.readFileSync(path.join(testDir, "..", "..", "contents", "data", "countries.json"), "utf8")).features
   const india = model.countryCentre(countries, "IN")
   assert.ok(india.latitude > 5 && india.latitude < 35)
   assert.ok(india.longitude > 65 && india.longitude < 100)

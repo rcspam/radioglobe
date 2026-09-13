@@ -57,14 +57,14 @@ test("normalizeStation drops out-of-range coordinates and caps lengths", () => {
 test("normalizeStations dedupes by uuid and caps the count", () => {
     const rows = [raw, raw, { ...raw, stationuuid: "other" }, { ...raw, stationuuid: "third" }];
     const list = model.normalizeStations(rows, 2);
-    assert.deepEqual(list.map(s => s.uuid), ["abc-123", "other"]);
+    assert.deepEqual(Array.from(list, s => s.uuid), ["abc-123", "other"]);
 });
 
 test("dedupeByUrl keeps the most clicked station per stream url", () => {
     const a = { uuid: "a", url: "https://x/1", clicks: 5 };
     const b = { uuid: "b", url: "https://x/1", clicks: 9 };
     const c = { uuid: "c", url: "https://x/2", clicks: 1 };
-    assert.deepEqual(model.dedupeByUrl([a, b, c]).map(s => s.uuid), ["b", "c"]);
+    assert.deepEqual(Array.from(model.dedupeByUrl([a, b, c]), s => s.uuid), ["b", "c"]);
 });
 
 test("pickRandomStation avoids recent uuids and uses the injected random", () => {
@@ -93,10 +93,10 @@ test("pushHistory prepends, dedupes and caps", () => {
     const h1 = model.pushHistory([], { uuid: "a" }, 1000, 2);
     const h2 = model.pushHistory(h1, { uuid: "b" }, 2000, 2);
     const h3 = model.pushHistory(h2, { uuid: "a" }, 3000, 2);
-    assert.deepEqual(h3.map(e => e.uuid), ["a", "b"]);
+    assert.deepEqual(Array.from(h3, e => e.uuid), ["a", "b"]);
     assert.equal(h3[0].playedAt, 3000);
     const h4 = model.pushHistory(h3, { uuid: "c" }, 4000, 2);
-    assert.deepEqual(h4.map(e => e.uuid), ["c", "a"]);
+    assert.deepEqual(Array.from(h4, e => e.uuid), ["c", "a"]);
 });
 
 test("isRawTitle detects the url filename mpv reports before ICY arrives", () => {

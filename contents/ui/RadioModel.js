@@ -628,10 +628,7 @@ function normalizeStation(raw) {
 }
 
 function normalizeStations(rows, maximum) {
-    // new Array() (not a literal) so the result stays constructible by the
-    // caller's realm when this file runs inside a node vm sandbox; QML has
-    // a single realm, so this makes no difference there.
-    var output = new Array();
+    var output = [];
     var seen = ({});
     var limit = Math.max(1, Number(maximum || 500));
     var list = Array.isArray(rows) ? rows : [];
@@ -660,7 +657,7 @@ function dedupeByUrl(stations) {
             byUrl[key] = station;
         }
     }
-    var output = new Array();
+    var output = [];
     for (var n = 0; n < order.length; n++) output.push(byUrl[order[n]]);
     return output;
 }
@@ -713,8 +710,7 @@ function pushHistory(history, station, nowMs, maximum) {
     var entry = ({});
     for (var key in station) entry[key] = station[key];
     entry.playedAt = Number(nowMs) || 0;
-    var output = new Array();
-    output.push(entry);
+    var output = [entry];
     for (var i = 0; i < rows.length && output.length < limit; i++) {
         if (rows[i] && rows[i].uuid !== station.uuid) output.push(rows[i]);
     }
