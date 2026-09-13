@@ -280,4 +280,82 @@ TestCase {
         rb.click("def");
         compare(pending.length, 0);
     }
+
+    function test_background_refresh_updates_known_stations() {
+        store["world"] = {
+            value: [
+                {
+                    uuid: "a",
+                    name: "Old",
+                    url: "https://s/a",
+                    countryCode: "FR",
+                    latitude: 48,
+                    longitude: 2,
+                    clicks: 5
+                }
+            ],
+            savedAt: clock - 25 * 3600 * 1000
+        };
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a", {
+                name: "New"
+            })]);
+        compare(rb.worldStations.find(s => s.uuid === "a").name, "New");
+    }
+
+    function test_overlap_spread_is_not_persisted() {
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a"), raw("b")]);
+        const a = rb.worldStations.find(s => s.uuid === "a");
+        const b = rb.worldStations.find(s => s.uuid === "b");
+        verify(a.latitude !== b.latitude || a.longitude !== b.longitude, "expected spread apart coordinates");
+        const stored = store["world"].value;
+        const storedA = stored.find(s => s.uuid === "a");
+        const storedB = stored.find(s => s.uuid === "b");
+        compare(storedA.latitude, 48);
+        compare(storedA.longitude, 2);
+        compare(storedB.latitude, 48);
+        compare(storedB.longitude, 2);
+    }
+
+    function test_cap_keeps_most_clicked_stations() {
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a", {
+                clickcount: 100
+            }), raw("b", {
+                clickcount: 100
+            }), raw("c", {
+                clickcount: 100
+            }), raw("d", {
+                clickcount: 100
+            }), raw("e", {
+                clickcount: 100
+            })]);
+        rb.expandWorld();
+        answer("order=random", 200, [raw("f", {
+                clickcount: 1
+            }), raw("g", {
+                clickcount: 1
+            }), raw("h", {
+                clickcount: 1
+            })]);
+        compare(rb.worldStations.length, 6);
+        const uuids = rb.worldStations.map(s => s.uuid);
+        for (const uuid of ["a", "b", "c", "d", "e"])
+            verify(uuids.indexOf(uuid) >= 0, uuid + " missing from " + uuids.join());
+    }
+
+    function test_reset_ignores_late_callbacks() {
+        rb.start();
+        answer("/json/servers", 200, []);
+        rb.reset();
+        updates.clear();
+        answer("/json/stations/search", 200, [raw("a")]);
+        compare(rb.worldStations.length, 0);
+        compare(updates.count, 0);
+        verify(store["world"] === undefined);
+    }
 }

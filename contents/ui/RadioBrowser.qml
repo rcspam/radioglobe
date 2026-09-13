@@ -21,10 +21,12 @@ Item {
     property int worldLimit: 3000
     property int cacheTtlMs: 24 * 3600 * 1000
     property bool sendClicks: true
+    // The User-Agent header itself is set by Http.userAgent; this property is
+    // kept for display/debug purposes only.
     property string userAgentVersion: "0.0.0"
 
     readonly property string allMirror: "https://all.api.radio-browser.info"
-    readonly property var worldStations: root._world
+    readonly property var worldStations: RadioModel.spreadOverlapping(root._world)
     readonly property bool worldFromCache: root._worldFromCache
     readonly property bool expanding: root._expanding
     readonly property string lastError: root._lastError
@@ -37,21 +39,27 @@ Item {
     property string _lastError: ""
     property var _mirrors: []
     property bool _discovered: false
+    property bool _discovering: false
     property var _afterDiscovery: []
     property int _dryRounds: 0
     property int _searchGeneration: 0
     property bool _started: false
+    // Bumped by reset() so callbacks from requests issued before the reset
+    // can recognise themselves as stale and no-op instead of repopulating a
+    // world/search/discovery state nothing should be reading from anymore.
+    property int _epoch: 0
 
     function reset() {
+        root._epoch += 1;
         root._world = [];
         root._worldFromCache = false;
         root._expanding = false;
         root._lastError = "";
         root._mirrors = [];
         root._discovered = false;
+        root._discovering = false;
         root._afterDiscovery = [];
         root._dryRounds = 0;
-        root._searchGeneration = 0;
         root._started = false;
     }
 
@@ -76,7 +84,7 @@ Item {
         }, rows => {
             if (rows === null)
                 return;
-            root._absorb(rows, false);
+            root._absorb(rows);
         });
     }
 
@@ -85,7 +93,7 @@ Item {
             return;
         root._expanding = true;
         root._dryRounds = 0;
-        root._expandRound();
+        root._expandRound(root._epoch);
     }
 
     function loadCountry(code, callback) {
@@ -122,6 +130,7 @@ Item {
             return;
         root._searchGeneration += 1;
         const generation = root._searchGeneration;
+        const epoch = root._epoch;
         callback(RadioModel.searchStations(root._world, text, 80), false);
         const groups = [null, null, null];
         let remaining = 3;
@@ -145,11 +154,13 @@ Item {
         variants.forEach((filter, index) => {
             const params = Object.assign({}, common, filter);
             root._api("/json/stations/search", params, rows => {
+                if (epoch !== root._epoch)
+                    return;
                 groups[index] = rows === null ? [] : RadioModel.normalizeStations(rows, 80);
                 remaining -= 1;
                 if (remaining > 0 || generation !== root._searchGeneration)
                     return;
-                const merged = RadioModel.combineStations(groups, 240, false);
+                const merged = RadioModel.dedupeByUrl(RadioModel.combineStations(groups, 240, false));
                 merged.sort((a, b) => (Number(b.clicks) || 0) - (Number(a.clicks) || 0));
                 callback(root._locate(merged), true);
             });
@@ -163,7 +174,9 @@ Item {
         root.request(base + "/json/url/" + encodeURIComponent(String(uuid)), function () {});
     }
 
-    function _expandRound() {
+    function _expandRound(epoch) {
+        if (epoch !== root._epoch)
+            return;
         if (root._dryRounds >= 3 || root._world.length >= root.worldLimit) {
             root._expanding = false;
             return;
@@ -175,21 +188,30 @@ Item {
             limit: 500,
             _: Math.floor(root.random() * 1e9) + "" + root._world.length
         }, rows => {
+            if (epoch !== root._epoch)
+                return;
             const before = root._world.length;
             if (rows !== null && rows.length > 0)
-                root._absorb(rows, true);
+                root._absorb(rows);
             if (rows === null || root._world.length === before)
                 root._dryRounds += 1;
             else
                 root._dryRounds = 0;
-            root._expandRound();
+            root._expandRound(epoch);
         });
     }
 
-    function _absorb(rows, background) {
+    // Fresh rows always win over what is already known for the same uuid
+    // (prioritizeStations keeps the first occurrence, fresh first), then the
+    // geo/centroid step runs once on the combined set. Original coordinates
+    // are kept here and in the cache; spreading apart overlapping points is
+    // purely a display concern handled by the worldStations binding.
+    function _absorb(rows) {
         const fresh = RadioModel.dedupeByUrl(RadioModel.normalizeStations(rows, 500));
-        const merged = RadioModel.mergeGeoStations(fresh, root._world, root.countries);
-        root._world = RadioModel.spreadOverlapping(merged.slice(0, Math.max(1, root.worldLimit)));
+        const combined = RadioModel.prioritizeStations(fresh, root._world, 100000);
+        const located = RadioModel.mergeGeoStations(combined, [], root.countries);
+        const sorted = located.slice().sort((a, b) => (Number(b.clicks) || 0) - (Number(a.clicks) || 0));
+        root._world = sorted.slice(0, Math.max(1, root.worldLimit));
         root._worldFromCache = false;
         if (root.cache)
             root.cache.set("world", root._world, root.now());
@@ -201,8 +223,12 @@ Item {
     }
 
     // Calls callback(rows) with the parsed JSON array, or callback(null) when
-    // every mirror failed. Mirrors are tried in order on status 0, 429, 5xx.
+    // every mirror failed or answered with a non-retryable status (e.g. 404,
+    // which is not an outage: lastError is left untouched). Mirrors are
+    // retried in order only on status 0, 429 and 5xx, and on a 200 whose body
+    // is not a JSON array.
     function _api(path, params, callback) {
+        const epoch = root._epoch;
         if (!root._discovered) {
             root._afterDiscovery.push(() => root._api(path, params, callback));
             root._discover();
@@ -211,19 +237,27 @@ Item {
         const query = RadioModel.buildQuery(params);
         const mirrors = root._mirrors.slice();
         const attempt = index => {
+            if (epoch !== root._epoch)
+                return;
             if (index >= mirrors.length) {
                 root._lastError = "offline";
                 callback(null);
                 return;
             }
             root.request(mirrors[index] + path + (query ? "?" + query : ""), (status, text) => {
+                if (epoch !== root._epoch)
+                    return;
                 if (status === 0 || status === 429 || status >= 500) {
                     attempt(index + 1);
                     return;
                 }
+                if (status !== 200) {
+                    callback(null);
+                    return;
+                }
                 let rows = null;
                 try {
-                    rows = status === 200 ? JSON.parse(text) : null;
+                    rows = JSON.parse(text);
                 } catch (error) {
                     rows = null;
                 }
@@ -239,9 +273,14 @@ Item {
     }
 
     function _discover() {
-        if (root._afterDiscovery.length > 1)
+        if (root._discovering)
             return;
+        root._discovering = true;
+        const epoch = root._epoch;
         root.request(root.allMirror + "/json/servers", (status, text) => {
+            root._discovering = false;
+            if (epoch !== root._epoch)
+                return;
             const names = [];
             try {
                 const rows = status === 200 ? JSON.parse(text) : [];
