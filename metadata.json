@@ -1,0 +1,28 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Rapha (rcspam)"
+            }
+        ],
+        "BugReportUrl": "https://github.com/rcspam/radioglobe/issues",
+        "Category": "Multimedia",
+        "Description": "Explore live radio on a rotatable globe and play stations through mpv",
+        "FormFactors": [
+            "desktop"
+        ],
+        "Icon": "radio",
+        "Id": "com.github.rcspam.radioglobe",
+        "License": "MIT",
+        "Name": "RadioGlobe",
+        "Version": "0.1.0",
+        "Website": "https://github.com/rcspam/radioglobe"
+    },
+    "X-Plasma-API-Minimum-Version": "6.1",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.multimedia"
+    ],
+    "X-Plasma-NotificationArea": true,
+    "X-Plasma-NotificationAreaCategory": "ApplicationStatus"
+}

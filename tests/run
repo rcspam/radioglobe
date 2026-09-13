@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Full test gate: node unit tests, qmllint, qmlformat check, qmltestrunner.
+set -euo pipefail
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+qt6bin=/usr/lib/qt6/bin
+QMLLINT=${QMLLINT:-$qt6bin/qmllint}
+QMLFORMAT=${QMLFORMAT:-$qt6bin/qmlformat}
+QMLTESTRUNNER=${QMLTESTRUNNER:-$qt6bin/qmltestrunner}
+export QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software
+
+echo "== node"
+shopt -s nullglob
+node_tests=("$root"/tests/node/*.test.mjs)
+if ((${#node_tests[@]})); then node --test "${node_tests[@]}"; else echo "(no node tests)"; fi
+
+echo "== qmllint"
+find "$root/contents" "$root/tests/qml" \( -name '*.qml' -o -name '*.js' \) -print0 \
+  | xargs -0 "$QMLLINT"
+
+echo "== qmlformat"
+status=0
+while IFS= read -r -d '' file; do
+  if ! "$QMLFORMAT" "$file" | cmp -s - "$file"; then
+    echo "not formatted: $file"; status=1
+  fi
+done < <(find "$root/contents" "$root/tests/qml" -name '*.qml' -print0)
+((status == 0)) || exit "$status"
+
+echo "== qmltestrunner"
+dbus-run-session -- "$QMLTESTRUNNER" -silent -input "$root/tests/qml"
+echo "All tests passed"
