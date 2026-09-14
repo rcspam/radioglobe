@@ -138,7 +138,20 @@ ColumnLayout {
             value: bar.player ? bar.player.volume : 0
             onMoved: bar.volumeRequested(value)
         }
+        // Without a fixed width the label is 17 px wide at "5%" and 31 px at
+        // "100%", and the spacer above absorbs the difference: the slider and
+        // the mute button slide left under the cursor while it is dragged.
+        TextMetrics {
+            id: percentMetrics
+            font: percentLabel.font
+            text: "100%"
+        }
         PlasmaComponents3.Label {
+            id: percentLabel
+            objectName: "volumeLabel"
+            Layout.preferredWidth: percentMetrics.width
+            Layout.minimumWidth: percentMetrics.width
+            horizontalAlignment: Text.AlignRight
             text: bar.player ? Math.round(bar.player.volume * 100) + "%" : ""
             opacity: 0.75
         }

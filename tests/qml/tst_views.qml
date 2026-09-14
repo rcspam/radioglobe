@@ -105,6 +105,38 @@ TestCase {
         verify(bar.errorText.indexOf("org.kde.plasma.private.mpris") >= 0, bar.errorText);
     }
 
+    // The percent label used to be three different widths, and the spacer in
+    // the transport row absorbed the difference: the slider moved sideways
+    // under the cursor while it was being dragged.
+    function test_volume_label_keeps_one_width() {
+        const label = findChild(bar, "volumeLabel");
+        verify(label !== null, "volumeLabel not found");
+        bar.player = ({
+                state: "playing",
+                station: null,
+                track: "",
+                volume: 0.05,
+                muted: false,
+                errorKind: ""
+            });
+        compare(label.text, "5%");
+        // Layout width is settled in a polish pass, not on assignment.
+        wait(50);
+        const narrow = label.width;
+        bar.player = ({
+                state: "playing",
+                station: null,
+                track: "",
+                volume: 1,
+                muted: false,
+                errorKind: ""
+            });
+        compare(label.text, "100%");
+        wait(50);
+        compare(label.width, narrow);
+        verify(narrow > 0, "label has no width");
+    }
+
     Ui.StationList {
         id: list
         width: 300
