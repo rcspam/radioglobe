@@ -45,6 +45,9 @@ Item {
     property var _player: null
     property var _pendingStation: null
     property bool _userStopping: false
+    // Title the container was showing when the current OpenUri went out: mpv
+    // keeps the previous station's metadata until the new stream sends its own.
+    property string _trackAtOpen: ""
     property var _connectedModel: null
     property int _launchEpoch: 0
 
@@ -339,6 +342,7 @@ Item {
             return;
         root._setState("loading");
         root._track = "";
+        root._trackAtOpen = String(root._player.track || "");
         loadTimer.restart();
         probeTimer.restart();
         root._player.OpenUri(root._station.url);
@@ -442,6 +446,7 @@ Item {
         root._errorKind = "";
         root._pendingStation = null;
         root._userStopping = false;
+        root._trackAtOpen = "";
         root._muted = false;
         root._volume = 0.75;
     }
@@ -460,11 +465,17 @@ Item {
         }
     }
 
+    // Safety net for containers that never emit trackChanged: polls the title
+    // once. A title identical to the one showing before OpenUri is the previous
+    // station's leftover, not a successful load.
     Timer {
         id: probeTimer
         interval: root.probeMs
         onTriggered: {
-            if (root._state === "loading" && root._player && String(root._player.track || "") !== "")
+            if (root._state !== "loading" || !root._player)
+                return;
+            const current = String(root._player.track || "");
+            if (current !== "" && (root._trackAtOpen === "" || current !== root._trackAtOpen))
                 root._loaded();
         }
     }

@@ -230,10 +230,36 @@ TestCase {
         compare(player.state, "playing");
     }
 
+    // Fresh container: no title at OpenUri time, so the first one that shows up
+    // is necessarily the new stream's, even without a trackChanged signal.
     function test_probe_accepts_load_without_track_change() {
         const c = startAndAttach(2);
         c.track = "fip-midfi.mp3";
         tryCompare(player, "state", "playing", 1000);
+    }
+
+    function test_probe_ignores_the_previous_station_title() {
+        player.loadTimeoutMs = 5000;
+        const c = startAndAttach(2);
+        c.setTrack("Klangstein - Closer");
+        compare(player.state, "playing");
+        // Second station: mpv keeps showing the first one's title until the
+        // new stream sends its own, and emits no signal in between.
+        const other = {
+            uuid: "other",
+            name: "Other",
+            url: "https://s/other.mp3"
+        };
+        player.play(other);
+        compare(player.state, "loading");
+        wait(4 * player.probeMs);
+        compare(player.state, "loading");
+        // Same open, this time the stream publishes its own title before the
+        // probe runs: a title that differs does count as loaded.
+        player.play(other);
+        c.track = "Another - Song";
+        tryCompare(player, "state", "playing", 1000);
+        player.loadTimeoutMs = 60;
     }
 
     function test_mpris_missing_after_timeout() {
