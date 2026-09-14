@@ -232,3 +232,27 @@ test("submitParams drops empty fields and cleans tags", () => {
     assert.deepEqual({ ...model.submitParams({ name: "A", url: "https://a/b" }) }, { name: "A", url: "https://a/b" });
     assert.equal(model.submitParams({ name: "", url: "https://a/b" }), null);
 });
+
+test("nominatimUrl builds a search url with the query encoded", () => {
+    assert.equal(model.nominatimUrl(" 12 rue de Rivoli, Paris "), "https://nominatim.openstreetmap.org/search?q=12%20rue%20de%20Rivoli%2C%20Paris&format=jsonv2&limit=5");
+    assert.equal(model.nominatimUrl("  "), "");
+});
+
+test("parseNominatim keeps usable rows and picks a zoom from the bounding box", () => {
+    const rows = model.parseNominatim(JSON.stringify([
+        { display_name: "Paris, France", lat: "48.8589", lon: "2.3200", boundingbox: ["48.8155", "48.9021", "2.2241", "2.4699"] },
+        { display_name: "Rue de Rivoli, Paris", lat: "48.8590", lon: "2.3400", boundingbox: ["48.8580", "48.8600", "2.3390", "2.3410"] },
+        { display_name: "broken", lat: "abc", lon: "2" },
+        { lat: "1", lon: "2" },
+    ]));
+    assert.equal(rows.length, 3);
+    assert.equal(rows[0].name, "Paris, France");
+    assert.equal(rows[0].latitude, 48.8589);
+    assert.equal(rows[0].longitude, 2.32);
+    assert.ok(rows[0].zoom < rows[1].zoom, "a city zooms out further than a street");
+    assert.ok(rows[0].zoom >= 8 && rows[0].zoom <= 18);
+    assert.equal(rows[2].name, "1, 2");
+    assert.equal(rows[2].zoom, 14);
+    assert.equal(model.parseNominatim("not json").length, 0);
+    assert.equal(model.parseNominatim("{}").length, 0);
+});

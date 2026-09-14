@@ -713,6 +713,50 @@ function submitParams(fields) {
     return params;
 }
 
+// Nominatim is OpenStreetMap's geocoder. Its usage policy asks for an
+// identifiable User-Agent (Http sets it), no autocomplete and at most one
+// request per second: the page only calls it on Enter.
+function nominatimUrl(query) {
+    var text = cleanText(query, 200);
+    if (!text) return "";
+    return "https://nominatim.openstreetmap.org/search?q=" + encodeURIComponent(text) + "&format=jsonv2&limit=5";
+}
+
+// Parses a Nominatim JSON answer into [{name, latitude, longitude, zoom}].
+// The zoom comes from the bounding box: a country fits in 4-5, a street sits
+// around 16. Rows without usable coordinates are dropped.
+function parseNominatim(text) {
+    var rows = null;
+    try {
+        rows = JSON.parse(String(text || ""));
+    } catch (error) {
+        return [];
+    }
+    if (!Array.isArray(rows)) return [];
+    var output = [];
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        if (!row || typeof row !== "object") continue;
+        var latitude = finiteInRange(row.lat, -90, 90);
+        var longitude = finiteInRange(row.lon, -180, 180);
+        if (latitude === null || longitude === null) continue;
+        var zoom = 14;
+        var box = Array.isArray(row.boundingbox) ? row.boundingbox.map(Number) : [];
+        if (box.length === 4 && box.every(isFinite)) {
+            var span = Math.max(Math.abs(box[1] - box[0]), Math.abs(box[3] - box[2]), 0.0005);
+            // 360 degrees fit at zoom 0; each level halves the span.
+            zoom = clamp(Math.floor(Math.log(360 / span) / Math.LN2) - 1, 2, 18);
+        }
+        output.push({
+            name: cleanText(row.display_name, 300) || (latitude + ", " + longitude),
+            latitude: latitude,
+            longitude: longitude,
+            zoom: zoom
+        });
+    }
+    return output;
+}
+
 function dedupeByUrl(stations) {
     var rows = Array.isArray(stations) ? stations : [];
     var byUrl = ({});
