@@ -284,6 +284,32 @@ TestCase {
         compare(results[1].n, 3);
     }
 
+    // "fr" is an ISO code, not a station name: a fourth request looks it up.
+    function test_two_letter_search_also_asks_for_the_country_code() {
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, []);
+        let finals = [];
+        rb.search("fr", (stations, isFinal) => finals.push(isFinal));
+        answer("name=fr", 200, []);
+        answer("country=Fr", 200, []);
+        answer("tag=fr", 200, []);
+        compare(finals.indexOf(true), -1, "delivered before the country code answered");
+        const url = answer("countrycode=FR", 200, [raw("a")]);
+        verify(url.indexOf("countrycode=FR") > 0, url);
+        compare(finals[finals.length - 1], true);
+        compare(pending.length, 0);
+    }
+
+    function test_longer_search_keeps_three_requests() {
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, []);
+        rb.search("jazz", () => {});
+        compare(pending.length, 3);
+        verify(pending.some(p => p.url.indexOf("country=Jazz") > 0), pending.map(p => p.url).join(", "));
+    }
+
     function test_newer_search_cancels_final_delivery_of_older_one() {
         rb.start();
         answer("/json/servers", 200, []);
@@ -298,10 +324,10 @@ TestCase {
                 finals.push("two");
         });
         answer("name=one", 200, []);
-        answer("country=one", 200, []);
+        answer("country=One", 200, []);
         answer("tag=one", 200, []);
         answer("name=two", 200, []);
-        answer("country=two", 200, []);
+        answer("country=Two", 200, []);
         answer("tag=two", 200, []);
         compare(finals, ["two"]);
     }

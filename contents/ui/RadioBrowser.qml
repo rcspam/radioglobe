@@ -146,8 +146,6 @@ Item {
         const generation = root._searchGeneration;
         const epoch = root._epoch;
         callback(RadioModel.searchStations(root._world, text, 80), false);
-        const groups = [null, null, null];
-        let remaining = 3;
         const common = {
             hidebroken: true,
             order: "clickcount",
@@ -159,12 +157,21 @@ Item {
                 name: text
             },
             {
-                country: text
+                // Radio Browser stores country names capitalised and matches
+                // them case-sensitively: "france" finds nothing.
+                country: text.charAt(0).toUpperCase() + text.slice(1)
             },
             {
                 tag: text.toLowerCase()
             }
         ];
+        // Two letters are far more likely an ISO country code than a name.
+        if (/^[a-z]{2}$/i.test(text))
+            variants.push({
+                countrycode: text.toUpperCase()
+            });
+        const groups = variants.map(() => null);
+        let remaining = variants.length;
         variants.forEach((filter, index) => {
             const params = Object.assign({}, common, filter);
             root._api("/json/stations/search", params, rows => {
