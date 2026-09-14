@@ -14,6 +14,7 @@ A KDE Plasma 6 widget for exploring live radio stations on a rotatable globe and
 - Panel or system tray icon with a playing badge, tooltip showing the current station and title, left click to open, middle click for a random station, wheel to change volume, right click for Plasma's widget menu with "Random station" and "Stop and quit mpv"
 - Desktop widget form factor with a resizable globe + panel layout, and a compact layout on narrow widths
 - Full keyboard control (see Controls below), MPRIS integration with the Plasma Media Controller and multimedia keys
+- Add your own stations from the configuration dialog, placing them on an OpenStreetMap view, and optionally publish them to Radio Browser
 - French translation included, other languages welcome via `po/`
 
 ## Requirements
@@ -29,6 +30,8 @@ A KDE Plasma 6 widget for exploring live radio stations on a rotatable globe and
 | openSUSE | `mpv mpv-mpris` |
 
 Without mpv-mpris, mpv still plays audio but RadioGlobe cannot control it (no MPRIS interface to attach to), so it is a hard requirement, not an optional extra. The widget's settings page reports whether mpv and mpv-mpris are detected, with the install command for whichever is missing.
+
+Optional: the QtLocation QML module (`qml6-module-qtlocation` and `qt6-location-plugins` on Debian / Ubuntu, `qt6-location` on Arch Linux) shows the map on the "Add a station" page. Without it the page still works, with latitude and longitude typed by hand.
 
 ## Install
 
@@ -64,7 +67,7 @@ Then add "RadioGlobe" from the widget list to a panel, the system tray, or the d
 | Left | Open or close the popup |
 | Middle | Play a random station |
 | Right | Plasma's widget menu, with "Random station" and "Stop and quit mpv" |
-| Wheel | Adjust volume |
+| Wheel | Adjust volume (direction can be inverted in the settings) |
 
 ### Keyboard (full view)
 
@@ -84,6 +87,12 @@ In the player bar, clicking the stop button stops playback; holding it down quit
 
 Next to the search field, the pin button ("Keep open") stops the popup from closing when it loses focus, so you can keep browsing stations while you work in another window. It is remembered across sessions, and it does not show up when the widget sits on the desktop, where there is no popup to keep open.
 
+## Adding a station
+
+The "+" button next to the search field opens the configuration dialog; its "Add a station" page takes a name, a stream URL and, optionally, a homepage, a country code, tags and a location. Click the map to place the station (scroll to zoom, drag to pan), or type the coordinates. The station goes straight into your Favorites, playable right away.
+
+Tick "Also publish on Radio Browser" to share it with everyone. RadioGlobe first checks whether a station with the exact same stream URL already exists there: if so nothing is published and that existing station is the one added to your favourites. Otherwise the station is submitted and, once accepted, keeps the id Radio Browser gave it, so it will show up on the globe once the database has checked it and it lands in the world list.
+
 ## Data and privacy
 
 - Station data comes from [Radio Browser](https://www.radio-browser.info/), a community-run, public-domain database (no attribution required, but credited below anyway)
@@ -91,6 +100,7 @@ Next to the search field, the pin button ("Keep open") stops the popup from clos
 - Unless disabled in the settings page ("Report played stations to the click counter"), playing a station calls Radio Browser's click counter. This tells Radio Browser "this IP listened to this station" — it is how popularity and click counts are computed. Turn it off in the widget's configuration if you don't want that
 - Audio streams themselves are fetched directly by mpv from each broadcaster's own server, not proxied through Radio Browser or RadioGlobe's author. Whoever runs the station sees your IP address like any other listener, and the rights to what's broadcast belong to that station
 - Station metadata (country geometry) comes from [Natural Earth](https://www.naturalearthdata.com/), public domain
+- The map on the "Add a station" page loads tiles from [OpenStreetMap](https://www.openstreetmap.org/copyright) (© OpenStreetMap contributors), only while that page is open. Publishing a station sends the form's fields to Radio Browser under your IP address
 
 ## Troubleshooting
 
