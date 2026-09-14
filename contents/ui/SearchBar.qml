@@ -7,6 +7,7 @@ RowLayout {
     id: bar
 
     property alias text: field.text
+    readonly property bool inputFocused: field.activeFocus
 
     signal searchRequested(string text)
     signal cleared
@@ -21,6 +22,7 @@ RowLayout {
 
     PlasmaComponents3.TextField {
         id: field
+        objectName: "searchField"
         Layout.fillWidth: true
         placeholderText: i18n("Search stations, countries, tags…")
         onAccepted: bar.searchRequested(text)

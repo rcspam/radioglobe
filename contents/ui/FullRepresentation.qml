@@ -50,8 +50,16 @@ Item {
         })
 
     Keys.onPressed: event => {
-        if (searchBar.text !== "" && event.key !== Qt.Key_Escape && event.key !== Qt.Key_Down && event.key !== Qt.Key_Up && event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter)
+        if (searchBar.inputFocused) {
+            // Typing: only list navigation is intercepted; letters go to the field.
+            if (event.key === Qt.Key_Down || event.key === Qt.Key_Up) {
+                stationList.moveSelection(event.key === Qt.Key_Down ? 1 : -1);
+                event.accepted = true;
+            } else {
+                event.accepted = false;
+            }
             return;
+        }
         event.accepted = KeyMap.handle(full.keyTargets, event.key, event.text);
     }
 
@@ -77,7 +85,12 @@ Item {
             id: searchBar
             objectName: "searchBar"
             Layout.fillWidth: true
-            onSearchRequested: text => root.runSearch(text)
+            onSearchRequested: text => {
+                if (stationList.selectedIndex >= 0)
+                    stationList.activateSelected();
+                else
+                    root.runSearch(text);
+            }
             onCleared: root.clearSearch()
             onRandomRequested: root.playRandom()
         }
@@ -183,6 +196,15 @@ Item {
         function onExpandedChanged() {
             if (root.expanded)
                 full.forceActiveFocus();
+        }
+    }
+
+    // Typing invalidates whatever row Up/Down had picked, so Enter goes back
+    // to submitting a search until the list is navigated again.
+    Connections {
+        target: searchBar
+        function onTextChanged() {
+            stationList.selectedIndex = -1;
         }
     }
 }

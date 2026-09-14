@@ -227,6 +227,35 @@ TestCase {
         compare(root.expanded, false);
     }
 
+    function test_key_events_respect_search_focus() {
+        loader.item.forceActiveFocus();
+        keyClick(Qt.Key_R);
+        compare(root.calls.indexOf("random") >= 0, true, JSON.stringify(root.calls));
+
+        const field = findChild(loader.item, "searchField");
+        verify(field !== null, "searchField not found");
+        field.forceActiveFocus();
+        field.text = "";
+        const callsBeforeTyping = root.calls.length;
+        keyClick(Qt.Key_R);
+        compare(field.text, "r");
+        compare(root.calls.length, callsBeforeTyping, JSON.stringify(root.calls));
+
+        const list = findChild(loader.item, "stationList");
+        verify(list !== null, "stationList not found");
+        keyClick(Qt.Key_Down);
+        compare(list.selectedIndex, 0);
+
+        keyClick(Qt.Key_Return);
+        compare(root.calls.indexOf("play:" + root.listStations[0].uuid) >= 0, true, JSON.stringify(root.calls));
+        compare(root.calls.some(call => call.indexOf("search:") === 0), false, JSON.stringify(root.calls));
+
+        field.text = "jazz";
+        compare(list.selectedIndex, -1);
+        keyClick(Qt.Key_Return);
+        compare(root.calls.indexOf("search:jazz") >= 0, true, JSON.stringify(root.calls));
+    }
+
     function test_status_line_follows_context() {
         compare(loader.item.statusLine, "2 signals");
         root.currentCountry = {
