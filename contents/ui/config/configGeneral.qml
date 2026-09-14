@@ -13,6 +13,7 @@ KCM.SimpleKCM {
     property alias cfg_homeCountry: homeCountry.text
     property alias cfg_mpvPath: mpvPath.text
     property alias cfg_sendClicks: sendClicks.checked
+    property alias cfg_approximateLocations: approximateLocations.checked
     property alias cfg_invertWheel: invertWheel.checked
 
     // "fr_FR" -> "FR". What an empty home country setting falls back to.
@@ -78,9 +79,19 @@ KCM.SimpleKCM {
             onEditingFinished: text = text.toUpperCase()
         }
         QQC2.Label {
-            text: i18n("All stations of this country are always loaded on the globe and kept first; the ones Radio Browser has no coordinates for get an approximate spot inside the country.")
+            text: i18n("All geolocated stations of this country are always loaded on the globe and kept first.")
             wrapMode: Text.Wrap
             Layout.fillWidth: true
+        }
+        QQC2.CheckBox {
+            id: approximateLocations
+            text: i18n("Also show its stations without coordinates, at an approximate spot inside the country")
+        }
+        QQC2.Label {
+            text: i18n("Radio Browser has no location for most stations. This places them at random inside their borders (the tooltip says “approximate location”), so the globe fills up but the dots do not mean much.")
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
+            opacity: 0.7
         }
         QQC2.TextField {
             id: mpvPath

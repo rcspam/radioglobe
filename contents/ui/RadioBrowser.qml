@@ -22,6 +22,10 @@ Item {
     // ISO 3166-1 alpha-2 code of the country whose stations are always loaded
     // in full and kept at the front of the world list. Empty disables it.
     property string homeCountry: ""
+    // Stations without coordinates get an approximate spot inside their
+    // country (home country loaded whole, country lists too). Off: only
+    // stations Radio Browser locates go on the globe.
+    property bool approximateLocations: false
     property int cacheTtlMs: 24 * 3600 * 1000
     property bool sendClicks: true
     // The User-Agent header itself is set by Http.userAgent; this property is
@@ -29,10 +33,14 @@ Item {
     property string userAgentVersion: "0.0.0"
 
     readonly property string allMirror: "https://all.api.radio-browser.info"
-    // Bumped when what the world holds changes shape (v2: the home country
-    // comes whole, with approximate spots), so an older cache is not served
-    // for a day as if it were current.
-    readonly property string worldKey: "world:2"
+    // Bumped when what the world holds changes shape, so an older cache is
+    // not served for a day as if it were current. One cache per mode: the
+    // approximate world holds rows the exact one must never show. A function
+    // rather than a bound property: onApproximateLocationsChanged reads it
+    // before a binding would have caught up.
+    function worldKey() {
+        return root.approximateLocations ? "world:3:approximate" : "world:3";
+    }
     readonly property var worldStations: RadioModel.spreadOverlapping(root._world)
     readonly property bool worldFromCache: root._worldFromCache
     readonly property bool expanding: root._expanding
@@ -86,9 +94,11 @@ Item {
         if (root._started && !force)
             return;
         root._started = true;
-        if (root.cache)
+        if (root.cache) {
             root.cache.remove("world");
-        const cached = root.cache ? root.cache.get(root.worldKey) : null;
+            root.cache.remove("world:2");
+        }
+        const cached = root.cache ? root.cache.get(root.worldKey()) : null;
         if (cached && Array.isArray(cached.value) && cached.value.length > 0) {
             root._world = cached.value;
             root._worldFromCache = true;
@@ -223,21 +233,23 @@ Item {
         root.request(base + "/json/url/" + encodeURIComponent(String(uuid)), function () {});
     }
 
-    // The home country is fetched whole (up to 1000 stations, located or
-    // not: the ones without coordinates get an approximate spot inside the
-    // country from mergeGeoStations) on top of the world batch, and _absorb
-    // keeps it first when it cuts the world down to worldLimit. Changing the
-    // setting reloads it right away.
+    // The home country is fetched whole (up to 1000 stations; only the
+    // geolocated ones unless approximate locations are on) on top of the
+    // world batch, and _absorb keeps it first when it cuts the world down to
+    // worldLimit. Changing the setting reloads it right away.
     function _loadHome() {
         const code = String(root.homeCountry || "").toUpperCase();
         if (!/^[A-Z]{2}$/.test(code))
             return;
-        root._api("/json/stations/bycountrycodeexact/" + code, {
+        const params = {
             hidebroken: true,
             order: "clickcount",
             reverse: true,
             limit: 1000
-        }, rows => {
+        };
+        if (!root.approximateLocations)
+            params.has_geo_info = true;
+        root._api("/json/stations/bycountrycodeexact/" + code, params, rows => {
             if (rows !== null)
                 root._absorb(rows, 1000);
         });
@@ -246,6 +258,19 @@ Item {
     onHomeCountryChanged: {
         if (root._started)
             root._loadHome();
+    }
+
+    // The two modes do not mix (an approximate world holds rows the exact
+    // one must not show), so the world starts over from the other cache.
+    onApproximateLocationsChanged: {
+        if (!root._started)
+            return;
+        root._world = [];
+        root._worldDirty = false;
+        root._started = false;
+        root.start(true);
+        if (root._world.length < root.worldLimit)
+            root.expandWorld();
     }
 
     function _expandRound(epoch) {
@@ -288,7 +313,7 @@ Item {
         // Fresh rows head `combined`, so the 5500 cut inside mergeGeoStations
         // only ever eats into what was already known, never the home batch.
         const combined = RadioModel.prioritizeStations(fresh, root._world, 100000);
-        const located = RadioModel.mergeGeoStations(combined, [], root.countries);
+        const located = RadioModel.mergeGeoStations(combined, [], root.countries, root.approximateLocations);
         const sorted = RadioModel.sortWorld(located, root.homeCountry);
         root._world = sorted.slice(0, Math.max(1, root.worldLimit));
         root._worldFromCache = false;
@@ -311,11 +336,11 @@ Item {
             return;
         root._worldDirty = false;
         if (root.cache)
-            root.cache.set(root.worldKey, root._world, root.now());
+            root.cache.set(root.worldKey(), root._world, root.now());
     }
 
     function _locate(stations) {
-        return RadioModel.mergeGeoStations(stations, [], root.countries);
+        return RadioModel.mergeGeoStations(stations, [], root.countries, root.approximateLocations);
     }
 
     // Adds a station to Radio Browser, unless one with the exact same stream

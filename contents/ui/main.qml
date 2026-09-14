@@ -309,6 +309,7 @@ PlasmoidItem {
         countries: root.countries
         worldLimit: Plasmoid.configuration.maxWorldStations
         homeCountry: root.homeCountry
+        approximateLocations: Plasmoid.configuration.approximateLocations
         sendClicks: Plasmoid.configuration.sendClicks
         userAgentVersion: root.appVersion
     }

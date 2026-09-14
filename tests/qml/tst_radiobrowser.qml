@@ -89,6 +89,7 @@ TestCase {
         updates.clear();
         rb.reset();
         rb.homeCountry = "";
+        rb.approximateLocations = false;
     }
 
     function test_discovers_mirrors_and_loads_first_batch() {
@@ -111,11 +112,11 @@ TestCase {
         compare(rb.worldStations.length, 2);
         compare(rb.worldFromCache, false);
         compare(updates.count, 1);
-        verify(store[rb.worldKey] !== undefined);
+        verify(store[rb.worldKey()] !== undefined);
     }
 
     function test_serves_cache_first_and_skips_network_when_fresh() {
-        store[rb.worldKey] = {
+        store[rb.worldKey()] = {
             value: [
                 {
                     uuid: "c",
@@ -136,7 +137,7 @@ TestCase {
     }
 
     function test_stale_cache_is_refreshed_in_background() {
-        store[rb.worldKey] = {
+        store[rb.worldKey()] = {
             value: [
                 {
                     uuid: "c",
@@ -198,7 +199,7 @@ TestCase {
     }
 
     function test_refresh_goes_to_the_network_even_on_a_fresh_cache() {
-        store[rb.worldKey] = {
+        store[rb.worldKey()] = {
             value: [
                 {
                     uuid: "c",
@@ -241,16 +242,16 @@ TestCase {
         rb.start();
         answer("/json/servers", 200, []);
         answer("/json/stations/search", 200, [raw("a")]);
-        compare(writes[rb.worldKey], 1);
+        compare(writes[rb.worldKey()], 1);
 
         rb.expandWorld();
         // The first round still writes: a start interrupted halfway has to
         // leave something usable in the cache.
         answer("order=random", 200, [raw("b")]);
-        compare(writes[rb.worldKey], 2);
+        compare(writes[rb.worldKey()], 2);
         answer("order=random", 200, [raw("c")]);
         answer("order=random", 200, [raw("d")]);
-        compare(writes[rb.worldKey], 2);
+        compare(writes[rb.worldKey()], 2);
         compare(rb.worldStations.length, 4);
         // worldUpdated still fires on every round, the globe needs it.
         compare(updates.count, 4);
@@ -260,8 +261,8 @@ TestCase {
         answer("order=random", 200, []);
         answer("order=random", 0, "");
         compare(rb.expanding, false);
-        compare(writes[rb.worldKey], 3);
-        compare(store[rb.worldKey].value.length, 4);
+        compare(writes[rb.worldKey()], 3);
+        compare(store[rb.worldKey()].value.length, 4);
     }
 
     function test_expansion_respects_world_limit() {
@@ -301,7 +302,7 @@ TestCase {
     // An upgrading user has a fresh world cache that predates the home
     // country: start() must still go and get it instead of waiting a day.
     function test_fresh_cache_still_loads_a_missing_home_country() {
-        store[rb.worldKey] = {
+        store[rb.worldKey()] = {
             value: [
                 {
                     uuid: "d1",
@@ -335,7 +336,7 @@ TestCase {
                 longitude: 2,
                 clicks: 5
             });
-        store[rb.worldKey] = {
+        store[rb.worldKey()] = {
             value: rows,
             savedAt: clock - 1000
         };
@@ -352,8 +353,20 @@ TestCase {
         answer("/json/stations/search", 200, [raw("a", {
                 countrycode: "DE"
             })]);
-        // The home country comes whole: stations without coordinates get an
-        // approximate spot inside the country's borders.
+        const url = answer("/json/stations/bycountrycodeexact/FR", 200, [raw("f1"), raw("f2"), raw("f3")]);
+        verify(url.indexOf("has_geo_info=true") > 0, url);
+        verify(url.indexOf("limit=1000") > 0, url);
+        const uuids = rb.worldStations.map(s => s.uuid);
+        for (const uuid of ["f1", "f2", "f3"])
+            verify(uuids.indexOf(uuid) >= 0, uuid + " missing from " + uuids.join());
+        compare(pending.length, 0);
+    }
+
+    // With approximate locations on, the home country comes whole and the
+    // stations without coordinates get a spot inside the country's borders.
+    function test_approximate_locations_load_the_home_country_whole() {
+        rb.homeCountry = "FR";
+        rb.approximateLocations = true;
         rb.countries = [
             {
                 properties: {
@@ -365,19 +378,28 @@ TestCase {
                 }
             }
         ];
-        const url = answer("/json/stations/bycountrycodeexact/FR", 200, [raw("f1"), raw("f2"), raw("f3", {
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a", {
+                countrycode: "DE"
+            })]);
+        const url = answer("/json/stations/bycountrycodeexact/FR", 200, [raw("f1"), raw("f3", {
                 geo_lat: null,
                 geo_long: null
             })]);
         verify(url.indexOf("has_geo_info") < 0, url);
-        verify(url.indexOf("limit=1000") > 0, url);
-        const uuids = rb.worldStations.map(s => s.uuid);
-        for (const uuid of ["f1", "f2", "f3"])
-            verify(uuids.indexOf(uuid) >= 0, uuid + " missing from " + uuids.join());
         const estimated = rb.worldStations.find(s => s.uuid === "f3");
+        verify(estimated !== undefined, "unlocated home station kept");
         compare(estimated.estimatedLocation, true);
         verify(estimated.latitude > 43 && estimated.latitude < 50, "inside the country: " + estimated.latitude);
-        compare(pending.length, 0);
+        verify(store["world:3:approximate"] !== undefined, "own cache key");
+        compare(store["world:3"], undefined);
+        // Switching the option off starts the world over: the approximate
+        // rows must not survive.
+        rb.approximateLocations = false;
+        answer("/json/stations/search", 200, [raw("b")]);
+        answer("/json/stations/bycountrycodeexact/FR", 200, [raw("f1")]);
+        verify(rb.worldStations.every(s => s.uuid !== "f3"), "approximate row gone: " + rb.worldStations.map(s => s.uuid).join());
         rb.countries = [];
     }
 
@@ -518,7 +540,7 @@ TestCase {
     }
 
     function test_background_refresh_updates_known_stations() {
-        store[rb.worldKey] = {
+        store[rb.worldKey()] = {
             value: [
                 {
                     uuid: "a",
@@ -547,7 +569,7 @@ TestCase {
         const a = rb.worldStations.find(s => s.uuid === "a");
         const b = rb.worldStations.find(s => s.uuid === "b");
         verify(a.latitude !== b.latitude || a.longitude !== b.longitude, "expected spread apart coordinates");
-        const stored = store[rb.worldKey].value;
+        const stored = store[rb.worldKey()].value;
         const storedA = stored.find(s => s.uuid === "a");
         const storedB = stored.find(s => s.uuid === "b");
         compare(storedA.latitude, 48);
@@ -592,7 +614,7 @@ TestCase {
         answer("/json/stations/search", 200, [raw("a")]);
         compare(rb.worldStations.length, 0);
         compare(updates.count, 0);
-        verify(store[rb.worldKey] === undefined);
+        verify(store[rb.worldKey()] === undefined);
     }
 
     function test_stale_discovery_response_keeps_discovering_flag() {

@@ -468,12 +468,21 @@ function stationAt(stations, x, y, width, height, scale, centreLatitude, centreL
   return nearest
 }
 
-function mergeGeoStations(primary, secondary, countries) {
+// Merges two station lists (5500 cap). With `approximate` on, a station
+// without coordinates gets a stable pseudo-random spot inside its country
+// and `estimatedLocation: true`; off, it is kept as it is (in the lists,
+// not on the globe). Without borders for its country it is dropped either
+// way when approximating, kept otherwise.
+function mergeGeoStations(primary, secondary, countries, approximate) {
   var rows = mergeStations(primary, secondary, 5500)
   var output = []
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i]
     if (row.latitude === null || row.longitude === null) {
+      if (approximate !== true) {
+        output.push(row)
+        continue
+      }
       var estimate = estimatedCountryLocation(countries, row.countryCode, row.uuid)
       if (!estimate) continue
       var estimated = ({})

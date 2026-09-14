@@ -279,7 +279,11 @@ test("radio atlas model", () => {
     { uuid: "estimate-one", name: "One", countryCode: "ZZ", latitude: null, longitude: null },
     { uuid: "estimate-two", name: "Two", countryCode: "ZZ", latitude: null, longitude: null }
   ]
-  const estimatedStations = model.mergeGeoStations([], missingLocations, estimatedCountries)
+  // Off (the default): a station without coordinates stays without.
+  const kept = model.mergeGeoStations([], missingLocations, estimatedCountries)
+  assert.equal(kept.length, 2)
+  assert.equal(kept.every(station => station.latitude === null && station.estimatedLocation === undefined), true)
+  const estimatedStations = model.mergeGeoStations([], missingLocations, estimatedCountries, true)
   assert.equal(estimatedStations.length, 2)
   assert.equal(estimatedStations.every(station => station.estimatedLocation === true), true)
   assert.equal(estimatedStations.every(station => station.latitude >= 20 && station.latitude <= 30), true)
@@ -289,7 +293,7 @@ test("radio atlas model", () => {
     [estimatedStations[1].latitude, estimatedStations[1].longitude]
   )
   assert.deepEqual(
-    Array.from(model.mergeGeoStations([], missingLocations, estimatedCountries), station => [station.latitude, station.longitude]),
+    Array.from(model.mergeGeoStations([], missingLocations, estimatedCountries, true), station => [station.latitude, station.longitude]),
     Array.from(estimatedStations, station => [station.latitude, station.longitude])
   )
 
