@@ -2,11 +2,15 @@ import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.kirigami as Kirigami
+import "KeyMap.js" as KeyMap
 
 // Globe on the left, list + player on the right; stacks vertically when narrow.
 // Reads shared state from `root` (main.qml's PlasmoidItem) and `player`.
 Item {
     id: full
+
+    focus: true
+    activeFocusOnTab: true
 
     Layout.preferredWidth: Kirigami.Units.gridUnit * 45
     Layout.preferredHeight: Kirigami.Units.gridUnit * 30
@@ -17,6 +21,39 @@ Item {
     // component's own `player` property shadows that id, so the bindings there
     // reach the real player through this alias.
     readonly property var mediaPlayer: player
+
+    // Pure key -> action mapping (KeyMap.js) driven by these callbacks, so the
+    // dispatch logic can be unit-tested without instantiating the component.
+    readonly property var keyTargets: ({
+            focusSearch: () => searchBar.focusInput(),
+            moveSelection: delta => stationList.moveSelection(delta),
+            activateSelected: () => stationList.activateSelected(),
+            togglePause: () => full.mediaPlayer.togglePause(),
+            random: () => root.playRandom(),
+            favorite: () => {
+                const index = stationList.selectedIndex;
+                const target = index >= 0 ? root.listStations[index] : full.mediaPlayer.station;
+                if (target)
+                    root.toggleFavorite(target);
+            },
+            volumeStep: delta => full.mediaPlayer.setVolume(full.mediaPlayer.volume + delta),
+            mute: () => full.mediaPlayer.toggleMute(),
+            escape: () => {
+                if (searchBar.text !== "") {
+                    searchBar.text = "";
+                } else if (root.currentCountry) {
+                    root.clearCountry();
+                } else {
+                    root.expanded = false;
+                }
+            }
+        })
+
+    Keys.onPressed: event => {
+        if (searchBar.text !== "" && event.key !== Qt.Key_Escape && event.key !== Qt.Key_Down && event.key !== Qt.Key_Up && event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter)
+            return;
+        event.accepted = KeyMap.handle(full.keyTargets, event.key, event.text);
+    }
 
     readonly property bool narrow: width < Kirigami.Units.gridUnit * 32
     readonly property string statusLine: {
@@ -138,6 +175,14 @@ Item {
         function onPlayingStarted(station) {
             if (station && station.latitude !== null && station.longitude !== null)
                 globe.focusCoordinate(station.latitude, station.longitude);
+        }
+    }
+
+    Connections {
+        target: root
+        function onExpandedChanged() {
+            if (root.expanded)
+                full.forceActiveFocus();
         }
     }
 }

@@ -211,6 +211,22 @@ TestCase {
         compare(root.calls.indexOf("play:b") >= 0, true, JSON.stringify(root.calls));
     }
 
+    function test_keys_reach_targets() {
+        const targets = loader.item.keyTargets;
+        targets.random();
+        targets.mute();
+        targets.volumeStep(0.05);
+        compare(root.calls.indexOf("random") >= 0, true, JSON.stringify(root.calls));
+        compare(player.calls.indexOf("toggleMute") >= 0, true, JSON.stringify(player.calls));
+        compare(player.calls.indexOf("volume:0.55") >= 0, true, JSON.stringify(player.calls));
+        root.currentCountry = null;
+        const searchBar = findChild(loader.item, "searchBar");
+        searchBar.text = "";
+        root.expanded = true;
+        targets.escape();
+        compare(root.expanded, false);
+    }
+
     function test_status_line_follows_context() {
         compare(loader.item.statusLine, "2 signals");
         root.currentCountry = {
