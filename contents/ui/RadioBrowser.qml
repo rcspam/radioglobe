@@ -78,8 +78,14 @@ Item {
             root._world = cached.value;
             root._worldFromCache = true;
             root.worldUpdated();
-            if (!force && root.now() - cached.savedAt < root.cacheTtlMs)
+            if (!force && root.now() - cached.savedAt < root.cacheTtlMs) {
+                // A cache written before the home country was set, or before
+                // the setting existed at all, holds next to nothing of it: go
+                // and get it rather than wait a day for the cache to expire.
+                if (RadioModel.stationsForCountry(root._world, root.homeCountry, 20).length < 20)
+                    root._loadHome();
                 return;
+            }
         }
         root._api("/json/stations/search", {
             has_geo_info: true,
@@ -261,6 +267,8 @@ Item {
     // 500 of a world batch.
     function _absorb(rows, maximum) {
         const fresh = RadioModel.dedupeByUrl(RadioModel.normalizeStations(rows, Math.max(1, Number(maximum) || 500)));
+        // Fresh rows head `combined`, so the 5500 cut inside mergeGeoStations
+        // only ever eats into what was already known, never the home batch.
         const combined = RadioModel.prioritizeStations(fresh, root._world, 100000);
         const located = RadioModel.mergeGeoStations(combined, [], root.countries);
         const sorted = RadioModel.sortWorld(located, root.homeCountry);

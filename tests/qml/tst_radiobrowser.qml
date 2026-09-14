@@ -263,6 +263,53 @@ TestCase {
         compare(pending.length, 0);
     }
 
+    // An upgrading user has a fresh world cache that predates the home
+    // country: start() must still go and get it instead of waiting a day.
+    function test_fresh_cache_still_loads_a_missing_home_country() {
+        store["world"] = {
+            value: [
+                {
+                    uuid: "d1",
+                    name: "Cached",
+                    url: "https://s/d1",
+                    countryCode: "DE",
+                    latitude: 50,
+                    longitude: 8,
+                    clicks: 5
+                }
+            ],
+            savedAt: clock - 1000
+        };
+        rb.homeCountry = "FR";
+        rb.start();
+        answer("/json/servers", 200, []);
+        compare(pending.length, 1);
+        verify(pending[0].url.indexOf("/json/stations/bycountrycodeexact/FR") > 0, pending[0].url);
+        verify(pending[0].url.indexOf("/json/stations/search") < 0, pending[0].url);
+    }
+
+    function test_fresh_cache_skips_home_when_already_present() {
+        const rows = [];
+        for (let i = 0; i < 20; i++)
+            rows.push({
+                uuid: "f" + i,
+                name: "Cached " + i,
+                url: "https://s/f" + i,
+                countryCode: "FR",
+                latitude: 48,
+                longitude: 2,
+                clicks: 5
+            });
+        store["world"] = {
+            value: rows,
+            savedAt: clock - 1000
+        };
+        rb.homeCountry = "FR";
+        rb.start();
+        compare(rb.worldFromCache, true);
+        compare(pending.length, 0);
+    }
+
     function test_home_country_is_loaded_after_the_world_batch() {
         rb.homeCountry = "FR";
         rb.start();
