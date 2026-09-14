@@ -335,7 +335,9 @@ PlasmoidItem {
         }
     }
 
-    compactRepresentation: CompactRepresentation {}
+    compactRepresentation: CompactRepresentation {
+        invertWheel: Plasmoid.configuration.invertWheel
+    }
 
     fullRepresentation: FullRepresentation {}
 }

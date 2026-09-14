@@ -13,6 +13,7 @@ KCM.SimpleKCM {
     property alias cfg_homeCountry: homeCountry.text
     property alias cfg_mpvPath: mpvPath.text
     property alias cfg_sendClicks: sendClicks.checked
+    property alias cfg_invertWheel: invertWheel.checked
 
     // "fr_FR" -> "FR". What an empty home country setting falls back to.
     readonly property string localeCountry: Qt.locale().name.split("_")[1] || ""
@@ -108,6 +109,11 @@ KCM.SimpleKCM {
             id: sendClicks
             Kirigami.FormData.label: i18n("Radio Browser:")
             text: i18n("Report played stations to the click counter")
+        }
+        QQC2.CheckBox {
+            id: invertWheel
+            Kirigami.FormData.label: i18n("Panel icon:")
+            text: i18n("Invert the mouse wheel direction for the volume")
         }
     }
 }

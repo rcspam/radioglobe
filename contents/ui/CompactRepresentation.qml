@@ -16,6 +16,7 @@ Item {
             volumeStep: delta => player.setVolume(player.volume + delta)
         })
     property bool playing: typeof player !== "undefined" && player.state === "playing"
+    property bool invertWheel: false
     readonly property bool badgeVisible: compact.playing
     property real _wheelAccumulator: 0
 
@@ -57,7 +58,7 @@ Item {
                 wheel.accepted = false;
                 return;
             }
-            compact._wheelAccumulator += wheel.angleDelta.y;
+            compact._wheelAccumulator += wheel.angleDelta.y * (compact.invertWheel ? -1 : 1);
             while (Math.abs(compact._wheelAccumulator) >= 120) {
                 const step = compact._wheelAccumulator > 0 ? 0.05 : -0.05;
                 compact.actions.volumeStep(step);

@@ -46,6 +46,13 @@ TestCase {
         compare(log, ["volume:0.05", "volume:-0.05"]);
     }
 
+    function test_wheel_can_be_inverted() {
+        compact.invertWheel = true;
+        mouseWheel(compact, 24, 24, 0, 120);
+        compare(log, ["volume:-0.05"]);
+        compact.invertWheel = false;
+    }
+
     function test_horizontal_wheel_is_ignored() {
         mouseWheel(compact, 24, 24, 120, 0);
         compare(log, []);
