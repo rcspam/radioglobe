@@ -12,10 +12,11 @@ TestCase {
     property var writes: ({})
     property real clock: 1000000
 
-    function fakeRequest(url, callback) {
+    function fakeRequest(url, callback, options) {
         pending.push({
             url: url,
-            callback: callback
+            callback: callback,
+            options: options || null
         });
     }
 
@@ -613,5 +614,126 @@ TestCase {
         compare(pending.length, 0);
         compare(rb.worldStations.length, 0);
         compare(rb.lastError, "");
+    }
+
+    function submitForm() {
+        return {
+            name: "Radio Test",
+            url: "https://stream.example.org/live",
+            countryCode: "FR",
+            latitude: "48.85",
+            longitude: "2.35"
+        };
+    }
+
+    function test_submit_returns_the_existing_station_without_posting() {
+        let result = null;
+        rb.submit(submitForm(), r => {
+            result = r;
+        });
+        answer("/json/servers", 200, [
+            {
+                name: "m1.api.radio-browser.info"
+            }
+        ]);
+        const url = answer("/json/stations/byurl", 200, [raw("known")]);
+        verify(url.indexOf("url=https%3A%2F%2Fstream.example.org%2Flive") >= 0, url);
+        compare(pending[0] === undefined ? null : pending[0].options, null);
+        compare(result.status, "exists");
+        compare(result.station.uuid, "known");
+        compare(pending.length, 0);
+    }
+
+    function test_submit_posts_and_returns_the_new_uuid() {
+        let result = null;
+        rb.submit(submitForm(), r => {
+            result = r;
+        });
+        answer("/json/servers", 200, [
+            {
+                name: "m1.api.radio-browser.info"
+            }
+        ]);
+        answer("/json/stations/byurl", 200, []);
+        compare(pending.length, 1);
+        compare(pending[0].url, "https://m1.api.radio-browser.info/json/add");
+        compare(pending[0].options.method, "POST");
+        compare(pending[0].options.body, "name=Radio%20Test&url=https%3A%2F%2Fstream.example.org%2Flive&countrycode=FR&geo_lat=48.85&geo_long=2.35");
+        answer("/json/add", 200, {
+            ok: true,
+            message: "station was added",
+            uuid: "new-1"
+        });
+        compare(result.status, "added");
+        compare(result.uuid, "new-1");
+    }
+
+    function test_submit_reports_a_refusal() {
+        let result = null;
+        rb.submit(submitForm(), r => {
+            result = r;
+        });
+        answer("/json/servers", 200, [
+            {
+                name: "m1.api.radio-browser.info"
+            }
+        ]);
+        answer("/json/stations/byurl", 200, []);
+        answer("/json/add", 200, {
+            ok: false,
+            message: "StationUrlInvalid"
+        });
+        compare(result.status, "error");
+        compare(result.message, "StationUrlInvalid");
+    }
+
+    function test_submit_falls_back_to_the_next_mirror_and_reports_offline() {
+        let result = null;
+        rb.submit(submitForm(), r => {
+            result = r;
+        });
+        answer("/json/servers", 200, [
+            {
+                name: "m1.api.radio-browser.info"
+            },
+            {
+                name: "m2.api.radio-browser.info"
+            }
+        ]);
+        // A mirror without the route is not an outage: the check is skipped.
+        answer("/json/stations/byurl", 404, "");
+        answer("m1.api.radio-browser.info/json/add", 500, "");
+        answer("m2.api.radio-browser.info/json/add", 0, "");
+        answer("all.api.radio-browser.info/json/add", 0, "");
+        compare(result.status, "offline");
+        compare(pending.length, 0);
+    }
+
+    function test_submit_reports_offline_when_the_check_itself_fails() {
+        let result = null;
+        rb.submit(submitForm(), r => {
+            result = r;
+        });
+        answer("/json/servers", 200, [
+            {
+                name: "m1.api.radio-browser.info"
+            }
+        ]);
+        answer("m1.api.radio-browser.info/json/stations/byurl", 0, "");
+        answer("all.api.radio-browser.info/json/stations/byurl", 0, "");
+        compare(result.status, "offline");
+        compare(pending.length, 0);
+    }
+
+    function test_submit_rejects_an_invalid_form_without_network() {
+        let result = null;
+        rb.submit({
+            name: "",
+            url: "https://a/b"
+        }, r => {
+            result = r;
+        });
+        compare(result.status, "error");
+        compare(pending.length, 0);
     }
 }

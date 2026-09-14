@@ -311,19 +311,84 @@ Item {
         return RadioModel.mergeGeoStations(stations, [], root.countries);
     }
 
+    // Adds a station to Radio Browser, unless one with the exact same stream
+    // URL is already there. callback gets one of:
+    //   {status: "exists", station}  already known, `station` is that one
+    //   {status: "added", uuid}      published, `uuid` is its new id
+    //   {status: "error", message}   the server (or the form) refused it
+    //   {status: "offline"}          no mirror answered
+    function submit(fields, callback) {
+        const params = RadioModel.submitParams(fields);
+        if (!params) {
+            callback({
+                status: "error",
+                message: "invalid"
+            });
+            return;
+        }
+        root._api("/json/stations/byurl", {
+            url: params.url
+        }, rows => {
+            if (rows === null && root._lastError === "offline") {
+                callback({
+                    status: "offline"
+                });
+                return;
+            }
+            // A 404 or an odd body is not an outage: the check is skipped
+            // rather than blocking the submission.
+            const known = RadioModel.normalizeStations(rows, 1);
+            if (known.length > 0) {
+                callback({
+                    status: "exists",
+                    station: known[0]
+                });
+                return;
+            }
+            root._call("/json/add", null, {
+                method: "POST",
+                body: RadioModel.buildQuery(params)
+            }, row => row !== null && typeof row === "object" && !Array.isArray(row) && row.ok !== undefined, row => {
+                if (row === null) {
+                    callback({
+                        status: "offline"
+                    });
+                } else if (row.ok === true || row.ok === "true") {
+                    callback({
+                        status: "added",
+                        uuid: String(row.uuid || "")
+                    });
+                } else {
+                    callback({
+                        status: "error",
+                        message: String(row.message || "")
+                    });
+                }
+            });
+        });
+    }
+
     // Calls callback(rows) with the parsed JSON array, or callback(null) when
     // every mirror failed or answered with a non-retryable status (e.g. 404,
     // which is not an outage: lastError is left untouched). Mirrors are
     // retried in order only on status 0, 429 and 5xx, and on a 200 whose body
     // is not a JSON array.
     function _api(path, params, callback) {
+        root._call(path, params, null, Array.isArray, callback);
+    }
+
+    // The mirror loop behind _api, for any response shape: `validate` says
+    // whether a parsed 200 body is the expected one (a mirror that returns
+    // something else is skipped like a failed one), `options` goes to
+    // Http.request (a POST body, for instance).
+    function _call(path, params, options, validate, callback) {
         const epoch = root._epoch;
         if (!root._discovered) {
-            root._afterDiscovery.push(() => root._api(path, params, callback));
+            root._afterDiscovery.push(() => root._call(path, params, options, validate, callback));
             root._discover();
             return;
         }
-        const query = RadioModel.buildQuery(params);
+        const query = params ? RadioModel.buildQuery(params) : "";
         const mirrors = root._mirrors.slice();
         const attempt = index => {
             if (epoch !== root._epoch)
@@ -350,13 +415,13 @@ Item {
                 } catch (error) {
                     rows = null;
                 }
-                if (!Array.isArray(rows)) {
+                if (!validate(rows)) {
                     attempt(index + 1);
                     return;
                 }
                 root._lastError = "";
                 callback(rows);
-            });
+            }, options);
         };
         attempt(0);
     }
