@@ -69,7 +69,7 @@ Then add "RadioGlobe" from the widget list to a panel, the system tray, or the d
 | Right | Plasma's widget menu, with "Random station" and "Stop and quit mpv" |
 | Wheel | Adjust volume (direction can be inverted in the settings) |
 
-The icon itself is a setting too (General page): a few presets such as the globe Radio Atlas uses, or any icon of the theme through the icon chooser.
+The icon itself is a setting too (General page): a few presets such as the globe Radio Atlas uses, or any icon of the theme through the icon chooser, plus a custom colour for the icon and for the playing badge.
 
 ### Keyboard (full view)
 

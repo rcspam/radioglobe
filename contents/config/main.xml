@@ -49,6 +49,14 @@
     <entry name="icon" type="String">
       <default>radio</default>
     </entry>
+    <!-- Colours as "#rrggbb"; empty follows the theme (text colour for the
+         icon, highlight colour for the playing badge). -->
+    <entry name="iconColor" type="String">
+      <default></default>
+    </entry>
+    <entry name="badgeColor" type="String">
+      <default></default>
+    </entry>
     <entry name="invertWheel" type="Bool">
       <default>false</default>
     </entry>

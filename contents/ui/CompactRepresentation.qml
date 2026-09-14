@@ -18,6 +18,9 @@ Item {
     property bool playing: typeof player !== "undefined" && player.state === "playing"
     property bool invertWheel: false
     property string iconName: "radio"
+    // "#rrggbb" or empty for the theme colour.
+    property string iconColor: ""
+    property string badgeColor: ""
     readonly property bool badgeVisible: compact.playing
     property real _wheelAccumulator: 0
 
@@ -29,17 +32,21 @@ Item {
         objectName: "icon"
         anchors.fill: parent
         source: compact.iconName || "radio"
+        // Kirigami.Icon recolours monochrome icons only; a coloured icon
+        // keeps its own colours whatever is set here.
+        color: compact.iconColor ? compact.iconColor : Kirigami.Theme.textColor
         active: mouseArea.containsMouse
     }
 
     Rectangle {
+        objectName: "badge"
         visible: compact.badgeVisible
         width: Math.max(6, parent.width * 0.3)
         height: width
         radius: width / 2
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        color: Kirigami.Theme.highlightColor
+        color: compact.badgeColor ? compact.badgeColor : Kirigami.Theme.highlightColor
         border.color: Kirigami.Theme.backgroundColor
         border.width: 1
     }

@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCM
 import org.kde.iconthemes as KIconThemes
+import org.kde.kquickcontrols as KQuickControls
 import ".." as Ui
 import "../RadioModel.js" as RadioModel
 
@@ -17,9 +18,16 @@ KCM.SimpleKCM {
     property alias cfg_approximateLocations: approximateLocations.checked
     property alias cfg_invertWheel: invertWheel.checked
     property string cfg_icon: "radio"
+    // Empty means "theme colour"; the check boxes drive that.
+    property string cfg_iconColor: ""
+    property string cfg_badgeColor: ""
 
     // A few icons that fit, one click each; the dialog opens the whole theme.
-    readonly property var iconPresets: ["radio", "globe", "map-globe", "internet-services", "applications-multimedia"]
+    readonly property var iconPresets: ["radio", "globe", "map-globe"]
+
+    function hex(color) {
+        return String(color).slice(0, 7);
+    }
 
     // "fr_FR" -> "FR". What an empty home country setting falls back to.
     readonly property string localeCountry: Qt.locale().name.split("_")[1] || ""
@@ -157,6 +165,42 @@ KCM.SimpleKCM {
                 text: i18n("Choose…")
                 icon.name: page.iconPresets.indexOf(page.cfg_icon) < 0 ? page.cfg_icon : "document-open"
                 onClicked: iconDialog.open()
+            }
+        }
+        RowLayout {
+            Kirigami.FormData.label: i18n("Icon colour:")
+            spacing: Kirigami.Units.smallSpacing
+
+            QQC2.CheckBox {
+                id: customIconColor
+                text: i18n("Custom")
+                checked: page.cfg_iconColor !== ""
+                onToggled: page.cfg_iconColor = checked ? page.hex(iconColorButton.color) : ""
+            }
+            KQuickControls.ColorButton {
+                id: iconColorButton
+                enabled: customIconColor.checked
+                showAlphaChannel: false
+                color: page.cfg_iconColor || Kirigami.Theme.textColor
+                onAccepted: color => page.cfg_iconColor = page.hex(color)
+            }
+        }
+        RowLayout {
+            Kirigami.FormData.label: i18n("Playing badge colour:")
+            spacing: Kirigami.Units.smallSpacing
+
+            QQC2.CheckBox {
+                id: customBadgeColor
+                text: i18n("Custom")
+                checked: page.cfg_badgeColor !== ""
+                onToggled: page.cfg_badgeColor = checked ? page.hex(badgeColorButton.color) : ""
+            }
+            KQuickControls.ColorButton {
+                id: badgeColorButton
+                enabled: customBadgeColor.checked
+                showAlphaChannel: false
+                color: page.cfg_badgeColor || Kirigami.Theme.highlightColor
+                onAccepted: color => page.cfg_badgeColor = page.hex(color)
             }
         }
         QQC2.CheckBox {

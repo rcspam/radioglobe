@@ -78,6 +78,19 @@ TestCase {
         compact.iconName = "radio";
     }
 
+    function test_colours_follow_the_settings() {
+        const icon = findChild(compact, "icon");
+        const badge = findChild(compact, "badge");
+        compact.iconColor = "#ff0000";
+        compact.badgeColor = "#00ff00";
+        compare(String(icon.color), "#ff0000");
+        compare(String(badge.color), "#00ff00");
+        compact.iconColor = "";
+        compact.badgeColor = "";
+        verify(String(icon.color) !== "#ff0000", "back to the theme colour");
+        verify(String(badge.color) !== "#00ff00", "back to the theme colour");
+    }
+
     function test_badge_follows_playing() {
         compact.playing = false;
         compare(compact.badgeVisible, false);

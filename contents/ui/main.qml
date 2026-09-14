@@ -379,6 +379,8 @@ PlasmoidItem {
     compactRepresentation: CompactRepresentation {
         invertWheel: Plasmoid.configuration.invertWheel
         iconName: Plasmoid.configuration.icon
+        iconColor: Plasmoid.configuration.iconColor
+        badgeColor: Plasmoid.configuration.badgeColor
     }
 
     fullRepresentation: FullRepresentation {}
