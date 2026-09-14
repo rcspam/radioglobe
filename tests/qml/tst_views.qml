@@ -53,6 +53,27 @@ TestCase {
         bar.player = fakePlayer;
     }
 
+    function test_edit_button_needs_a_station() {
+        let asked = 0;
+        bar.editRequested.connect(() => asked++);
+        const button = findChild(bar, "editButton");
+        verify(button !== null, "editButton not found");
+        compare(button.enabled, false);
+        bar.player = ({
+                state: "playing",
+                station: {
+                    uuid: "a",
+                    name: "FIP"
+                },
+                track: "",
+                errorKind: ""
+            });
+        compare(button.enabled, true);
+        mouseClick(button);
+        compare(asked, 1);
+        bar.player = fakePlayer;
+    }
+
     function test_player_bar_idle_and_playing_texts() {
         compare(bar.primaryText, "No station selected");
         fakePlayer = ({

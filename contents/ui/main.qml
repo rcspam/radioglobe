@@ -30,7 +30,9 @@ PlasmoidItem {
 
     // Playback queue: the list displayed when the user picked a station.
     property var queue: []
-    property var worldStations: radioBrowser.worldStations
+    // Favourites edited by hand (localEdit) replace their Radio Browser row,
+    // so a corrected location moves the dot instead of adding a second one.
+    property var worldStations: RadioModel.applyLocalEdits(radioBrowser.worldStations, root.favorites)
     property var countries: []
     readonly property bool mprisAvailable: mprisLoader.status === Loader.Ready
     // The country whose stations are always on the globe: the configured one,
@@ -49,19 +51,18 @@ PlasmoidItem {
 
     // Opens the configuration dialog on the "Add a station" page. Plasma
     // opens on the first visible category, so config.qml lists that page
-    // first only while configStartPage says so.
+    // first only while configStartPage says so; the page clears the flag
+    // once it is up, and the sidebar falls back to its normal order.
     function openConfiguration() {
         Plasmoid.configuration.configStartPage = "addStation";
         Plasmoid.internalAction("configure").trigger();
-        startPageReset.restart();
     }
 
-    // Once the dialog is up, the flag goes back to normal so the widget
-    // menu's own "Configure" lands on General again.
-    Timer {
-        id: startPageReset
-        interval: 2000
-        onTriggered: Plasmoid.configuration.configStartPage = ""
+    // Same page, prefilled with an existing station: saving stores a local
+    // copy in the favourites (same uuid, localEdit flag).
+    function openStationEditor(station) {
+        Plasmoid.configuration.editStation = JSON.stringify(station);
+        root.openConfiguration();
     }
 
     // Pinned: the popup survives losing focus, which is what lets the user
@@ -110,8 +111,12 @@ PlasmoidItem {
     // qmllint enable missing-property
 
     function playFrom(list, station) {
-        root.queue = Array.isArray(list) && list.length > 0 ? list.slice() : [station];
-        player.play(station);
+        // A country list or a search result carries the Radio Browser row;
+        // a local edit of the same station wins, so the player, the globe
+        // and "locate" all agree on where it is.
+        const current = RadioModel.applyLocalEdits([station], root.favorites)[0];
+        root.queue = Array.isArray(list) && list.length > 0 ? list.slice() : [current];
+        player.play(current);
     }
 
     function next() {

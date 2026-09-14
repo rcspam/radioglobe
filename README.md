@@ -91,6 +91,8 @@ Next to the search field, the pin button ("Keep open") stops the popup from clos
 
 The "+" button next to the search field opens the configuration dialog; its "Add a station" page takes a name, a stream URL and, optionally, a homepage, a country code, tags and a location. Search an address or a place (OpenStreetMap's Nominatim geocoder, queried only when you press Enter), click the map to place the station (scroll to zoom, drag to pan), or type the coordinates. The station goes straight into your Favorites, playable right away.
 
+The pencil button in the player bar opens the same page prefilled with the playing station, to fix its details, its location above all. Radio Browser has no way to change an existing station (editing was removed after vandalism; only the stream's owner can override its metadata, through `icy-*` HTTP headers on the stream itself, see the "Owners" page on radio-browser.info), so what you save stays in the widget: the station goes to your favourites with your changes, and the globe shows your version instead of the Radio Browser one. Removing it from the favourites drops the local edit.
+
 Tick "Also publish on Radio Browser" to share it with everyone. RadioGlobe first checks whether a station with the exact same stream URL already exists there: if so nothing is published and that existing station is the one added to your favourites. Otherwise the station is submitted and, once accepted, keeps the id Radio Browser gave it, so it will show up on the globe once the database has checked it and it lands in the world list.
 
 ## Data and privacy

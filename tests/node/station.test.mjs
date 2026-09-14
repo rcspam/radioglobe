@@ -256,3 +256,41 @@ test("parseNominatim keeps usable rows and picks a zoom from the bounding box", 
     assert.equal(model.parseNominatim("not json").length, 0);
     assert.equal(model.parseNominatim("{}").length, 0);
 });
+
+test("editedStation keeps what the form does not cover and marks the local edit", () => {
+    const original = model.normalizeStation(raw);
+    const edited = model.editedStation(original, { ...form, name: "FIP renamed", latitude: "45.75", longitude: "4.85" });
+    assert.equal(edited.uuid, "abc-123");
+    assert.equal(edited.name, "FIP renamed");
+    assert.equal(edited.url, "https://stream.example.org/live");
+    assert.equal(edited.codec, "MP3");
+    assert.equal(edited.bitrate, 128);
+    assert.equal(edited.clicks, 42);
+    assert.equal(edited.country, "France");
+    assert.equal(edited.latitude, 45.75);
+    assert.equal(edited.longitude, 4.85);
+    assert.equal(edited.localEdit, true);
+    assert.equal(edited.meta, model.stationMeta(edited));
+    assert.equal(original.name, "FIP Paris", "original untouched");
+    assert.equal(model.editedStation(original, { ...form, name: "" }), null);
+    assert.equal(model.editedStation(null, form), null);
+});
+
+test("applyLocalEdits swaps in edited favourites and keeps the array when nothing applies", () => {
+    const world = [
+        { uuid: "a", name: "A", latitude: 1, longitude: 1 },
+        { uuid: "b", name: "B", latitude: 2, longitude: 2 },
+    ];
+    const plain = { uuid: "a", name: "A old copy", latitude: 9, longitude: 9 };
+    const edited = { uuid: "b", name: "B moved", latitude: 5, longitude: 5, localEdit: true };
+    assert.equal(model.applyLocalEdits(world, [plain]), world, "a plain favourite never overrides");
+    assert.equal(model.applyLocalEdits(world, []), world);
+    assert.equal(model.applyLocalEdits(world, [{ uuid: "zzz", localEdit: true }]), world);
+    const out = model.applyLocalEdits(world, [edited, plain]);
+    assert.notEqual(out, world);
+    assert.equal(out.length, 2);
+    assert.equal(out[0].name, "A");
+    assert.equal(out[1].name, "B moved");
+    assert.equal(out[1].latitude, 5);
+    assert.equal(world[1].name, "B", "input untouched");
+});

@@ -728,6 +728,55 @@ function stationFromForm(fields, uuid) {
     return station;
 }
 
+// A known station with the form's fields applied. Everything the form does
+// not cover (codec, bitrate, clicks, favicon...) is kept from the original,
+// and `localEdit` marks the copy so applyLocalEdits() puts it on the globe
+// in place of the Radio Browser row. Null when the form is invalid.
+function editedStation(original, fields) {
+    if (!original || typeof original !== "object" || !original.uuid) return null;
+    var fromForm = stationFromForm(fields, original.uuid);
+    if (!fromForm) return null;
+    var station = ({});
+    for (var key in original) station[key] = original[key];
+    station.name = fromForm.name;
+    station.url = fromForm.url;
+    station.homepage = fromForm.homepage;
+    station.countryCode = fromForm.countryCode;
+    station.tags = fromForm.tags;
+    station.latitude = fromForm.latitude;
+    station.longitude = fromForm.longitude;
+    station.localEdit = true;
+    station.meta = stationMeta(station);
+    return station;
+}
+
+// Replaces, in a station list, every row whose uuid matches a favourite
+// marked localEdit. Returns the very same array when nothing applies, so a
+// binding on it does not wake the globe up for nothing.
+function applyLocalEdits(stations, favorites) {
+    var rows = Array.isArray(stations) ? stations : [];
+    var edits = ({});
+    var any = false;
+    var list = Array.isArray(favorites) ? favorites : [];
+    for (var i = 0; i < list.length; i++) {
+        var favorite = list[i];
+        if (favorite && favorite.localEdit === true && favorite.uuid) {
+            edits["$" + favorite.uuid] = favorite;
+            any = true;
+        }
+    }
+    if (!any) return rows;
+    var output = null;
+    for (var n = 0; n < rows.length; n++) {
+        var row = rows[n];
+        var replacement = row && row.uuid ? edits["$" + row.uuid] : undefined;
+        if (replacement === undefined) continue;
+        if (output === null) output = rows.slice();
+        output[n] = replacement;
+    }
+    return output === null ? rows : output;
+}
+
 // Radio Browser /json/add parameters for the same form. Empty values are
 // left out so the server applies its own defaults.
 function submitParams(fields) {

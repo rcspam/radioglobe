@@ -45,8 +45,13 @@
     </entry>
     <!-- Not a setting: which page the next configuration dialog opens on
          ("addStation" or empty). Set by the popup's "+" button, cleared by
-         the widget menu's "Configure" path. -->
+         the page itself once shown. -->
     <entry name="configStartPage" type="String">
+      <default></default>
+    </entry>
+    <!-- Not a setting either: the station (JSON) the "Add a station" page
+         should open prefilled with, consumed and cleared by the page. -->
+    <entry name="editStation" type="String">
       <default></default>
     </entry>
   </group>

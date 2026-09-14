@@ -20,6 +20,9 @@ ColumnLayout {
     signal favoriteRequested
     // Double click on the station name: show it on the globe.
     signal locateRequested
+    // Edit button: fix the station's details (its location above all)
+    // locally, in the configuration dialog.
+    signal editRequested
 
     // Deliberately shadows Item.state: this component has no QML states and
     // reads far better as the player state everywhere below.
@@ -110,6 +113,15 @@ ColumnLayout {
                 onDoubleClicked: if (bar.player && bar.player.station)
                     bar.locateRequested()
             }
+        }
+        PlasmaComponents3.ToolButton {
+            objectName: "editButton"
+            icon.name: "document-edit"
+            enabled: bar.player && bar.player.station ? true : false
+            onClicked: bar.editRequested()
+            Accessible.name: i18n("Edit this station…")
+            PlasmaComponents3.ToolTip.text: i18n("Edit this station…")
+            PlasmaComponents3.ToolTip.visible: hovered
         }
         PlasmaComponents3.ToolButton {
             icon.name: bar.favorite ? "starred-symbolic" : "non-starred-symbolic"

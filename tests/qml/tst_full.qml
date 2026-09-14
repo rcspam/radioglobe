@@ -105,6 +105,10 @@ TestCase {
         function openConfiguration() {
             root.calls.push("configure");
         }
+
+        function openStationEditor(station) {
+            root.calls.push("edit:" + station.uuid);
+        }
     }
 
     QtObject {
@@ -225,6 +229,17 @@ TestCase {
         globe.globeScale = 12;
         playerBar.locateRequested();
         compare(globe.globeScale, 12, "an existing closer zoom is kept");
+        player.station = null;
+    }
+
+    function test_edit_button_sends_the_current_station_to_root() {
+        const playerBar = findChild(loader.item, "playerBar");
+        player.station = {
+            uuid: "cur",
+            name: "Current"
+        };
+        playerBar.editRequested();
+        compare(root.calls.indexOf("edit:cur") >= 0, true, JSON.stringify(root.calls));
         player.station = null;
     }
 

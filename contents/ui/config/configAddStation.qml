@@ -35,6 +35,9 @@ KCM.SimpleKCM {
     // The LocationPicker instance, or null without QtLocation. Typed var so
     // the page never names the QtLocation-backed type itself.
     readonly property var map: mapLoader.item
+    // The station being edited (opened from the player's edit button), or
+    // null when the page adds a new one.
+    property var editing: null
     property bool busy: false
     property string status: ""
     property bool searching: false
@@ -70,6 +73,16 @@ KCM.SimpleKCM {
 
     function add() {
         const form = page.fields();
+        if (page.editing) {
+            const edited = RadioModel.editedStation(page.editing, form);
+            if (!edited) {
+                page.status = page.validationMessage(form);
+                return;
+            }
+            page.store(edited, i18n("Saved. The change is local to this widget: Radio Browser cannot be edited."));
+            page.editing = null;
+            return;
+        }
         const local = RadioModel.stationFromForm(form, "local-" + page.randomHex(16));
         if (!local) {
             page.status = page.validationMessage(form);
@@ -104,6 +117,34 @@ KCM.SimpleKCM {
         Plasmoid.configuration.favorites = JSON.stringify(RadioModel.prioritizeStations([station], rows, 100000));
         page.clearForm();
         page.status = message;
+    }
+
+    // Prefills the form with a station to edit (from Plasmoid.configuration
+    // .editStation, written by the player's edit button).
+    function startEditing(station) {
+        page.editing = station;
+        nameField.text = String(station.name || "");
+        urlField.text = String(station.url || "");
+        homepageField.text = String(station.homepage || "");
+        countryField.text = String(station.countryCode || "");
+        tagsField.text = String(station.tags || "");
+        const located = station.latitude !== null && station.latitude !== undefined && station.longitude !== null && station.longitude !== undefined;
+        latitudeField.text = located ? Number(station.latitude).toFixed(4) : "";
+        longitudeField.text = located ? Number(station.longitude).toFixed(4) : "";
+        publish.checked = false;
+        page.status = "";
+        page.syncMarker();
+        if (page.map && located)
+            page.map.centreOn(Number(station.latitude), Number(station.longitude), 10);
+        else
+            page.centreMapOnCountry();
+    }
+
+    function stopEditing() {
+        page.editing = null;
+        page.clearForm();
+        page.status = "";
+        page.centreMapOnCountry();
     }
 
     function clearForm() {
@@ -195,7 +236,22 @@ KCM.SimpleKCM {
     }
 
     Component.onCompleted: {
+        // The popup's "+" put this page first in config.qml so the dialog
+        // opened on it; back to the normal order now that it is showing.
+        let toEdit = null;
+        try {
+            Plasmoid.configuration.configStartPage = "";
+            const pending = String(Plasmoid.configuration.editStation || "");
+            if (pending) {
+                Plasmoid.configuration.editStation = "";
+                toEdit = JSON.parse(pending);
+            }
+        } catch (error) {
+            toEdit = null;
+        }
         countryField.text = page.homeCountry || (Qt.locale().name.split("_")[1] || "");
+        if (toEdit && typeof toEdit === "object" && toEdit.uuid)
+            page.startEditing(toEdit);
         // Same route as main.qml: XMLHttpRequest cannot open local files in
         // plasmashell, so the bundled GeoJSON goes through `cat`.
         const path = decodeURIComponent(String(Qt.resolvedUrl("../../data/countries.json")).replace(/^file:\/\//, ""));
@@ -339,7 +395,10 @@ KCM.SimpleKCM {
                         longitudeField.text = longitude.toFixed(4);
                         page.syncMarker();
                     });
-                    page.centreMapOnCountry();
+                    if (page.editing)
+                        page.startEditing(page.editing);
+                    else
+                        page.centreMapOnCountry();
                 }
             }
 
@@ -366,8 +425,21 @@ KCM.SimpleKCM {
             opacity: 0.7
         }
 
+        Kirigami.InlineMessage {
+            Layout.fillWidth: true
+            visible: page.editing !== null
+            type: Kirigami.MessageType.Information
+            text: page.editing ? i18n("Editing “%1”. Radio Browser has no way to change an existing station, so what you save here stays in this widget: the station goes to your favourites and the globe shows your version.", page.editing.name) : ""
+            actions: Kirigami.Action {
+                text: i18n("Cancel editing")
+                icon.name: "dialog-cancel"
+                onTriggered: page.stopEditing()
+            }
+        }
+
         QQC2.CheckBox {
             id: publish
+            visible: page.editing === null
             text: i18n("Also publish on Radio Browser (public)")
         }
 
@@ -377,8 +449,8 @@ KCM.SimpleKCM {
 
             QQC2.Button {
                 id: addButton
-                text: i18n("Add")
-                icon.name: "list-add"
+                text: page.editing ? i18n("Save") : i18n("Add")
+                icon.name: page.editing ? "document-save" : "list-add"
                 enabled: !page.busy
                 onClicked: page.add()
             }

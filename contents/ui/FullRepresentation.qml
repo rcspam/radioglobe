@@ -277,6 +277,8 @@ Item {
                     onFavoriteRequested: if (full.mediaPlayer.station)
                         root.toggleFavorite(full.mediaPlayer.station)
                     onLocateRequested: full.locateCurrentStation()
+                    onEditRequested: if (full.mediaPlayer.station)
+                        root.openStationEditor(full.mediaPlayer.station)
                 }
             }
         }
