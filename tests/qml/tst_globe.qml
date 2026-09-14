@@ -194,6 +194,16 @@ TestCase {
         verify(globe.paintCount - before <= 2, "expected at most 2 paints for " + burst + " changes, got " + (globe.paintCount - before));
     }
 
+    // spreadOverlapping puts duplicates 0.08 degrees apart: at scale 24 that
+    // is under the 12 px hit radius, so the ceiling has to sit higher.
+    function test_wheelZoomStepAndCeiling() {
+        mouseWheel(globe, 400, 300, 0, 120);
+        fuzzyCompare(globe.globeScale, Math.exp(120 / 480), 0.001);
+        for (var i = 0; i < 60; i++)
+            mouseWheel(globe, 400, 300, 0, 120);
+        compare(globe.globeScale, 64);
+    }
+
     function test_offscreenMarkersAreSkippedButEdgeMarkersRemainClickable() {
         globe.globeScale = 3;
         var edgeLongitude = Math.asin((-6 - globe.width / 2) / globe.radius()) * 180 / Math.PI;

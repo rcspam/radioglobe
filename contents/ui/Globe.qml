@@ -17,7 +17,9 @@ Item {
     property real centreLongitude: -20
     property real globeScale: 1
     property real minimumScale: 0.72
-    property real maximumScale: 24
+    // 64 keeps two duplicates spread by spreadOverlapping (0.08 degrees) about
+    // 23 px apart on a 600 px globe, clear of the 12 px hit radius.
+    property real maximumScale: 64
     property real longitudeSensitivity: 0.22
     property real latitudeSensitivity: 0.18
     readonly property real kineticLaunchSpeed: 120
@@ -803,7 +805,7 @@ Item {
             root.stopKineticRotation(true);
             root.suppressNextTap = false;
             root.hoveredStation = null;
-            var factor = Math.exp(event.angleDelta.y / 720);
+            var factor = Math.exp(event.angleDelta.y / 480);
             root.globeScale = RadioModel.clamp(root.globeScale * factor, root.minimumScale, root.maximumScale);
             event.accepted = true;
         }
