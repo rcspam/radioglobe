@@ -35,6 +35,9 @@ PlasmoidItem {
     switchWidth: Kirigami.Units.gridUnit * 30
     switchHeight: Kirigami.Units.gridUnit * 20
 
+    // The station name and the ICY title both come from the broadcaster: never
+    // let them be interpreted as rich text.
+    toolTipTextFormat: Text.PlainText
     toolTipMainText: player.station ? player.station.name : i18n("RadioGlobe")
     toolTipSubText: {
         if (!player.station)
@@ -47,7 +50,28 @@ PlasmoidItem {
             return i18n("Playback failed");
         return i18n("Stopped");
     }
-    Plasmoid.status: player.state === "playing" ? PlasmaCore.Types.ActiveStatus : PlasmaCore.Types.PassiveStatus
+    // A launcher, not a notifier: staying passive would hide the icon in the
+    // system tray whenever nothing is playing, which is exactly when the user
+    // needs it to pick a station.
+    Plasmoid.status: PlasmaCore.Types.ActiveStatus
+
+    // qmllint disable missing-property
+    // Plasmoid.contextualActions is declared on the attached Plasmoid object,
+    // which qmllint resolves to the applet type without it.
+    Plasmoid.contextualActions: [
+        PlasmaCore.Action {
+            text: i18n("Random station")
+            icon.name: "media-playlist-shuffle"
+            onTriggered: root.playRandom()
+        },
+        PlasmaCore.Action {
+            text: i18n("Stop and quit mpv")
+            icon.name: "media-playback-stop"
+            enabled: player.state !== "idle"
+            onTriggered: root.stopAll()
+        }
+    ]
+    // qmllint enable missing-property
 
     function playFrom(list, station) {
         root.queue = Array.isArray(list) && list.length > 0 ? list.slice() : [station];

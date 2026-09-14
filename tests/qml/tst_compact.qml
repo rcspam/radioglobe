@@ -18,7 +18,6 @@ TestCase {
         actions: ({
                 toggle: () => log.push("toggle"),
                 random: () => log.push("random"),
-                stop: () => log.push("stop"),
                 volumeStep: delta => log.push("volume:" + delta)
             })
     }
@@ -31,8 +30,14 @@ TestCase {
     function test_buttons_dispatch_actions() {
         mouseClick(compact, 24, 24, Qt.LeftButton);
         mouseClick(compact, 24, 24, Qt.MiddleButton);
+        compare(log, ["toggle", "random"]);
+    }
+
+    // Right click belongs to Plasma: it opens the widget menu, which carries
+    // the random / stop actions main.qml publishes.
+    function test_right_click_is_left_to_plasma() {
         mouseClick(compact, 24, 24, Qt.RightButton);
-        compare(log, ["toggle", "random", "stop"]);
+        compare(log, []);
     }
 
     function test_wheel_changes_volume() {

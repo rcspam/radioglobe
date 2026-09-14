@@ -3,7 +3,8 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 
 // Panel / tray icon. Left click opens the popup, middle click tunes a random
-// station, right click stops mpv, wheel adjusts the volume.
+// station, wheel adjusts the volume. Right click is left to Plasma, which
+// shows the widget menu and the actions main.qml publishes there.
 Item {
     id: compact
 
@@ -12,7 +13,6 @@ Item {
                 root.expanded = !root.expanded;
             },
             random: () => root.playRandom(),
-            stop: () => root.stopAll(),
             volumeStep: delta => player.setVolume(player.volume + delta)
         })
     property bool playing: typeof player !== "undefined" && player.state === "playing"
@@ -45,12 +45,10 @@ Item {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
         onClicked: mouse => {
             if (mouse.button === Qt.MiddleButton)
                 compact.actions.random();
-            else if (mouse.button === Qt.RightButton)
-                compact.actions.stop();
             else
                 compact.actions.toggle();
         }
