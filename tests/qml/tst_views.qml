@@ -149,8 +149,7 @@ TestCase {
     }
 
     function test_components_compile() {
-        // CompactRepresentation.qml lands in Task 10.
-        for (const file of ["SearchBar.qml", "FullRepresentation.qml"]) {
+        for (const file of ["SearchBar.qml", "FullRepresentation.qml", "CompactRepresentation.qml"]) {
             const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/" + file));
             verify(component.status === Component.Ready || component.status === Component.Error, file);
             if (component.status === Component.Error)

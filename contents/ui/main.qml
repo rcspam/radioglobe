@@ -252,14 +252,7 @@ PlasmoidItem {
         }
     }
 
-    // Placeholder until Task 10 provides the real compact representation.
-    compactRepresentation: Kirigami.Icon {
-        source: "radio"
-        MouseArea {
-            anchors.fill: parent
-            onClicked: root.expanded = !root.expanded
-        }
-    }
+    compactRepresentation: CompactRepresentation {}
 
     fullRepresentation: FullRepresentation {}
 }
