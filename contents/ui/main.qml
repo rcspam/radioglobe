@@ -36,6 +36,20 @@ PlasmoidItem {
     // The country whose stations are always on the globe: the configured one,
     // or the one of the user's locale ("fr_FR" -> "FR") when it is empty.
     readonly property string homeCountry: (Plasmoid.configuration.homeCountry || (Qt.locale().name.split("_")[1] || "")).toUpperCase()
+    // Planar means the widget sits on the desktop or in a panel-less layout:
+    // there is no popup to keep open, so the pin button hides itself.
+    readonly property bool isOnDesktop: Plasmoid.formFactor === PlasmaCore.Types.Planar
+    // Read and written through root so the views never touch
+    // Plasmoid.configuration directly, which lets the tests fake it.
+    readonly property bool pinned: Plasmoid.configuration.pinned
+
+    function setPinned(value) {
+        Plasmoid.configuration.pinned = value;
+    }
+
+    // Pinned: the popup survives losing focus, which is what lets the user
+    // click around while the station list stays on screen.
+    hideOnWindowDeactivate: !root.pinned
 
     switchWidth: Kirigami.Units.gridUnit * 30
     switchHeight: Kirigami.Units.gridUnit * 20
@@ -280,7 +294,7 @@ PlasmoidItem {
                 }
             }
             radioBrowser.start();
-            if (Plasmoid.formFactor === PlasmaCore.Types.Planar || root.expanded)
+            if (root.isOnDesktop || root.expanded)
                 radioBrowser.expandWorld();
         });
     }

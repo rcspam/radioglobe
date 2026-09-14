@@ -94,18 +94,36 @@ Item {
         anchors.margins: Kirigami.Units.smallSpacing
         spacing: Kirigami.Units.smallSpacing
 
-        SearchBar {
-            id: searchBar
-            objectName: "searchBar"
+        RowLayout {
             Layout.fillWidth: true
-            onSearchRequested: text => {
-                if (stationList.selectedIndex >= 0)
-                    stationList.activateSelected();
-                else
-                    root.runSearch(text);
+            spacing: Kirigami.Units.smallSpacing
+
+            SearchBar {
+                id: searchBar
+                objectName: "searchBar"
+                Layout.fillWidth: true
+                onSearchRequested: text => {
+                    if (stationList.selectedIndex >= 0)
+                        stationList.activateSelected();
+                    else
+                        root.runSearch(text);
+                }
+                onCleared: root.clearSearch()
+                onRandomRequested: root.playRandom()
             }
-            onCleared: root.clearSearch()
-            onRandomRequested: root.playRandom()
+
+            // Only a popup can be dismissed by a click elsewhere, so the pin
+            // has nothing to do when the widget lives on the desktop.
+            PlasmaComponents3.ToolButton {
+                objectName: "pinButton"
+                visible: !root.isOnDesktop
+                icon.name: "window-pin"
+                checkable: true
+                checked: root.pinned
+                onToggled: root.setPinned(checked)
+                PlasmaComponents3.ToolTip.text: i18n("Keep open")
+                PlasmaComponents3.ToolTip.visible: hovered
+            }
         }
 
         GridLayout {

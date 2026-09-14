@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-14 12:30+0200\n"
+"POT-Creation-Date: 2026-09-14 13:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,6 +77,10 @@ msgstr ""
 msgid "Home country:"
 msgstr ""
 
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:124
+msgid "Keep open"
+msgstr ""
+
 #: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:807
 msgid "Landed near · %1"
 msgstr ""
@@ -93,7 +97,7 @@ msgstr ""
 msgid "No favorites yet"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:49
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:63
 msgid "No station playing"
 msgstr ""
 
@@ -117,7 +121,7 @@ msgstr ""
 msgid "Nothing played yet"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:53
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:67
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:39
 msgid "Paused"
 msgstr ""
@@ -126,12 +130,12 @@ msgstr ""
 msgid "Pick a signal on the globe or a station in the list"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:55
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:69
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:41
 msgid "Playback failed"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:51
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:65
 msgid "Playing"
 msgstr ""
 
@@ -143,7 +147,7 @@ msgstr ""
 msgid "Radio Browser:"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:46
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:60
 msgid "RadioGlobe"
 msgstr ""
 
@@ -151,7 +155,7 @@ msgstr ""
 msgid "Random"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:68
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:82
 msgid "Random station"
 msgstr ""
 
@@ -163,7 +167,7 @@ msgstr ""
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:165
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:183
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:69
 msgid "Retry"
 msgstr ""
@@ -180,11 +184,11 @@ msgstr ""
 msgid "Stop (hold to quit mpv)"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:73
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:87
 msgid "Stop and quit mpv"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:56
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:70
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:43
 msgid "Stopped"
 msgstr ""

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-14 12:30+0200\n"
+"POT-Creation-Date: 2026-09-14 13:04+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -76,6 +76,10 @@ msgstr "Général"
 msgid "Home country:"
 msgstr "Pays favori :"
 
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:124
+msgid "Keep open"
+msgstr "Garder ouvert"
+
 #: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:807
 msgid "Landed near · %1"
 msgstr "À proximité de · %1"
@@ -92,7 +96,7 @@ msgstr "Nombre maximal de stations sur le globe :"
 msgid "No favorites yet"
 msgstr "Aucun favori pour l’instant"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:49
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:63
 msgid "No station playing"
 msgstr "Aucune station en lecture"
 
@@ -116,7 +120,7 @@ msgstr "Introuvable. Installer le paquet « mpv »."
 msgid "Nothing played yet"
 msgstr "Rien n’a encore été écouté"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:53
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:67
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:39
 msgid "Paused"
 msgstr "En pause"
@@ -125,12 +129,12 @@ msgstr "En pause"
 msgid "Pick a signal on the globe or a station in the list"
 msgstr "Choisissez un signal sur le globe ou une station dans la liste"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:55
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:69
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:41
 msgid "Playback failed"
 msgstr "Échec de la lecture"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:51
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:65
 msgid "Playing"
 msgstr "Lecture en cours"
 
@@ -142,7 +146,7 @@ msgstr "Radio Browser injoignable, affichage des données en cache"
 msgid "Radio Browser:"
 msgstr "Radio Browser :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:46
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:60
 msgid "RadioGlobe"
 msgstr "RadioGlobe"
 
@@ -150,7 +154,7 @@ msgstr "RadioGlobe"
 msgid "Random"
 msgstr "Aléatoire"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:68
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:82
 msgid "Random station"
 msgstr "Station aléatoire"
 
@@ -162,7 +166,7 @@ msgstr "Récents"
 msgid "Report played stations to the click counter"
 msgstr "Signaler les stations écoutées au compteur de clics"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:165
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:183
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:69
 msgid "Retry"
 msgstr "Réessayer"
@@ -179,11 +183,11 @@ msgstr "Démarrage de mpv…"
 msgid "Stop (hold to quit mpv)"
 msgstr "Arrêter (maintenir pour quitter mpv)"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:73
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:87
 msgid "Stop and quit mpv"
 msgstr "Arrêter et quitter mpv"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:56
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:70
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:43
 msgid "Stopped"
 msgstr "Arrêté"

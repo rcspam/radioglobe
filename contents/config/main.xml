@@ -35,5 +35,9 @@
     <entry name="sendClicks" type="Bool">
       <default>true</default>
     </entry>
+    <!-- Keeps the popup open when it loses focus ("keep open" button). -->
+    <entry name="pinned" type="Bool">
+      <default>false</default>
+    </entry>
   </group>
 </kcfg>

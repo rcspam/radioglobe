@@ -53,7 +53,14 @@ TestCase {
         property string searchText: ""
         property var favorites: []
         property bool expanded: true
+        property bool isOnDesktop: false
+        property bool pinned: false
         property var calls: []
+
+        function setPinned(value) {
+            root.pinned = value;
+            root.calls.push("pinned:" + value);
+        }
 
         function isFavorite(uuid) {
             return false;
@@ -345,6 +352,21 @@ TestCase {
         compare(root.currentCountry, null);
         compare(root.currentTab, 1);
         root.currentTab = 0;
+    }
+
+    function test_pin_button_routes_through_root() {
+        const button = findChild(loader.item, "pinButton");
+        verify(button !== null, "pinButton not found");
+        compare(button.visible, true);
+        compare(button.checked, false);
+        mouseClick(button);
+        compare(root.calls.indexOf("pinned:true") >= 0, true, JSON.stringify(root.calls));
+        compare(root.pinned, true);
+        // On the desktop there is no popup to keep open.
+        root.isOnDesktop = true;
+        compare(button.visible, false);
+        root.isOnDesktop = false;
+        root.pinned = false;
     }
 
     function test_retry_button_appears_offline_and_reaches_the_browser() {
