@@ -25,6 +25,7 @@ TestCase {
 
     function init() {
         log = [];
+        compact._wheelAccumulator = 0;
     }
 
     function test_buttons_dispatch_actions() {
@@ -38,6 +39,20 @@ TestCase {
         mouseWheel(compact, 24, 24, 0, 120);
         mouseWheel(compact, 24, 24, 0, -120);
         compare(log, ["volume:0.05", "volume:-0.05"]);
+    }
+
+    function test_horizontal_wheel_is_ignored() {
+        mouseWheel(compact, 24, 24, 120, 0);
+        compare(log, []);
+    }
+
+    function test_touchpad_micro_deltas_accumulate() {
+        mouseWheel(compact, 24, 24, 0, 40);
+        mouseWheel(compact, 24, 24, 0, 40);
+        mouseWheel(compact, 24, 24, 0, 40);
+        compare(log, ["volume:0.05"]);
+        mouseWheel(compact, 24, 24, 0, -40);
+        compare(log, ["volume:0.05"]);
     }
 
     function test_badge_follows_playing() {

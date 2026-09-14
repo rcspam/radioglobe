@@ -17,6 +17,7 @@ Item {
         })
     property bool playing: typeof player !== "undefined" && player.state === "playing"
     readonly property bool badgeVisible: compact.playing
+    property real _wheelAccumulator: 0
 
     Layout.minimumWidth: Kirigami.Units.iconSizes.small
     Layout.minimumHeight: Kirigami.Units.iconSizes.small
@@ -54,8 +55,16 @@ Item {
                 compact.actions.toggle();
         }
         onWheel: wheel => {
-            const step = wheel.angleDelta.y > 0 ? 0.05 : -0.05;
-            compact.actions.volumeStep(step);
+            if (wheel.angleDelta.y === 0) {
+                wheel.accepted = false;
+                return;
+            }
+            compact._wheelAccumulator += wheel.angleDelta.y;
+            while (Math.abs(compact._wheelAccumulator) >= 120) {
+                const step = compact._wheelAccumulator > 0 ? 0.05 : -0.05;
+                compact.actions.volumeStep(step);
+                compact._wheelAccumulator -= compact._wheelAccumulator > 0 ? 120 : -120;
+            }
             wheel.accepted = true;
         }
     }
