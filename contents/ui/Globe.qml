@@ -807,7 +807,13 @@ Item {
             root.suppressNextTap = false;
             root.hoveredStation = null;
             var factor = Math.exp(event.angleDelta.y / 360);
-            root.globeScale = RadioModel.clamp(root.globeScale * factor, root.minimumScale, root.maximumScale);
+            var nextScale = RadioModel.clamp(root.globeScale * factor, root.minimumScale, root.maximumScale);
+            // The place under the cursor stays under the cursor, so zooming
+            // into a city is a matter of pointing at it.
+            var centre = RadioModel.zoomAnchoredCentre(point.position.x, point.position.y, root.width, root.height, root.globeScale, nextScale, root.centreLatitude, root.centreLongitude);
+            root.globeScale = nextScale;
+            root.centreLatitude = centre.latitude;
+            root.centreLongitude = centre.longitude;
             event.accepted = true;
         }
     }

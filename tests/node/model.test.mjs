@@ -333,3 +333,29 @@ test("radio atlas model", () => {
   )
   assert.deepEqual(Array.from(model.stationWindow(playlistRows, "missing", 5)), [])
 });
+
+test("zoomAnchoredCentre keeps the point under the cursor in place", () => {
+    const width = 800, height = 600;
+    const centre = { latitude: 20, longitude: -10 };
+    const cursor = { x: 560, y: 210 };
+    const normalised = (scale) => {
+        const r = Math.min(width, height) * 0.44 * scale;
+        return { x: (cursor.x - width / 2) / r, y: -(cursor.y - height / 2) / r };
+    };
+    const before = normalised(1);
+    const anchor = model.unproject(before.x, before.y, centre.latitude, centre.longitude);
+    const next = model.zoomAnchoredCentre(cursor.x, cursor.y, width, height, 1, 3, centre.latitude, centre.longitude);
+    const pos = model.stationPosition(anchor, width, height, 3, next.latitude, next.longitude);
+    assert.ok(Math.abs(pos.x - cursor.x) < 0.5 && Math.abs(pos.y - cursor.y) < 0.5, JSON.stringify(pos));
+});
+
+test("zoomAnchoredCentre zooms about the centre when the cursor is off the sphere", () => {
+    const next = model.zoomAnchoredCentre(5, 5, 800, 600, 1, 2, 20, -10);
+    assert.equal(next.latitude, 20);
+    assert.equal(next.longitude, -10);
+});
+
+test("zoomAnchoredCentre respects the latitude limits", () => {
+    const next = model.zoomAnchoredCentre(400, 40, 800, 600, 1, 8, 70, 0);
+    assert.ok(next.latitude <= 78);
+});
