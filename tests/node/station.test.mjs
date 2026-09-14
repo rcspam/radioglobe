@@ -37,6 +37,9 @@ test("normalizeStation maps and cleans Radio Browser fields", () => {
     assert.equal(s.clicks, 42);
     assert.equal(s.hls, false);
     assert.equal(s.estimatedLocation, undefined);
+    // Precomputed for the list delegate, identical to stationMeta().
+    assert.equal(s.meta, "FR · MP3 · 128 kbps");
+    assert.equal(s.meta, model.stationMeta(s));
 });
 
 test("normalizeStation falls back to url and rejects non-http streams", () => {

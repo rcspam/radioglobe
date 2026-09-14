@@ -607,7 +607,7 @@ function normalizeStation(raw) {
         latitude = null;
         longitude = null;
     }
-    return {
+    var station = {
         uuid: uuid,
         name: name,
         url: url,
@@ -625,6 +625,11 @@ function normalizeStation(raw) {
         clicks: Number(raw.clickcount) || 0,
         hls: Number(raw.hls) === 1
     };
+    // The list delegate would otherwise call stationMeta() on every row of
+    // every refresh. Rows that come from an older cache have no meta field,
+    // so the delegate keeps a fallback.
+    station.meta = stationMeta(station);
+    return station;
 }
 
 function normalizeStations(rows, maximum) {

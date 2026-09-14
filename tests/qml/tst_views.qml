@@ -151,6 +151,12 @@ TestCase {
     }
 
     SignalSpy {
+        id: favorites
+        target: list
+        signalName: "favoriteToggled"
+    }
+
+    SignalSpy {
         id: tabs
         target: list
         signalName: "tabSelected"
@@ -184,6 +190,59 @@ TestCase {
         list.activateSelected();
         compare(activations.count, 1);
         compare(activations.signalArguments[0][0].uuid, "b");
+    }
+
+    // The delegate is a plain anchored Item, not an ItemDelegate: highlight,
+    // activation and the favourite star are all wired by hand now.
+    function test_station_list_row_highlight_activation_and_star() {
+        activations.clear();
+        favorites.clear();
+        list.stations = [
+            {
+                uuid: "a",
+                name: "A",
+                countryCode: "FR",
+                codec: "MP3",
+                bitrate: 128
+            },
+            {
+                uuid: "b",
+                name: "B",
+                countryCode: "DE",
+                codec: "AAC",
+                bitrate: 64,
+                meta: "precomputed"
+            }
+        ];
+        list.selectedIndex = -1;
+        const view = findChild(list, "stationView");
+        verify(view !== null, "stationView not found");
+        wait(50);
+        const first = view.itemAtIndex(0);
+        verify(first !== null, "row 0 not created");
+        compare(first.highlighted, false);
+        list.selectedIndex = 0;
+        compare(first.highlighted, true);
+
+        // No meta field on the station: the delegate falls back to computing it.
+        compare(findChild(first, "stationMeta").text, "FR · MP3 · 128 kbps");
+        const second = view.itemAtIndex(1);
+        verify(second !== null, "row 1 not created");
+        compare(findChild(second, "stationMeta").text, "precomputed");
+        // The playing station is the other highlight source.
+        list.currentUuid = "b";
+        compare(second.highlighted, true);
+        list.currentUuid = "";
+
+        mouseClick(first, 10, first.height / 2);
+        compare(activations.count, 1);
+        compare(activations.signalArguments[0][0].uuid, "a");
+
+        const star = findChild(first, "favoriteButton");
+        verify(star !== null, "favoriteButton not found");
+        mouseClick(star);
+        compare(favorites.count, 1);
+        compare(favorites.signalArguments[0][0].uuid, "a");
     }
 
     // Leaving a country or a search means clicking World again, which changes

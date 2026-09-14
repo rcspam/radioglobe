@@ -75,44 +75,95 @@ ColumnLayout {
 
         ListView {
             id: view
+            objectName: "stationView"
             clip: true
             model: list.stations
             currentIndex: list.selectedIndex
+            // A world batch is 3000 rows and the user flings through them:
+            // recycling the delegates is what keeps the scroll off the GUI
+            // thread. Everything below binds to modelData and to list.*, so a
+            // reused row rebinds on its own with no onReused handler.
+            reuseItems: true
+            cacheBuffer: view.height
 
-            delegate: PlasmaComponents3.ItemDelegate {
+            // Deliberately not an ItemDelegate with nested layouts: that cost
+            // 2 ms per row to build against 0.8 ms for plain anchors.
+            delegate: Item {
                 id: row
+                objectName: "stationRow"
+
                 required property var modelData
                 required property int index
-                width: view.width
-                highlighted: list.selectedIndex === index || list.currentUuid === modelData.uuid
-                onClicked: list.activated(modelData)
+                readonly property bool playing: list.currentUuid === row.modelData.uuid
+                readonly property bool highlighted: list.selectedIndex === row.index || row.playing
 
-                contentItem: RowLayout {
-                    spacing: Kirigami.Units.smallSpacing
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 0
-                        PlasmaComponents3.Label {
-                            Layout.fillWidth: true
-                            text: row.modelData.name
-                            textFormat: Text.PlainText
-                            elide: Text.ElideRight
-                            font.bold: list.currentUuid === row.modelData.uuid
-                        }
-                        PlasmaComponents3.Label {
-                            Layout.fillWidth: true
-                            text: RadioModel.stationMeta(row.modelData)
-                            textFormat: Text.PlainText
-                            elide: Text.ElideRight
-                            opacity: 0.7
-                            font: Kirigami.Theme.smallFont
-                        }
-                    }
-                    PlasmaComponents3.ToolButton {
-                        icon.name: list.favoriteCheck(row.modelData.uuid) ? "starred-symbolic" : "non-starred-symbolic"
-                        onClicked: list.favoriteToggled(row.modelData)
-                        PlasmaComponents3.ToolTip.text: i18n("Toggle favorite (F)")
-                        PlasmaComponents3.ToolTip.visible: hovered
+                width: view.width
+                height: nameLabel.implicitHeight + metaLabel.implicitHeight + Kirigami.Units.smallSpacing * 2
+
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: 1
+                    radius: Kirigami.Units.smallSpacing
+                    color: Kirigami.Theme.highlightColor
+                    opacity: rowArea.pressed ? 0.45 : (row.highlighted ? 0.28 : (rowArea.containsMouse ? 0.14 : 0))
+                    visible: opacity > 0
+                }
+
+                MouseArea {
+                    id: rowArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: list.activated(row.modelData)
+                }
+
+                PlasmaComponents3.Label {
+                    id: nameLabel
+                    anchors.left: parent.left
+                    anchors.right: starArea.left
+                    anchors.top: parent.top
+                    anchors.leftMargin: Kirigami.Units.smallSpacing * 2
+                    anchors.rightMargin: Kirigami.Units.smallSpacing
+                    anchors.topMargin: Kirigami.Units.smallSpacing
+                    text: row.modelData.name
+                    textFormat: Text.PlainText
+                    elide: Text.ElideRight
+                    font.bold: row.playing
+                }
+
+                PlasmaComponents3.Label {
+                    id: metaLabel
+                    objectName: "stationMeta"
+                    anchors.left: nameLabel.left
+                    anchors.right: nameLabel.right
+                    anchors.top: nameLabel.bottom
+                    // Precomputed by normalizeStation; rows restored from a
+                    // cache written by an older build have no meta field.
+                    text: row.modelData.meta || RadioModel.stationMeta(row.modelData)
+                    textFormat: Text.PlainText
+                    elide: Text.ElideRight
+                    opacity: 0.7
+                    font: Kirigami.Theme.smallFont
+                }
+
+                MouseArea {
+                    id: starArea
+                    objectName: "favoriteButton"
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.rightMargin: Kirigami.Units.smallSpacing
+                    width: Kirigami.Units.iconSizes.smallMedium + Kirigami.Units.smallSpacing * 2
+                    height: width
+                    hoverEnabled: true
+                    onClicked: list.favoriteToggled(row.modelData)
+                    PlasmaComponents3.ToolTip.text: i18n("Toggle favorite (F)")
+                    PlasmaComponents3.ToolTip.visible: starArea.containsMouse
+
+                    Kirigami.Icon {
+                        anchors.centerIn: parent
+                        width: Kirigami.Units.iconSizes.smallMedium
+                        height: width
+                        source: list.favoriteCheck(row.modelData.uuid) ? "starred-symbolic" : "non-starred-symbolic"
+                        opacity: starArea.containsMouse ? 1 : 0.85
                     }
                 }
             }
