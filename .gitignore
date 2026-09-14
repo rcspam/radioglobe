@@ -1,6 +1,7 @@
 # Build artefacts
 *.plasmoid
 contents/locale/
+dist/
 # Editors
 *.swp
 .idea/
