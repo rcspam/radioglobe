@@ -646,6 +646,73 @@ function normalizeStations(rows, maximum) {
     return output;
 }
 
+function cleanTags(value) {
+    return cleanText(value, 500).split(",").map(function (tag) {
+        return tag.trim();
+    }).filter(function (tag) {
+        return tag !== "";
+    }).join(",");
+}
+
+// Coordinates typed in the add form: both, or neither. `valid` is false when
+// only one is given or one is not a number in range.
+function formCoordinates(fields) {
+    var latText = cleanText(fields.latitude, 32);
+    var longText = cleanText(fields.longitude, 32);
+    if (latText === "" && longText === "") return { latitude: null, longitude: null, valid: true };
+    var latitude = finiteInRange(latText, -90, 90);
+    var longitude = finiteInRange(longText, -180, 180);
+    if (latitude === null || longitude === null) return { latitude: null, longitude: null, valid: false };
+    return { latitude: latitude, longitude: longitude, valid: true };
+}
+
+// Builds a station from the "Add a station" form with the same cleaning as
+// normalizeStation. Returns null when a mandatory field is missing or bad.
+function stationFromForm(fields, uuid) {
+    var source = fields && typeof fields === "object" ? fields : {};
+    var id = cleanText(uuid, 64);
+    var name = cleanText(source.name, 160);
+    var url = webUrlOrEmpty(source.url);
+    var coordinates = formCoordinates(source);
+    if (!id || !name || !url || !coordinates.valid) return null;
+    var station = {
+        uuid: id,
+        name: name,
+        url: url,
+        homepage: webUrlOrEmpty(source.homepage),
+        favicon: "",
+        country: "",
+        countryCode: cleanText(source.countryCode, 2).toUpperCase(),
+        state: "",
+        language: "",
+        tags: cleanTags(source.tags),
+        codec: "",
+        bitrate: 0,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        clicks: 0,
+        hls: false
+    };
+    station.meta = stationMeta(station);
+    return station;
+}
+
+// Radio Browser /json/add parameters for the same form. Empty values are
+// left out so the server applies its own defaults.
+function submitParams(fields) {
+    var station = stationFromForm(fields, "pending");
+    if (!station) return null;
+    var params = { name: station.name, url: station.url };
+    if (station.homepage) params.homepage = station.homepage;
+    if (station.countryCode) params.countrycode = station.countryCode;
+    if (station.tags) params.tags = station.tags;
+    if (station.latitude !== null) {
+        params.geo_lat = station.latitude;
+        params.geo_long = station.longitude;
+    }
+    return params;
+}
+
 function dedupeByUrl(stations) {
     var rows = Array.isArray(stations) ? stations : [];
     var byUrl = ({});

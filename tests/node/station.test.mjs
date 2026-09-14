@@ -176,3 +176,59 @@ test("sortWorld without a home country sorts by clicks only", () => {
     assert.deepEqual(Array.from(model.sortWorld(rows, ""), s => s.uuid), ["b", "a"]);
     assert.deepEqual(Array.from(model.sortWorld(rows), s => s.uuid), ["b", "a"]);
 });
+
+const form = {
+    name: " Radio Test ",
+    url: "https://stream.example.org/live",
+    homepage: "https://example.org",
+    countryCode: "fr",
+    tags: " jazz , news,, ",
+    latitude: "48.85",
+    longitude: "2.35",
+};
+
+test("stationFromForm builds a normalised station", () => {
+    const s = model.stationFromForm(form, "local-1");
+    assert.equal(s.uuid, "local-1");
+    assert.equal(s.name, "Radio Test");
+    assert.equal(s.url, "https://stream.example.org/live");
+    assert.equal(s.homepage, "https://example.org");
+    assert.equal(s.countryCode, "FR");
+    assert.equal(s.tags, "jazz,news");
+    assert.equal(s.latitude, 48.85);
+    assert.equal(s.longitude, 2.35);
+    assert.equal(s.clicks, 0);
+    assert.equal(s.hls, false);
+    assert.equal(s.meta, model.stationMeta(s));
+});
+
+test("stationFromForm rejects a missing name, a bad url, a lone coordinate or no uuid", () => {
+    assert.equal(model.stationFromForm({ ...form, name: " " }, "u"), null);
+    assert.equal(model.stationFromForm({ ...form, url: "ftp://x" }, "u"), null);
+    assert.equal(model.stationFromForm({ ...form, longitude: "" }, "u"), null);
+    assert.equal(model.stationFromForm({ ...form, latitude: "abc" }, "u"), null);
+    assert.equal(model.stationFromForm(form, ""), null);
+    assert.equal(model.stationFromForm(null, "u"), null);
+});
+
+test("stationFromForm without coordinates has null latitude and longitude", () => {
+    const s = model.stationFromForm({ ...form, latitude: "", longitude: "" }, "u");
+    assert.equal(s.latitude, null);
+    assert.equal(s.longitude, null);
+});
+
+test("submitParams drops empty fields and cleans tags", () => {
+    // Spread copies the object out of the QML-JS realm, so deepEqual compares
+    // fields only, not prototypes.
+    assert.deepEqual({ ...model.submitParams(form) }, {
+        name: "Radio Test",
+        url: "https://stream.example.org/live",
+        homepage: "https://example.org",
+        countrycode: "FR",
+        tags: "jazz,news",
+        geo_lat: 48.85,
+        geo_long: 2.35,
+    });
+    assert.deepEqual({ ...model.submitParams({ name: "A", url: "https://a/b" }) }, { name: "A", url: "https://a/b" });
+    assert.equal(model.submitParams({ name: "", url: "https://a/b" }), null);
+});
