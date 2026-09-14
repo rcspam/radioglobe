@@ -179,7 +179,18 @@ Item {
                     favoriteCheck: uuid => root.isFavorite(uuid)
                     currentTab: root.currentTab
                     onTabSelected: index => {
-                        root.currentCountry = null;
+                        if (index === 0) {
+                            // Picking World means "show me the world again":
+                            // a country or a search still in place has to go.
+                            if (root.currentCountry)
+                                root.clearCountry();
+                            if (searchBar.text !== "" || root.searchText !== "") {
+                                searchBar.text = "";
+                                root.clearSearch();
+                            }
+                        } else {
+                            root.currentCountry = null;
+                        }
                         root.currentTab = index;
                     }
                     onActivated: station => root.playFrom(root.listStations, station)

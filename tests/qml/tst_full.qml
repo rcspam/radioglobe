@@ -301,6 +301,41 @@ TestCase {
         radioBrowser.lastError = "";
     }
 
+    function test_world_tab_leaves_the_country_and_the_search() {
+        const list = findChild(loader.item, "stationList");
+        verify(list !== null, "stationList not found");
+        const searchBar = findChild(loader.item, "searchBar");
+        verify(searchBar !== null, "searchBar not found");
+        root.currentCountry = {
+            code: "FR",
+            name: "France"
+        };
+        root.searchText = "jazz";
+        searchBar.text = "jazz";
+        root.calls = [];
+
+        list.tabSelected(0);
+        compare(root.calls.indexOf("clearCountry") >= 0, true, JSON.stringify(root.calls));
+        compare(root.calls.indexOf("clearSearch") >= 0, true, JSON.stringify(root.calls));
+        compare(searchBar.text, "");
+        compare(root.currentTab, 0);
+
+        root.currentCountry = null;
+        root.searchText = "";
+    }
+
+    function test_other_tabs_still_drop_the_country() {
+        const list = findChild(loader.item, "stationList");
+        root.currentCountry = {
+            code: "FR",
+            name: "France"
+        };
+        list.tabSelected(1);
+        compare(root.currentCountry, null);
+        compare(root.currentTab, 1);
+        root.currentTab = 0;
+    }
+
     function test_retry_button_appears_offline_and_reaches_the_browser() {
         const button = findChild(loader.item, "retryButton");
         verify(button !== null, "retryButton not found");

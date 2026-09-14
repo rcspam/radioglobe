@@ -118,6 +118,12 @@ TestCase {
         signalName: "activated"
     }
 
+    SignalSpy {
+        id: tabs
+        target: list
+        signalName: "tabSelected"
+    }
+
     function test_station_list_selection_and_activation() {
         activations.clear();
         list.stations = [
@@ -146,6 +152,18 @@ TestCase {
         list.activateSelected();
         compare(activations.count, 1);
         compare(activations.signalArguments[0][0].uuid, "b");
+    }
+
+    // Leaving a country or a search means clicking World again, which changes
+    // no tab index: without its own onClicked the bar would say nothing.
+    function test_world_tab_emits_even_when_already_current() {
+        list.currentTab = 0;
+        tabs.clear();
+        const worldTab = findChild(list, "worldTab");
+        verify(worldTab !== null, "worldTab not found");
+        mouseClick(worldTab);
+        compare(tabs.count, 1);
+        compare(tabs.signalArguments[0][0], 0);
     }
 
     function test_components_compile() {

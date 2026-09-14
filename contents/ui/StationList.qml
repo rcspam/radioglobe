@@ -54,7 +54,12 @@ ColumnLayout {
             list.tabSelected(currentIndex)
 
         PlasmaComponents3.TabButton {
+            objectName: "worldTab"
             text: i18n("World")
+            // Clicking World while it is already the current tab changes no
+            // index, so the bar stays silent; emit by hand, otherwise there
+            // is no way back to the world from a country or a search.
+            onClicked: list.tabSelected(0)
         }
         PlasmaComponents3.TabButton {
             text: i18n("Favorites")
