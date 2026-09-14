@@ -25,6 +25,8 @@ PlasmoidItem {
     property int currentTab: 0
     property var currentCountry: null
     property string searchText: ""
+    // Set while openCountry / runSearch move back to the world tab themselves.
+    property bool _switchingTab: false
 
     // Playback queue: the list displayed when the user picked a station.
     property var queue: []
@@ -109,11 +111,11 @@ PlasmoidItem {
     }
 
     function openCountry(code, name) {
+        root._selectWorldTab();
         root.currentCountry = {
             code: code,
             name: name
         };
-        root.currentTab = 0;
         // Claim the source before the request goes out, so a world refresh
         // arriving meanwhile does not send _refreshList back through here.
         root.listSource = "country";
@@ -136,7 +138,7 @@ PlasmoidItem {
             root._refreshList();
             return;
         }
-        root.currentTab = 0;
+        root._selectWorldTab();
         root.listSource = "search";
         radioBrowser.search(text, (stations, isFinal) => {
             if (root.currentTab === 0 && root.searchText === text) {
@@ -153,6 +155,17 @@ PlasmoidItem {
 
     function stopAll() {
         player.quit();
+    }
+
+    // Going back to the world tab because a country or a search was opened
+    // from another tab must not run _refreshList: the caller is on its way to
+    // fill the list itself, and the re-entry would send the same request twice.
+    function _selectWorldTab() {
+        if (root.currentTab === 0)
+            return;
+        root._switchingTab = true;
+        root.currentTab = 0;
+        root._switchingTab = false;
     }
 
     function _refreshList() {
@@ -181,7 +194,8 @@ PlasmoidItem {
         }
     }
 
-    onCurrentTabChanged: root._refreshList()
+    onCurrentTabChanged: if (!root._switchingTab)
+        root._refreshList()
     onWorldStationsChanged: if (root.listSource === "world")
         root._refreshList()
     onExpandedChanged: {
