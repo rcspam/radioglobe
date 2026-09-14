@@ -13,14 +13,31 @@ KCM.SimpleKCM {
     property alias cfg_mpvPath: mpvPath.text
     property alias cfg_sendClicks: sendClicks.checked
 
-    property string mpvStatus: i18n("Checking…")
-    property string mprisStatus: i18n("Checking…")
+    readonly property string checkingText: i18n("Checking…")
+    readonly property string unknownText: i18n("Could not check (the command did not return). Try again.")
+
+    property string mpvStatus: checkingText
+    property string mprisStatus: checkingText
 
     Ui.Exec {
         id: exec
     }
 
+    Timer {
+        id: probeTimeout
+        interval: 5000
+        onTriggered: {
+            if (page.mpvStatus === page.checkingText)
+                page.mpvStatus = page.unknownText;
+            if (page.mprisStatus === page.checkingText)
+                page.mprisStatus = page.unknownText;
+        }
+    }
+
     function probe() {
+        page.mpvStatus = page.checkingText;
+        page.mprisStatus = page.checkingText;
+        probeTimeout.restart();
         const binary = mpvPath.text.trim() || "mpv";
         exec.run("command -v " + RadioModel.shellQuote(binary), (code, out) => {
             page.mpvStatus = code === 0 ? i18n("Found: %1", out.trim()) : i18n("Not found. Install the “mpv” package.");
