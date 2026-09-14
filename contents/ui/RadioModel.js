@@ -377,8 +377,10 @@ function stationPosition(station, width, height, scale, centreLatitude, centreLo
 // Centre that keeps the geographic point under the cursor in place across a
 // zoom from oldScale to newScale. The centre is refined by successive
 // corrections (the offset between the wanted point and the one the cursor
-// lands on); three passes are enough at any zoom. Off the sphere, the
-// centre stays and the zoom is plain.
+// lands on) until the step is negligible: a leftover of a thousandth of a
+// degree is already pixels at scale 1000, and it would pile up over the
+// steps of one continuous zoom. Off the sphere, the centre stays and the
+// zoom is plain.
 function zoomAnchoredCentre(cursorX, cursorY, width, height, oldScale, newScale, centreLatitude, centreLongitude) {
   var current = { latitude: Number(centreLatitude), longitude: Number(centreLongitude) }
   var oldRadius = Math.min(width, height) * 0.44 * oldScale
@@ -389,13 +391,16 @@ function zoomAnchoredCentre(cursorX, cursorY, width, height, oldScale, newScale,
   if (!anchor) return current
   var targetX = (cursorX - width / 2) / newRadius
   var targetY = -(cursorY - height / 2) / newRadius
-  for (var pass = 0; pass < 3; pass++) {
+  for (var pass = 0; pass < 20; pass++) {
     var under = unproject(targetX, targetY, current.latitude, current.longitude)
     if (!under) break
+    var deltaLatitude = anchor.latitude - under.latitude
+    var deltaLongitude = wrapLongitude(anchor.longitude - under.longitude)
     current = {
-      latitude: clamp(current.latitude + anchor.latitude - under.latitude, -78, 78),
-      longitude: wrapLongitude(current.longitude + anchor.longitude - under.longitude)
+      latitude: clamp(current.latitude + deltaLatitude, -78, 78),
+      longitude: wrapLongitude(current.longitude + deltaLongitude)
     }
+    if (Math.abs(deltaLatitude) < 1e-7 && Math.abs(deltaLongitude) < 1e-7) break
   }
   return current
 }

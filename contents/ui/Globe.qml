@@ -17,10 +17,10 @@ Item {
     property real centreLongitude: -20
     property real globeScale: 1
     property real minimumScale: 0.72
-    // Dense cities (Paris, London) pack stations a few hundredths of a degree
-    // apart: 0.01 degrees is 12 px at scale 256 on a 600 px globe, the hit
-    // radius, so that is where they stop overlapping.
-    property real maximumScale: 256
+    // Dense cities (Paris, London) pack stations a few thousandths of a
+    // degree apart: 0.003 degrees is 14 px at scale 1024 on a 600 px globe,
+    // just over the hit radius, so that is where they stop overlapping.
+    property real maximumScale: 1024
     property real longitudeSensitivity: 0.22
     property real latitudeSensitivity: 0.18
     readonly property real kineticLaunchSpeed: 120

@@ -202,14 +202,15 @@ TestCase {
         fuzzyCompare(globe.globeScale, Math.exp(120 / 360), 0.001);
         for (var i = 0; i < 60; i++)
             mouseWheel(globe, 400, 300, 0, 120);
-        compare(globe.globeScale, 256);
+        compare(globe.globeScale, 1024);
     }
 
     function test_wheelZoomKeepsThePointUnderTheCursor() {
         var radius = globe.radius();
         var anchor = RadioModel.unproject((560 - 400) / radius, -(210 - 300) / radius, 0, 0);
-        mouseWheel(globe, 560, 210, 0, 120);
-        mouseWheel(globe, 560, 210, 0, 120);
+        for (var i = 0; i < 20; i++)
+            mouseWheel(globe, 560, 210, 0, 120);
+        verify(globe.globeScale > 500, "reached a deep zoom: " + globe.globeScale);
         var position = RadioModel.stationPosition(anchor, globe.width, globe.height, globe.globeScale, globe.centreLatitude, globe.centreLongitude);
         verify(Math.abs(position.x - 560) < 1 && Math.abs(position.y - 210) < 1, JSON.stringify(position));
     }
