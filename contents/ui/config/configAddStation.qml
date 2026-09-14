@@ -37,6 +37,9 @@ KCM.SimpleKCM {
     readonly property var map: mapLoader.item
     property bool busy: false
     property string status: ""
+    property bool searching: false
+    property var searchResults: []
+    property string searchStatus: ""
 
     function fields() {
         return {
@@ -111,6 +114,45 @@ KCM.SimpleKCM {
         latitudeField.text = "";
         longitudeField.text = "";
         publish.checked = false;
+    }
+
+    // Address search through Nominatim, on Enter only (its usage policy
+    // forbids autocomplete). One result goes straight to the map; several
+    // are listed for the user to pick.
+    function searchAddress() {
+        const url = RadioModel.nominatimUrl(addressField.text);
+        if (!url || page.searching)
+            return;
+        page.searching = true;
+        page.searchResults = [];
+        page.searchStatus = i18n("Searching…");
+        http.request(url, (status, text) => {
+            page.searching = false;
+            if (status !== 200) {
+                page.searchStatus = i18n("Address search unavailable (OpenStreetMap did not answer).");
+                return;
+            }
+            const results = RadioModel.parseNominatim(text);
+            if (results.length === 0) {
+                page.searchStatus = i18n("No place found for “%1”.", addressField.text.trim());
+            } else if (results.length === 1) {
+                page.searchStatus = "";
+                page.goTo(results[0]);
+            } else {
+                page.searchStatus = "";
+                page.searchResults = results;
+            }
+        });
+    }
+
+    // Puts the marker on a search result and frames it on the map.
+    function goTo(place) {
+        page.searchResults = [];
+        latitudeField.text = place.latitude.toFixed(4);
+        longitudeField.text = place.longitude.toFixed(4);
+        page.syncMarker();
+        if (page.map)
+            page.map.centreOn(place.latitude, place.longitude, place.zoom);
     }
 
     // Both fields typed by hand (or filled by the map): the marker follows.
@@ -228,8 +270,52 @@ KCM.SimpleKCM {
             }
         }
 
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Kirigami.Units.smallSpacing
+
+            QQC2.TextField {
+                id: addressField
+                objectName: "addressField"
+                Layout.fillWidth: true
+                placeholderText: i18n("Search an address or a place, then press Enter")
+                enabled: !page.searching
+                onAccepted: page.searchAddress()
+            }
+            QQC2.Button {
+                icon.name: "search"
+                text: i18n("Search")
+                enabled: !page.searching && addressField.text.trim() !== ""
+                onClicked: page.searchAddress()
+            }
+        }
+
         QQC2.Label {
-            text: i18n("Click the map to place the station.")
+            visible: page.searchStatus !== ""
+            text: page.searchStatus
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
+        }
+
+        ColumnLayout {
+            visible: page.searchResults.length > 0
+            Layout.fillWidth: true
+            spacing: 0
+
+            Repeater {
+                model: page.searchResults
+                delegate: QQC2.ItemDelegate {
+                    required property var modelData
+                    Layout.fillWidth: true
+                    text: modelData.name
+                    icon.name: "mark-location"
+                    onClicked: page.goTo(modelData)
+                }
+            }
+        }
+
+        QQC2.Label {
+            text: i18n("Click the map to place the station, scroll to zoom, drag to pan.")
             wrapMode: Text.Wrap
             Layout.fillWidth: true
         }

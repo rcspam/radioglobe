@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-14 15:32+0200\n"
+"POT-Creation-Date: 2026-09-14 19:12+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -23,7 +23,7 @@ msgid_plural "%1 signals"
 msgstr[0] "%1 signal"
 msgstr[1] "%1 signaux"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:880
+#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:881
 msgid "%1 · approximate location"
 msgstr "%1 · position approximative"
 
@@ -35,7 +35,7 @@ msgstr "%1 · cliquez sur un autre pays pour parcourir"
 msgid "Absolute path, or leave empty to use mpv from PATH"
 msgstr "Chemin absolu, ou laisser vide pour utiliser mpv depuis le PATH"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:294
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:380
 msgid "Add"
 msgstr "Ajouter"
 
@@ -48,19 +48,23 @@ msgstr "Ajouter une radio"
 msgid "Add a station…"
 msgstr "Ajouter une radio…"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:76
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:79
 msgid "Added to your favourites."
 msgstr "Ajoutée à vos favoris."
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:132
+msgid "Address search unavailable (OpenStreetMap did not answer)."
+msgstr "Recherche d'adresse indisponible (OpenStreetMap n'a pas répondu)."
 
 #: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:81
 msgid "All geolocated stations of this country are always loaded on the globe and kept first."
 msgstr "Toutes les stations géolocalisées de ce pays sont toujours chargées sur le globe et gardées en premier."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:84
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:87
 msgid "Already on Radio Browser as “%1”: added that one to your favourites."
 msgstr "Déjà sur Radio Browser sous le nom « %1 » : c'est celle-là qui a été ajoutée à vos favoris."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:285
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:371
 msgid "Also publish on Radio Browser (public)"
 msgstr "Publier aussi sur Radio Browser (public)"
 
@@ -72,7 +76,7 @@ msgstr "Auto (%1 selon votre locale)"
 msgid "Check again"
 msgstr "Vérifier à nouveau"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:80
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:83
 msgid "Checking Radio Browser…"
 msgstr "Vérification sur Radio Browser…"
 
@@ -80,11 +84,11 @@ msgstr "Vérification sur Radio Browser…"
 msgid "Checking…"
 msgstr "Vérification…"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:232
-msgid "Click the map to place the station."
-msgstr "Cliquez sur la carte pour placer la radio."
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:318
+msgid "Click the map to place the station, scroll to zoom, drag to pan."
+msgstr "Cliquez sur la carte pour placer la radio, molette pour zoomer, glisser pour déplacer."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:211
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:253
 msgid "Comma separated, e.g. jazz,news"
 msgstr "Séparés par des virgules, ex. jazz,news"
 
@@ -96,19 +100,19 @@ msgstr "Connexion…"
 msgid "Could not check (the command did not return). Try again."
 msgstr "Vérification impossible (la commande n’a pas répondu). Réessayer."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:198
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:240
 msgid "Country code:"
 msgstr "Code pays :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:55
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:58
 msgid "Enter a station name."
 msgstr "Indiquez un nom de radio."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:57
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:60
 msgid "Enter a valid http(s) stream URL."
 msgstr "Indiquez une URL de flux http(s) valide."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:58
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:61
 msgid "Enter both latitude and longitude, or leave both empty."
 msgstr "Indiquez la latitude et la longitude, ou laissez les deux vides."
 
@@ -129,11 +133,11 @@ msgstr "Général"
 msgid "Home country:"
 msgstr "Pays favori :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:192
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:234
 msgid "Homepage:"
 msgstr "Site web :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:272
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:358
 msgid "Install the QtLocation QML module (qml6-module-qtlocation on Debian and Ubuntu) to pick the location on a map."
 msgstr "Installez le module QML QtLocation (qml6-module-qtlocation sur Debian et Ubuntu) pour choisir la position sur une carte."
 
@@ -146,11 +150,11 @@ msgstr "Inverser le sens de la molette pour le volume"
 msgid "Keep open"
 msgstr "Garder ouvert"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:878
+#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:879
 msgid "Landed near · %1"
 msgstr "À proximité de · %1"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:220
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:262
 msgid "Latitude"
 msgstr "Latitude"
 
@@ -158,15 +162,15 @@ msgstr "Latitude"
 msgid "Live"
 msgstr "En direct"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:215
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:257
 msgid "Location:"
 msgstr "Position :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:225
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:267
 msgid "Longitude"
 msgstr "Longitude"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:278
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:364
 msgid "Map data © OpenStreetMap contributors"
 msgstr "Données cartographiques © les contributeurs d'OpenStreetMap"
 
@@ -174,13 +178,17 @@ msgstr "Données cartographiques © les contributeurs d'OpenStreetMap"
 msgid "Maximum stations on the globe:"
 msgstr "Nombre maximal de stations sur le globe :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:180
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:222
 msgid "Name:"
 msgstr "Nom :"
 
 #: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:193
 msgid "No favorites yet"
 msgstr "Aucun favori pour l’instant"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:137
+msgid "No place found for “%1”."
+msgstr "Aucun lieu trouvé pour « %1 »."
 
 #: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:69
 msgid "No station playing"
@@ -206,7 +214,7 @@ msgstr "Introuvable. Installer le paquet « mpv »."
 msgid "Nothing played yet"
 msgstr "Rien n’a encore été écouté"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:193
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:235
 msgid "Optional"
 msgstr "Facultatif"
 
@@ -232,11 +240,11 @@ msgstr "Échec de la lecture"
 msgid "Playing"
 msgstr "Lecture en cours"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:86
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:89
 msgid "Published on Radio Browser. Added to your favourites."
 msgstr "Publiée sur Radio Browser. Ajoutée à vos favoris."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:88
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:91
 msgid "Radio Browser refused the station: %1. Kept locally only."
 msgstr "Radio Browser a refusé la radio : %1. Gardée en local seulement."
 
@@ -244,7 +252,7 @@ msgstr "Radio Browser a refusé la radio : %1. Gardée en local seulement."
 msgid "Radio Browser unreachable, showing cached data"
 msgstr "Radio Browser injoignable, affichage des données en cache"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:90
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:93
 msgid "Radio Browser unreachable. Kept locally only."
 msgstr "Radio Browser injoignable. Gardée en local seulement."
 
@@ -277,9 +285,21 @@ msgstr "Signaler les stations écoutées au compteur de clics"
 msgid "Retry"
 msgstr "Réessayer"
 
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:287
+msgid "Search"
+msgstr "Rechercher"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:281
+msgid "Search an address or a place, then press Enter"
+msgstr "Cherchez une adresse ou un lieu, puis appuyez sur Entrée"
+
 #: /home/rapha/SOURCES/radioglobe/contents/ui/SearchBar.qml:27
 msgid "Search stations, countries, tags…"
 msgstr "Rechercher des stations, pays, mots-clés…"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:128
+msgid "Searching…"
+msgstr "Recherche…"
 
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:33
 msgid "Starting mpv…"
@@ -298,11 +318,11 @@ msgstr "Arrêter et quitter mpv"
 msgid "Stopped"
 msgstr "Arrêté"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:186
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:228
 msgid "Stream URL:"
 msgstr "URL du flux :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:210
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:252
 msgid "Tags:"
 msgstr "Tags :"
 
@@ -327,7 +347,7 @@ msgstr "Écouter une station aléatoire (R)"
 msgid "World"
 msgstr "Monde"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:893
+#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:894
 msgid "approximate location"
 msgstr "position approximative"
 

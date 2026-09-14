@@ -89,7 +89,7 @@ Next to the search field, the pin button ("Keep open") stops the popup from clos
 
 ## Adding a station
 
-The "+" button next to the search field opens the configuration dialog; its "Add a station" page takes a name, a stream URL and, optionally, a homepage, a country code, tags and a location. Click the map to place the station (scroll to zoom, drag to pan), or type the coordinates. The station goes straight into your Favorites, playable right away.
+The "+" button next to the search field opens the configuration dialog; its "Add a station" page takes a name, a stream URL and, optionally, a homepage, a country code, tags and a location. Search an address or a place (OpenStreetMap's Nominatim geocoder, queried only when you press Enter), click the map to place the station (scroll to zoom, drag to pan), or type the coordinates. The station goes straight into your Favorites, playable right away.
 
 Tick "Also publish on Radio Browser" to share it with everyone. RadioGlobe first checks whether a station with the exact same stream URL already exists there: if so nothing is published and that existing station is the one added to your favourites. Otherwise the station is submitted and, once accepted, keeps the id Radio Browser gave it, so it will show up on the globe once the database has checked it and it lands in the world list.
 
@@ -100,7 +100,7 @@ Tick "Also publish on Radio Browser" to share it with everyone. RadioGlobe first
 - Unless disabled in the settings page ("Report played stations to the click counter"), playing a station calls Radio Browser's click counter. This tells Radio Browser "this IP listened to this station" — it is how popularity and click counts are computed. Turn it off in the widget's configuration if you don't want that
 - Audio streams themselves are fetched directly by mpv from each broadcaster's own server, not proxied through Radio Browser or RadioGlobe's author. Whoever runs the station sees your IP address like any other listener, and the rights to what's broadcast belong to that station
 - Station metadata (country geometry) comes from [Natural Earth](https://www.naturalearthdata.com/), public domain
-- The map on the "Add a station" page loads tiles from [OpenStreetMap](https://www.openstreetmap.org/copyright) (© OpenStreetMap contributors), only while that page is open. Publishing a station sends the form's fields to Radio Browser under your IP address
+- The map on the "Add a station" page loads tiles from [OpenStreetMap](https://www.openstreetmap.org/copyright) (© OpenStreetMap contributors), only while that page is open, and the address search sends what you typed to [Nominatim](https://nominatim.org/), OpenStreetMap's geocoder. Publishing a station sends the form's fields to Radio Browser under your IP address
 
 ## Troubleshooting
 
