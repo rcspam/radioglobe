@@ -1,8 +1,6 @@
 import QtQuick
-import QtQuick.Layouts
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
-import org.kde.plasma.components as PlasmaComponents3
 import org.kde.kirigami as Kirigami
 import "RadioModel.js" as RadioModel
 
@@ -254,7 +252,7 @@ PlasmoidItem {
         }
     }
 
-    // Placeholders until Tasks 9 and 10 provide the real representations.
+    // Placeholder until Task 10 provides the real compact representation.
     compactRepresentation: Kirigami.Icon {
         source: "radio"
         MouseArea {
@@ -263,12 +261,5 @@ PlasmoidItem {
         }
     }
 
-    fullRepresentation: Item {
-        Layout.preferredWidth: Kirigami.Units.gridUnit * 45
-        Layout.preferredHeight: Kirigami.Units.gridUnit * 30
-        PlasmaComponents3.Label {
-            anchors.centerIn: parent
-            text: i18n("RadioGlobe")
-        }
-    }
+    fullRepresentation: FullRepresentation {}
 }
