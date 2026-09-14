@@ -55,9 +55,16 @@ Item {
             if (event.key === Qt.Key_Down || event.key === Qt.Key_Up) {
                 stationList.moveSelection(event.key === Qt.Key_Down ? 1 : -1);
                 event.accepted = true;
-            } else {
-                event.accepted = false;
+                return;
             }
+            // SearchBar clears its own text on Escape and only lets the event
+            // bubble up here once the field is already empty, meaning it wants
+            // us to clear the country / close the popup.
+            if (event.key === Qt.Key_Escape) {
+                event.accepted = KeyMap.handle(full.keyTargets, event.key, event.text);
+                return;
+            }
+            event.accepted = false;
             return;
         }
         event.accepted = KeyMap.handle(full.keyTargets, event.key, event.text);

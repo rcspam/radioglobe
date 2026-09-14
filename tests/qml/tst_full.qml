@@ -256,6 +256,32 @@ TestCase {
         compare(root.calls.indexOf("search:jazz") >= 0, true, JSON.stringify(root.calls));
     }
 
+    function test_escape_from_focused_empty_field_escalates() {
+        const field = findChild(loader.item, "searchField");
+        verify(field !== null, "searchField not found");
+        field.forceActiveFocus();
+        field.text = "";
+
+        root.currentCountry = {
+            code: "FR",
+            name: "France"
+        };
+        keyClick(Qt.Key_Escape);
+        compare(root.calls.indexOf("clearCountry") >= 0, true, JSON.stringify(root.calls));
+
+        root.currentCountry = null;
+        root.expanded = true;
+        keyClick(Qt.Key_Escape);
+        compare(root.expanded, false);
+
+        field.forceActiveFocus();
+        field.text = "abc";
+        const clearCountryCallsBefore = root.calls.filter(call => call === "clearCountry").length;
+        keyClick(Qt.Key_Escape);
+        compare(field.text, "");
+        compare(root.calls.filter(call => call === "clearCountry").length, clearCountryCallsBefore, JSON.stringify(root.calls));
+    }
+
     function test_status_line_follows_context() {
         compare(loader.item.statusLine, "2 signals");
         root.currentCountry = {
