@@ -7,6 +7,9 @@ TestCase {
 
     property var pending: []
     property var store: ({})
+    // Cache writes per key, so a test can tell "written once" from "written
+    // on every round".
+    property var writes: ({})
     property real clock: 1000000
 
     function fakeRequest(url, callback) {
@@ -36,6 +39,7 @@ TestCase {
                     value: value,
                     savedAt: savedAt
                 };
+                writes[key] = (writes[key] || 0) + 1;
             },
             remove: function (key) {
                 delete store[key];
@@ -79,6 +83,7 @@ TestCase {
     function init() {
         pending = [];
         store = ({});
+        writes = ({});
         clock = 1000000;
         updates.clear();
         rb.reset();
@@ -227,6 +232,35 @@ TestCase {
         answer("order=random", 0, "");
         compare(rb.expanding, false);
         compare(pending.length, 0);
+    }
+
+    // Each write is a JSON.stringify of the whole world plus a synchronous
+    // SQLite write, and it used to happen on every round of the expansion.
+    function test_expansion_writes_the_cache_once_at_each_end() {
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a")]);
+        compare(writes["world"], 1);
+
+        rb.expandWorld();
+        // The first round still writes: a start interrupted halfway has to
+        // leave something usable in the cache.
+        answer("order=random", 200, [raw("b")]);
+        compare(writes["world"], 2);
+        answer("order=random", 200, [raw("c")]);
+        answer("order=random", 200, [raw("d")]);
+        compare(writes["world"], 2);
+        compare(rb.worldStations.length, 4);
+        // worldUpdated still fires on every round, the globe needs it.
+        compare(updates.count, 4);
+
+        // Three dry rounds end the expansion, which flushes once.
+        answer("order=random", 200, [raw("d")]);
+        answer("order=random", 200, []);
+        answer("order=random", 0, "");
+        compare(rb.expanding, false);
+        compare(writes["world"], 3);
+        compare(store["world"].value.length, 4);
     }
 
     function test_expansion_respects_world_limit() {

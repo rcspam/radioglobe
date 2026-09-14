@@ -213,8 +213,21 @@ PlasmoidItem {
 
     onCurrentTabChanged: if (!root._switchingTab)
         root._refreshList()
-    onWorldStationsChanged: if (root.listSource === "world")
-        root._refreshList()
+    onWorldStationsChanged: {
+        if (root.listSource !== "world")
+            return;
+        // A cold start grows the world in 500-station rounds. The globe takes
+        // each of them, but rebuilding the list every time costs more than it
+        // shows, so the refresh waits for the rounds to settle.
+        // The very first batch goes straight through, otherwise the list sits
+        // empty next to a globe that is already filling up.
+        if (radioBrowser.expanding && root.listStations.length > 0) {
+            listRefreshTimer.restart();
+            return;
+        }
+        listRefreshTimer.stop();
+        root._refreshList();
+    }
     onExpandedChanged: {
         if (!root.expanded)
             return;
@@ -243,6 +256,13 @@ PlasmoidItem {
 
     Cache {
         id: cache
+    }
+
+    Timer {
+        id: listRefreshTimer
+        interval: 250
+        onTriggered: if (root.listSource === "world")
+            root._refreshList()
     }
 
     RadioBrowser {
