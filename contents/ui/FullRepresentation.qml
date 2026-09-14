@@ -121,6 +121,7 @@ Item {
                 checkable: true
                 checked: root.pinned
                 onToggled: root.setPinned(checked)
+                Accessible.name: i18n("Keep open")
                 PlasmaComponents3.ToolTip.text: i18n("Keep open")
                 PlasmaComponents3.ToolTip.visible: hovered
             }

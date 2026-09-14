@@ -96,13 +96,23 @@ ColumnLayout {
                 required property int index
                 readonly property bool playing: list.currentUuid === row.modelData.uuid
                 readonly property bool highlighted: list.selectedIndex === row.index || row.playing
+                // Reads list.favorites through the injected favoriteCheck, so
+                // the binding re-evaluates when the favourites change.
+                readonly property bool favorite: list.favoriteCheck(row.modelData.uuid)
 
                 width: view.width
-                height: nameLabel.implicitHeight + metaLabel.implicitHeight + Kirigami.Units.smallSpacing * 2
+                height: Math.max(nameLabel.implicitHeight + metaLabel.implicitHeight + Kirigami.Units.smallSpacing * 2, starArea.height)
+
+                // An Item is not an ItemDelegate: the screen reader gets
+                // nothing unless the row says what it is.
+                Accessible.role: Accessible.ListItem
+                Accessible.name: row.modelData.name
+                Accessible.description: metaLabel.text
+                Accessible.selected: row.highlighted
 
                 Rectangle {
                     anchors.fill: parent
-                    anchors.margins: 1
+                    anchors.margins: Math.round(Kirigami.Units.smallSpacing / 2)
                     radius: Kirigami.Units.smallSpacing
                     color: Kirigami.Theme.highlightColor
                     opacity: rowArea.pressed ? 0.45 : (row.highlighted ? 0.28 : (rowArea.containsMouse ? 0.14 : 0))
@@ -158,11 +168,18 @@ ColumnLayout {
                     PlasmaComponents3.ToolTip.text: i18n("Toggle favorite (F)")
                     PlasmaComponents3.ToolTip.visible: starArea.containsMouse
 
+                    Accessible.role: Accessible.CheckBox
+                    Accessible.name: i18n("Toggle favorite (F)")
+                    Accessible.checkable: true
+                    Accessible.checked: row.favorite
+                    Accessible.onPressAction: list.favoriteToggled(row.modelData)
+
                     Kirigami.Icon {
+                        objectName: "favoriteIcon"
                         anchors.centerIn: parent
                         width: Kirigami.Units.iconSizes.smallMedium
                         height: width
-                        source: list.favoriteCheck(row.modelData.uuid) ? "starred-symbolic" : "non-starred-symbolic"
+                        source: row.favorite ? "starred-symbolic" : "non-starred-symbolic"
                         opacity: starArea.containsMouse ? 1 : 0.85
                     }
                 }

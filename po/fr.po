@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-14 13:04+0200\n"
+"POT-Creation-Date: 2026-09-14 13:31+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -17,221 +17,223 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:85
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:85
 msgid "%1 signal"
 msgid_plural "%1 signals"
 msgstr[0] "%1 signal"
 msgstr[1] "%1 signaux"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:809
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/Globe.qml:845
 msgid "%1 · approximate location"
 msgstr "%1 · position approximative"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:84
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:84
 msgid "%1 · click another country to browse"
 msgstr "%1 · cliquez sur un autre pays pour parcourir"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:87
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:87
 msgid "Absolute path, or leave empty to use mpv from PATH"
 msgstr "Chemin absolu, ou laisser vide pour utiliser mpv depuis le PATH"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:80
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:80
 msgid "All geolocated stations of this country are always loaded on the globe and kept first."
 msgstr "Toutes les stations géolocalisées de ce pays sont toujours chargées sur le globe et gardées en premier."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:71
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:71
 msgid "Auto (%1 from your locale)"
 msgstr "Auto (%1 selon votre locale)"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:103
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:103
 msgid "Check again"
 msgstr "Vérifier à nouveau"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:20
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:20
 msgid "Checking…"
 msgstr "Vérification…"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:35
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:35
 msgid "Connecting…"
 msgstr "Connexion…"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:21
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:21
 msgid "Could not check (the command did not return). Try again."
 msgstr "Vérification impossible (la commande n’a pas répondu). Réessayer."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:65
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/StationList.qml:65
 msgid "Favorites"
 msgstr "Favoris"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:47
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:50
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:47
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:50
 msgid "Found: %1"
 msgstr "Trouvé : %1"
 
-#: /home/rapha/SOURCES/radioglobe/contents/config/config.qml:6
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/config/config.qml:6
 msgid "General"
 msgstr "Général"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:70
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:70
 msgid "Home country:"
 msgstr "Pays favori :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:124
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:124
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:125
 msgid "Keep open"
 msgstr "Garder ouvert"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:807
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/Globe.qml:843
 msgid "Landed near · %1"
 msgstr "À proximité de · %1"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:37
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:37
 msgid "Live"
 msgstr "En direct"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:60
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:60
 msgid "Maximum stations on the globe:"
 msgstr "Nombre maximal de stations sur le globe :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:125
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/StationList.qml:193
 msgid "No favorites yet"
 msgstr "Aucun favori pour l’instant"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:63
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/main.qml:63
 msgid "No station playing"
 msgstr "Aucune station en lecture"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:25
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:25
 msgid "No station selected"
 msgstr "Aucune station sélectionnée"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:125
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/StationList.qml:193
 msgid "No stations"
 msgstr "Aucune station"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:50
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:50
 msgid "Not found. Install the “mpv-mpris” package (media keys and the Media Player widget need it)."
 msgstr "Introuvable. Installer le paquet « mpv-mpris » (nécessaire pour les touches multimédias et le widget Lecteur multimédia)."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:47
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:47
 msgid "Not found. Install the “mpv” package."
 msgstr "Introuvable. Installer le paquet « mpv »."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:125
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/StationList.qml:193
 msgid "Nothing played yet"
 msgstr "Rien n’a encore été écouté"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:67
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:39
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/main.qml:67
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:39
 msgid "Paused"
 msgstr "En pause"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:28
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:28
 msgid "Pick a signal on the globe or a station in the list"
 msgstr "Choisissez un signal sur le globe ou une station dans la liste"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:69
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:41
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/main.qml:69
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:41
 msgid "Playback failed"
 msgstr "Échec de la lecture"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:65
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/main.qml:65
 msgid "Playing"
 msgstr "Lecture en cours"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:82
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:82
 msgid "Radio Browser unreachable, showing cached data"
 msgstr "Radio Browser injoignable, affichage des données en cache"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:109
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:109
 msgid "Radio Browser:"
 msgstr "Radio Browser :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:60
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/main.qml:60
 msgid "RadioGlobe"
 msgstr "RadioGlobe"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/SearchBar.qml:41
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/SearchBar.qml:41
 msgid "Random"
 msgstr "Aléatoire"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:82
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/main.qml:82
 msgid "Random station"
 msgstr "Station aléatoire"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:68
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/StationList.qml:68
 msgid "Recent"
 msgstr "Récents"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:110
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:110
 msgid "Report played stations to the click counter"
 msgstr "Signaler les stations écoutées au compteur de clics"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:183
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:69
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:184
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:69
 msgid "Retry"
 msgstr "Réessayer"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/SearchBar.qml:27
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/SearchBar.qml:27
 msgid "Search stations, countries, tags…"
 msgstr "Rechercher des stations, pays, mots-clés…"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:33
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:33
 msgid "Starting mpv…"
 msgstr "Démarrage de mpv…"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:123
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:123
 msgid "Stop (hold to quit mpv)"
 msgstr "Arrêter (maintenir pour quitter mpv)"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:87
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/main.qml:87
 msgid "Stop and quit mpv"
 msgstr "Arrêter et quitter mpv"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:70
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:43
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/main.qml:70
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:43
 msgid "Stopped"
 msgstr "Arrêté"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:55
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:55
 msgid "This Plasma version does not provide the MPRIS module (org.kde.plasma.private.mpris) RadioGlobe needs to control mpv."
 msgstr "Cette version de Plasma ne fournit pas le module MPRIS (org.kde.plasma.private.mpris) dont RadioGlobe a besoin pour contrôler mpv."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:57
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:57
 msgid "This station could not be played. It may be offline; retry or pick another one."
 msgstr "Cette station n’a pas pu être lue. Elle est peut-être hors ligne : réessayez ou choisissez-en une autre."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:114
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/StationList.qml:168
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/StationList.qml:172
 msgid "Toggle favorite (F)"
 msgstr "Basculer le favori (F)"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/SearchBar.qml:44
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/SearchBar.qml:44
 msgid "Tune a random station (R)"
 msgstr "Écouter une station aléatoire (R)"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:58
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/StationList.qml:58
 msgid "World"
 msgstr "Monde"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:822
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/Globe.qml:858
 msgid "approximate location"
 msgstr "position approximative"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:86
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:86
 msgid "mpv executable:"
 msgstr "Exécutable mpv :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:51
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:51
 msgid "mpv is not installed. Install the “mpv” and “mpv-mpris” packages, then try again."
 msgstr "mpv n’est pas installé. Installer les paquets « mpv » et « mpv-mpris », puis réessayer."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:53
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/PlayerBar.qml:53
 msgid "mpv started but did not appear on MPRIS. Install the “mpv-mpris” package."
 msgstr "mpv a démarré mais n’apparaît pas sur MPRIS. Installer le paquet « mpv-mpris »."
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:97
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:97
 msgid "mpv-mpris:"
 msgstr "mpv-mpris :"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:91
+#: /mnt/ff433a59-fbed-4db3-9e7d-aeb235009f1b/DEV/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:91
 msgid "mpv:"
 msgstr "mpv :"

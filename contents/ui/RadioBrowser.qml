@@ -45,9 +45,10 @@ Item {
     property bool _discovering: false
     property var _afterDiscovery: []
     property int _dryRounds: 0
-    // Absorbed batches since the current expansion started, and whether the
-    // world has changed since the last cache write.
-    property int _expandAbsorbs: 0
+    // True between the start of an expansion and its first cache write, so
+    // that one round out of the whole run still reaches the cache.
+    property bool _needsFirstWrite: false
+    // The world has changed since the last cache write.
     property bool _worldDirty: false
     property int _searchGeneration: 0
     property bool _started: false
@@ -67,7 +68,9 @@ Item {
         root._discovering = false;
         root._afterDiscovery = [];
         root._dryRounds = 0;
-        root._expandAbsorbs = 0;
+        root._needsFirstWrite = false;
+        // The cleared world is not worth persisting: drop the pending write
+        // instead of flushing an empty list over a usable cache.
         root._worldDirty = false;
         root._started = false;
     }
@@ -123,7 +126,7 @@ Item {
             return;
         root._expanding = true;
         root._dryRounds = 0;
-        root._expandAbsorbs = 0;
+        root._needsFirstWrite = true;
         root._expandRound(root._epoch);
     }
 
@@ -283,14 +286,16 @@ Item {
         root._world = sorted.slice(0, Math.max(1, root.worldLimit));
         root._worldFromCache = false;
         root._worldDirty = true;
-        root._expandAbsorbs = root._expanding ? root._expandAbsorbs + 1 : 0;
         // Writing the cache is a JSON.stringify of about 720 kB plus a
         // synchronous SQLite write: 20 to 25 ms of GUI thread, and it used to
-        // run on every expansion round. The first round still writes, so a
-        // start interrupted halfway leaves something usable behind, and the
-        // rest is flushed once when the expansion stops.
-        if (!root._expanding || root._expandAbsorbs === 1)
+        // run on every expansion round. Outside an expansion every batch still
+        // writes. During one, only the first round does, so a start
+        // interrupted halfway leaves something usable behind; everything after
+        // it is flushed in one go when the expansion stops.
+        if (!root._expanding || root._needsFirstWrite) {
+            root._needsFirstWrite = false;
             root._saveWorld();
+        }
         root.worldUpdated();
     }
 

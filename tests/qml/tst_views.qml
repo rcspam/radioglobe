@@ -137,11 +137,17 @@ TestCase {
         verify(narrow > 0, "label has no width");
     }
 
+    // Favourites held as data, like main.qml does: the delegate binding reads
+    // them through favoriteCheck, so reassigning the set has to refresh it.
+    property var favSet: ({
+            b: true
+        })
+
     Ui.StationList {
         id: list
         width: 300
         height: 300
-        favoriteCheck: uuid => uuid === "b"
+        favoriteCheck: uuid => favSet[uuid] === true
     }
 
     SignalSpy {
@@ -243,6 +249,43 @@ TestCase {
         mouseClick(star);
         compare(favorites.count, 1);
         compare(favorites.signalArguments[0][0].uuid, "a");
+    }
+
+    // A favourite added elsewhere (the player bar, the F key) must repaint the
+    // star of a row that is already on screen.
+    function test_favorite_star_follows_the_favorites() {
+        favSet = ({});
+        list.stations = [
+            {
+                uuid: "a",
+                name: "A",
+                countryCode: "FR",
+                codec: "MP3",
+                bitrate: 128
+            }
+        ];
+        const view = findChild(list, "stationView");
+        verify(view !== null, "stationView not found");
+        wait(50);
+        const first = view.itemAtIndex(0);
+        verify(first !== null, "row 0 not created");
+        const icon = findChild(first, "favoriteIcon");
+        verify(icon !== null, "favoriteIcon not found");
+        compare(first.favorite, false);
+        compare(String(icon.source), "non-starred-symbolic");
+
+        favSet = ({
+                a: true
+            });
+        compare(first.favorite, true);
+        compare(String(icon.source), "starred-symbolic");
+
+        favSet = ({});
+        compare(first.favorite, false);
+        compare(String(icon.source), "non-starred-symbolic");
+        favSet = ({
+                b: true
+            });
     }
 
     // Leaving a country or a search means clicking World again, which changes

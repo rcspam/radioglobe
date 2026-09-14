@@ -32,6 +32,11 @@ TestCase {
         globe.stations = [];
         globe.selectedStation = null;
         globe.highlightedStation = null;
+        globe.backgroundColor = "#090a0c";
+        globe.sphereColor = "#11151a";
+        globe.gridColor = "#7d8791";
+        globe.outlineColor = "#9099a3";
+        globe.signalColor = "#d9dee3";
         selectionChanges.clear();
     }
 
@@ -103,9 +108,51 @@ TestCase {
         tryVerify(function () {
             return grabImage(globe).pixel(centreX, centreY).toString() !== Qt.rgba(0, 0, 0, 1).toString();
         });
-        globe.gridColor = "#7d8791";
-        globe.outlineColor = "#9099a3";
-        globe.signalColor = "#d9dee3";
+    }
+
+    // Every dot of a depth bucket goes into one path closed by a single fill.
+    // Without the moveTo before each arc, the arcs are chained by a straight
+    // line and the fill paints the polygon they enclose: verified, the centre
+    // of this ring turns from black to #dedede when the moveTo is removed.
+    function test_bucketedDotsAreNotJoinedIntoOneBlob() {
+        globe.backgroundColor = "#000000";
+        globe.sphereColor = "#000000";
+        globe.gridColor = "#000000";
+        globe.outlineColor = "#000000";
+        globe.signalColor = "#ffffff";
+        // A ring of eight dots 12 degrees off the centre: same distance from
+        // the viewer, so the same depth bucket, and empty sky in the middle.
+        const ring = [];
+        for (let i = 0; i < 8; i++)
+            ring.push({
+                uuid: "d" + i,
+                latitude: 12 * Math.sin(i * Math.PI / 4),
+                longitude: 12 * Math.cos(i * Math.PI / 4)
+            });
+        globe.stations = ring;
+        const centreX = Math.round(globe.width / 2);
+        const centreY = Math.round(globe.height / 2);
+        tryVerify(function () {
+            return grabImage(globe).pixel(centreX, centreY).toString() === Qt.rgba(0, 0, 0, 1).toString();
+        });
+
+        // The same property at the call level: one moveTo per arc of a bucket.
+        let moveTos = 0;
+        let arcs = 0;
+        const context = {
+            beginPath: function () {},
+            moveTo: function () {
+                moveTos += 1;
+            },
+            arc: function () {
+                arcs += 1;
+            },
+            fill: function () {},
+            stroke: function () {}
+        };
+        globe.paintSignals(context);
+        compare(arcs, ring.length);
+        compare(moveTos, arcs);
     }
 
     function test_offscreenMarkersAreSkippedButEdgeMarkersRemainClickable() {
