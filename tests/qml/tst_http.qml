@@ -17,13 +17,16 @@ TestCase {
             aborted: false,
             onreadystatechange: null,
             open: function (method, url) {
+                this.method = method;
                 this.url = url;
                 this.readyState = 1;
             },
             setRequestHeader: function (name, value) {
                 this.headers[name] = value;
             },
-            send: function () {},
+            send: function (body) {
+                this.body = body;
+            },
             abort: function () {
                 this.aborted = true;
                 this.readyState = 4;
@@ -78,6 +81,36 @@ TestCase {
         created[0].respond(200, "");
         compare(created.length, 2);
         compare(created[1].url, "https://a/2");
+        created[1].respond(200, "");
+    }
+
+    function test_post_sends_body_and_never_retries() {
+        let got = null;
+        http.request("https://a/add", (status, text) => {
+            got = status;
+        }, {
+            method: "POST",
+            body: "name=x&url=y"
+        });
+        compare(created.length, 1);
+        compare(created[0].method, "POST");
+        compare(created[0].body, "name=x&url=y");
+        compare(created[0].headers["Content-Type"], "application/x-www-form-urlencoded");
+        // A lost reply after a POST that did arrive would add the station
+        // twice: the caller gets the failure instead of a silent retry.
+        created[0].respond(0, "");
+        compare(got, 0);
+        wait(20);
+        compare(created.length, 1);
+    }
+
+    function test_get_ignores_body_and_keeps_retrying() {
+        http.request("https://a/x", () => {});
+        compare(created[0].method, "GET");
+        compare(created[0].body, undefined);
+        compare(created[0].headers["Content-Type"], undefined);
+        created[0].respond(0, "");
+        tryCompare(created, "length", 2);
         created[1].respond(200, "");
     }
 

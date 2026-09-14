@@ -1,6 +1,7 @@
 import QtQuick
 
-// Serialised HTTP GET queue on top of XMLHttpRequest.
+// Serialised HTTP queue on top of XMLHttpRequest: GET by default, or a
+// form-encoded POST through `options`.
 // Qt's QML XHR has no working timeout, so a Timer aborts the request; abort()
 // is never called from inside the request's own onreadystatechange (that
 // re-enters the dying reply and can crash plasmashell). One request at a time
@@ -22,10 +23,16 @@ Item {
     property var _queue: []
     property var _current: null
 
-    function request(url, callback) {
+    // options: {method: "POST", body: "a=b&c=d"}. A POST is never retried on
+    // a network error: the reply may have been lost after the server acted on
+    // it, and sending again would act twice.
+    function request(url, callback, options) {
+        const settings = options && typeof options === "object" ? options : {};
         root._queue.push({
             url: url,
             callback: callback,
+            method: settings.method === "POST" ? "POST" : "GET",
+            body: settings.method === "POST" ? String(settings.body || "") : null,
             attempts: 0,
             settled: false,
             xhr: null
@@ -71,15 +78,20 @@ Item {
             job.settled = true;
             root._finish(job, xhr.status, xhr.responseText);
         };
-        xhr.open("GET", job.url);
+        xhr.open(job.method, job.url);
         xhr.setRequestHeader("User-Agent", root.userAgent);
+        if (job.body !== null)
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         timeout.restart();
-        xhr.send();
+        if (job.body !== null)
+            xhr.send(job.body);
+        else
+            xhr.send();
     }
 
     function _finish(job, status, text) {
         timeout.stop();
-        if (status === 0 && job.attempts < root.maxAttempts) {
+        if (status === 0 && job.method === "GET" && job.attempts < root.maxAttempts) {
             // job.settled was set true by the caller (onreadystatechange or the
             // timeout) to mark this attempt as processed; reset it here so the
             // deferred check below can tell a still-pending retry (settled
