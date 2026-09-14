@@ -47,15 +47,15 @@
     <!-- Wheel up on the panel icon lowers the volume instead of raising it. -->
     <!-- Icon name from the theme for the panel / tray icon. -->
     <entry name="icon" type="String">
-      <default>radio</default>
+      <default>map-globe</default>
     </entry>
     <!-- Colours as "#rrggbb"; empty follows the theme (text colour for the
          icon, highlight colour for the playing badge). -->
     <entry name="iconColor" type="String">
-      <default></default>
+      <default>#226ce7</default>
     </entry>
     <entry name="badgeColor" type="String">
-      <default></default>
+      <default>#4fa710</default>
     </entry>
     <entry name="invertWheel" type="Bool">
       <default>false</default>

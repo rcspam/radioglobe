@@ -73,7 +73,7 @@ PlasmoidItem {
     switchHeight: Kirigami.Units.gridUnit * 20
 
     // The widget's own icon (desktop form, tooltips) follows the setting too.
-    Plasmoid.icon: Plasmoid.configuration.icon || "radio"
+    Plasmoid.icon: Plasmoid.configuration.icon || "map-globe"
 
     // The station name and the ICY title both come from the broadcaster: never
     // let them be interpreted as rich text.

@@ -70,12 +70,12 @@ TestCase {
     function test_icon_follows_the_setting() {
         const icon = findChild(compact, "icon");
         verify(icon !== null, "icon not found");
-        compare(String(icon.source), "radio");
+        compare(String(icon.source), "map-globe");
         compact.iconName = "globe";
         compare(String(icon.source), "globe");
         compact.iconName = "";
-        compare(String(icon.source), "radio");
-        compact.iconName = "radio";
+        compare(String(icon.source), "map-globe");
+        compact.iconName = "map-globe";
     }
 
     function test_colours_follow_the_settings() {

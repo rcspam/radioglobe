@@ -17,7 +17,7 @@ KCM.SimpleKCM {
     property alias cfg_sendClicks: sendClicks.checked
     property alias cfg_approximateLocations: approximateLocations.checked
     property alias cfg_invertWheel: invertWheel.checked
-    property string cfg_icon: "radio"
+    property string cfg_icon: "map-globe"
     // Empty means "theme colour"; the check boxes drive that.
     property string cfg_iconColor: ""
     property string cfg_badgeColor: ""

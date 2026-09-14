@@ -17,7 +17,7 @@ Item {
         })
     property bool playing: typeof player !== "undefined" && player.state === "playing"
     property bool invertWheel: false
-    property string iconName: "radio"
+    property string iconName: "map-globe"
     // "#rrggbb" or empty for the theme colour.
     property string iconColor: ""
     property string badgeColor: ""
@@ -31,7 +31,7 @@ Item {
         id: icon
         objectName: "icon"
         anchors.fill: parent
-        source: compact.iconName || "radio"
+        source: compact.iconName || "map-globe"
         // Kirigami.Icon recolours monochrome icons only; a coloured icon
         // keeps its own colours whatever is set here.
         color: compact.iconColor ? compact.iconColor : Kirigami.Theme.textColor

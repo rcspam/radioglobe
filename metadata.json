@@ -12,7 +12,7 @@
         "FormFactors": [
             "desktop"
         ],
-        "Icon": "radio",
+        "Icon": "map-globe",
         "Id": "com.github.rcspam.radioglobe",
         "License": "MIT",
         "Name": "RadioGlobe",
