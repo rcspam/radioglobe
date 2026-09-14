@@ -17,6 +17,7 @@ Item {
         })
     property bool playing: typeof player !== "undefined" && player.state === "playing"
     property bool invertWheel: false
+    property string iconName: "radio"
     readonly property bool badgeVisible: compact.playing
     property real _wheelAccumulator: 0
 
@@ -25,8 +26,9 @@ Item {
 
     Kirigami.Icon {
         id: icon
+        objectName: "icon"
         anchors.fill: parent
-        source: "radio"
+        source: compact.iconName || "radio"
         active: mouseArea.containsMouse
     }
 

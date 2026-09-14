@@ -3,6 +3,7 @@ import QtQuick.Controls as QQC2
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCM
+import org.kde.iconthemes as KIconThemes
 import ".." as Ui
 import "../RadioModel.js" as RadioModel
 
@@ -15,6 +16,10 @@ KCM.SimpleKCM {
     property alias cfg_sendClicks: sendClicks.checked
     property alias cfg_approximateLocations: approximateLocations.checked
     property alias cfg_invertWheel: invertWheel.checked
+    property string cfg_icon: "radio"
+
+    // A few icons that fit, one click each; the dialog opens the whole theme.
+    readonly property var iconPresets: ["radio", "globe", "map-globe", "internet-services", "applications-multimedia"]
 
     // "fr_FR" -> "FR". What an empty home country setting falls back to.
     readonly property string localeCountry: Qt.locale().name.split("_")[1] || ""
@@ -27,6 +32,14 @@ KCM.SimpleKCM {
 
     Ui.Exec {
         id: exec
+    }
+
+    KIconThemes.IconDialog {
+        id: iconDialog
+        onIconNameChanged: iconName => {
+            if (iconName)
+                page.cfg_icon = iconName;
+        }
     }
 
     Timer {
@@ -121,9 +134,33 @@ KCM.SimpleKCM {
             Kirigami.FormData.label: i18n("Radio Browser:")
             text: i18n("Report played stations to the click counter")
         }
+        RowLayout {
+            Kirigami.FormData.label: i18n("Panel icon:")
+            spacing: Kirigami.Units.smallSpacing
+
+            Repeater {
+                model: page.iconPresets
+                delegate: QQC2.Button {
+                    required property string modelData
+                    icon.name: modelData
+                    icon.width: Kirigami.Units.iconSizes.smallMedium
+                    icon.height: Kirigami.Units.iconSizes.smallMedium
+                    checkable: true
+                    checked: page.cfg_icon === modelData
+                    onClicked: page.cfg_icon = modelData
+                    Accessible.name: modelData
+                    QQC2.ToolTip.text: modelData
+                    QQC2.ToolTip.visible: hovered
+                }
+            }
+            QQC2.Button {
+                text: i18n("Choose…")
+                icon.name: page.iconPresets.indexOf(page.cfg_icon) < 0 ? page.cfg_icon : "document-open"
+                onClicked: iconDialog.open()
+            }
+        }
         QQC2.CheckBox {
             id: invertWheel
-            Kirigami.FormData.label: i18n("Panel icon:")
             text: i18n("Invert the mouse wheel direction for the volume")
         }
     }

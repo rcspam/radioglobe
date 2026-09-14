@@ -45,6 +45,10 @@
       <default>false</default>
     </entry>
     <!-- Wheel up on the panel icon lowers the volume instead of raising it. -->
+    <!-- Icon name from the theme for the panel / tray icon. -->
+    <entry name="icon" type="String">
+      <default>radio</default>
+    </entry>
     <entry name="invertWheel" type="Bool">
       <default>false</default>
     </entry>

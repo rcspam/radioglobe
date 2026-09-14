@@ -72,6 +72,9 @@ PlasmoidItem {
     switchWidth: Kirigami.Units.gridUnit * 30
     switchHeight: Kirigami.Units.gridUnit * 20
 
+    // The widget's own icon (desktop form, tooltips) follows the setting too.
+    Plasmoid.icon: Plasmoid.configuration.icon || "radio"
+
     // The station name and the ICY title both come from the broadcaster: never
     // let them be interpreted as rich text.
     toolTipTextFormat: Text.PlainText
@@ -375,6 +378,7 @@ PlasmoidItem {
 
     compactRepresentation: CompactRepresentation {
         invertWheel: Plasmoid.configuration.invertWheel
+        iconName: Plasmoid.configuration.icon
     }
 
     fullRepresentation: FullRepresentation {}

@@ -67,6 +67,17 @@ TestCase {
         compare(log, ["volume:0.05"]);
     }
 
+    function test_icon_follows_the_setting() {
+        const icon = findChild(compact, "icon");
+        verify(icon !== null, "icon not found");
+        compare(String(icon.source), "radio");
+        compact.iconName = "globe";
+        compare(String(icon.source), "globe");
+        compact.iconName = "";
+        compare(String(icon.source), "radio");
+        compact.iconName = "radio";
+    }
+
     function test_badge_follows_playing() {
         compact.playing = false;
         compare(compact.badgeVisible, false);
