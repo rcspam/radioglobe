@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-14 19:56+0200\n"
+"POT-Creation-Date: 2026-09-14 20:06+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -44,8 +44,8 @@ msgstr "Ajouter"
 msgid "Add a station"
 msgstr "Ajouter une radio"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:145
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:146
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:139
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:140
 msgid "Add a station…"
 msgstr "Ajouter une radio…"
 
@@ -58,8 +58,8 @@ msgid "Address search unavailable (OpenStreetMap did not answer)."
 msgstr "Recherche d'adresse indisponible (OpenStreetMap n'a pas répondu)."
 
 #: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:81
-msgid "All geolocated stations of this country are always loaded on the globe and kept first."
-msgstr "Toutes les stations géolocalisées de ce pays sont toujours chargées sur le globe et gardées en premier."
+msgid "All stations of this country are always loaded on the globe and kept first; the ones Radio Browser has no coordinates for get an approximate spot inside the country."
+msgstr "Toutes les stations de ce pays sont toujours chargées sur le globe et gardées en tête ; celles dont Radio Browser n'a pas les coordonnées reçoivent une position approximative dans le pays."
 
 #: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:100
 msgid "Already on Radio Browser as “%1”: added that one to your favourites."
@@ -159,8 +159,8 @@ msgstr "Installez le module QML QtLocation (qml6-module-qtlocation sur Debian et
 msgid "Invert the mouse wheel direction for the volume"
 msgstr "Inverser le sens de la molette pour le volume"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:159
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:160
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:153
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:154
 msgid "Keep open"
 msgstr "Garder ouvert"
 
@@ -294,7 +294,7 @@ msgstr "Récents"
 msgid "Report played stations to the click counter"
 msgstr "Signaler les stations écoutées au compteur de clics"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:222
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:216
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:74
 msgid "Retry"
 msgstr "Réessayer"
@@ -392,3 +392,6 @@ msgstr "mpv-mpris :"
 #: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:92
 msgid "mpv:"
 msgstr "mpv :"
+
+#~ msgid "All geolocated stations of this country are always loaded on the globe and kept first."
+#~ msgstr "Toutes les stations géolocalisées de ce pays sont toujours chargées sur le globe et gardées en premier."

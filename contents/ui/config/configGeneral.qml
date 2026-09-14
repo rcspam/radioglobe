@@ -78,7 +78,7 @@ KCM.SimpleKCM {
             onEditingFinished: text = text.toUpperCase()
         }
         QQC2.Label {
-            text: i18n("All geolocated stations of this country are always loaded on the globe and kept first.")
+            text: i18n("All stations of this country are always loaded on the globe and kept first; the ones Radio Browser has no coordinates for get an approximate spot inside the country.")
             wrapMode: Text.Wrap
             Layout.fillWidth: true
         }

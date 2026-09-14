@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-14 19:56+0200\n"
+"POT-Creation-Date: 2026-09-14 20:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,8 +45,8 @@ msgstr ""
 msgid "Add a station"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:145
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:146
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:139
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:140
 msgid "Add a station…"
 msgstr ""
 
@@ -59,7 +59,7 @@ msgid "Address search unavailable (OpenStreetMap did not answer)."
 msgstr ""
 
 #: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:81
-msgid "All geolocated stations of this country are always loaded on the globe and kept first."
+msgid "All stations of this country are always loaded on the globe and kept first; the ones Radio Browser has no coordinates for get an approximate spot inside the country."
 msgstr ""
 
 #: /home/rapha/SOURCES/radioglobe/contents/ui/config/configAddStation.qml:100
@@ -160,8 +160,8 @@ msgstr ""
 msgid "Invert the mouse wheel direction for the volume"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:159
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:160
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:153
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:154
 msgid "Keep open"
 msgstr ""
 
@@ -295,7 +295,7 @@ msgstr ""
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:222
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:216
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:74
 msgid "Retry"
 msgstr ""

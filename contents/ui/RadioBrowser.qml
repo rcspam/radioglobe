@@ -29,6 +29,10 @@ Item {
     property string userAgentVersion: "0.0.0"
 
     readonly property string allMirror: "https://all.api.radio-browser.info"
+    // Bumped when what the world holds changes shape (v2: the home country
+    // comes whole, with approximate spots), so an older cache is not served
+    // for a day as if it were current.
+    readonly property string worldKey: "world:2"
     readonly property var worldStations: RadioModel.spreadOverlapping(root._world)
     readonly property bool worldFromCache: root._worldFromCache
     readonly property bool expanding: root._expanding
@@ -82,7 +86,9 @@ Item {
         if (root._started && !force)
             return;
         root._started = true;
-        const cached = root.cache ? root.cache.get("world") : null;
+        if (root.cache)
+            root.cache.remove("world");
+        const cached = root.cache ? root.cache.get(root.worldKey) : null;
         if (cached && Array.isArray(cached.value) && cached.value.length > 0) {
             root._world = cached.value;
             root._worldFromCache = true;
@@ -217,15 +223,16 @@ Item {
         root.request(base + "/json/url/" + encodeURIComponent(String(uuid)), function () {});
     }
 
-    // The home country is fetched whole (up to 1000 geolocated stations) on top
-    // of the world batch, and _absorb keeps it first when it cuts the world
-    // down to worldLimit. Changing the setting reloads it right away.
+    // The home country is fetched whole (up to 1000 stations, located or
+    // not: the ones without coordinates get an approximate spot inside the
+    // country from mergeGeoStations) on top of the world batch, and _absorb
+    // keeps it first when it cuts the world down to worldLimit. Changing the
+    // setting reloads it right away.
     function _loadHome() {
         const code = String(root.homeCountry || "").toUpperCase();
         if (!/^[A-Z]{2}$/.test(code))
             return;
         root._api("/json/stations/bycountrycodeexact/" + code, {
-            has_geo_info: true,
             hidebroken: true,
             order: "clickcount",
             reverse: true,
@@ -304,7 +311,7 @@ Item {
             return;
         root._worldDirty = false;
         if (root.cache)
-            root.cache.set("world", root._world, root.now());
+            root.cache.set(root.worldKey, root._world, root.now());
     }
 
     function _locate(stations) {
