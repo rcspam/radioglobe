@@ -10,6 +10,7 @@ A KDE Plasma 6 widget for exploring live radio stations on a rotatable globe and
 ## Install
 
 ```bash
+scripts/build-translations.sh
 kpackagetool6 --type Plasma/Applet --install .
 ```
 
@@ -17,5 +18,6 @@ kpackagetool6 --type Plasma/Applet --install .
 
 ```bash
 tests/run
+scripts/build-translations.sh
 plasmoidviewer -a .
 ```

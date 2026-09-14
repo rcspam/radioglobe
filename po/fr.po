@@ -1,0 +1,231 @@
+# French translations for RadioGlobe package.
+# Copyright (C) 2026 THE RadioGlobe'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the RadioGlobe package.
+# rcspam, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: RadioGlobe 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
+"POT-Creation-Date: 2026-09-14 11:03+0200\n"
+"PO-Revision-Date: 2026-09-14 11:03+0200\n"
+"Last-Translator: rcspam\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:79
+msgid "%1 signal"
+msgid_plural "%1 signals"
+msgstr[0] "%1 signal"
+msgstr[1] "%1 signaux"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:809
+msgid "%1 · approximate location"
+msgstr "%1 · position approximative"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:78
+msgid "%1 · click another country to browse"
+msgstr "%1 · cliquez sur un autre pays pour parcourir"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:63
+msgid "Absolute path, or leave empty to use mpv from PATH"
+msgstr "Chemin absolu, ou laisser vide pour utiliser mpv depuis le PATH"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:79
+msgid "Check again"
+msgstr "Vérifier à nouveau"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:16
+msgid "Checking…"
+msgstr "Vérification…"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:35
+msgid "Connecting…"
+msgstr "Connexion…"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:17
+msgid "Could not check (the command did not return). Try again."
+msgstr "Vérification impossible (la commande n’a pas répondu). Réessayer."
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:60
+msgid "Favorites"
+msgstr "Favoris"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:43
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:46
+msgid "Found: %1"
+msgstr "Trouvé : %1"
+
+#: /home/rapha/SOURCES/radioglobe/contents/config/config.qml:6
+msgid "General"
+msgstr "Général"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:807
+msgid "Landed near · %1"
+msgstr "À proximité de · %1"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:37
+msgid "Live"
+msgstr "En direct"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:55
+msgid "Maximum stations on the globe:"
+msgstr "Nombre maximal de stations sur le globe :"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:120
+msgid "No favorites yet"
+msgstr "Aucun favori pour l’instant"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:41
+msgid "No station playing"
+msgstr "Aucune station en lecture"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:25
+msgid "No station selected"
+msgstr "Aucune station sélectionnée"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:120
+msgid "No stations"
+msgstr "Aucune station"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:46
+msgid ""
+"Not found. Install the “mpv-mpris” package (media keys and the Media Player "
+"widget need it)."
+msgstr ""
+"Introuvable. Installer le paquet « mpv-mpris » (nécessaire pour les touches "
+"multimédias et le widget Lecteur multimédia)."
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:43
+msgid "Not found. Install the “mpv” package."
+msgstr "Introuvable. Installer le paquet « mpv »."
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:120
+msgid "Nothing played yet"
+msgstr "Rien n’a encore été écouté"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:45
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:39
+msgid "Paused"
+msgstr "En pause"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:28
+msgid "Pick a signal on the globe or a station in the list"
+msgstr "Choisissez un signal sur le globe ou une station dans la liste"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:47
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:41
+msgid "Playback failed"
+msgstr "Échec de la lecture"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:43
+msgid "Playing"
+msgstr "Lecture en cours"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:76
+msgid "Radio Browser unreachable, showing cached data"
+msgstr "Radio Browser injoignable, affichage des données en cache"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:85
+msgid "Radio Browser:"
+msgstr "Radio Browser :"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:38
+msgid "RadioGlobe"
+msgstr "RadioGlobe"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/SearchBar.qml:41
+msgid "Random"
+msgstr "Aléatoire"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:63
+msgid "Recent"
+msgstr "Récents"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:86
+msgid "Report played stations to the click counter"
+msgstr "Signaler les stations écoutées au compteur de clics"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:69
+msgid "Retry"
+msgstr "Réessayer"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/SearchBar.qml:27
+msgid "Search stations, countries, tags…"
+msgstr "Rechercher des stations, pays, mots-clés…"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:33
+msgid "Starting mpv…"
+msgstr "Démarrage de mpv…"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:123
+msgid "Stop (hold to quit mpv)"
+msgstr "Arrêter (maintenir pour quitter mpv)"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:48
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:43
+msgid "Stopped"
+msgstr "Arrêté"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:55
+msgid ""
+"This Plasma version does not provide the MPRIS module (org.kde.plasma."
+"private.mpris) RadioGlobe needs to control mpv."
+msgstr ""
+"Cette version de Plasma ne fournit pas le module MPRIS (org.kde.plasma."
+"private.mpris) dont RadioGlobe a besoin pour contrôler mpv."
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:57
+msgid ""
+"This station could not be played. It may be offline; retry or pick another "
+"one."
+msgstr ""
+"Cette station n’a pas pu être lue. Elle est peut-être hors ligne : "
+"réessayez ou choisissez-en une autre."
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:109
+msgid "Toggle favorite (F)"
+msgstr "Basculer le favori (F)"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/SearchBar.qml:44
+msgid "Tune a random station (R)"
+msgstr "Écouter une station aléatoire (R)"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:57
+msgid "World"
+msgstr "Monde"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/Globe.qml:822
+msgid "approximate location"
+msgstr "position approximative"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:62
+msgid "mpv executable:"
+msgstr "Exécutable mpv :"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:51
+msgid ""
+"mpv is not installed. Install the “mpv” and “mpv-mpris” packages, then try "
+"again."
+msgstr ""
+"mpv n’est pas installé. Installer les paquets « mpv » et « mpv-mpris », "
+"puis réessayer."
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:53
+msgid ""
+"mpv started but did not appear on MPRIS. Install the “mpv-mpris” package."
+msgstr ""
+"mpv a démarré mais n’apparaît pas sur MPRIS. Installer le paquet « mpv-"
+"mpris »."
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:73
+msgid "mpv-mpris:"
+msgstr "mpv-mpris :"
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:67
+msgid "mpv:"
+msgstr "mpv :"
