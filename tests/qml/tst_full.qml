@@ -262,6 +262,17 @@ TestCase {
         compare(root.calls.indexOf("search:jazz") >= 0, true, JSON.stringify(root.calls));
     }
 
+    function test_modifier_combinations_are_not_shortcuts() {
+        loader.item.forceActiveFocus();
+        keyClick(Qt.Key_M, Qt.ControlModifier);
+        compare(player.calls.indexOf("toggleMute"), -1, JSON.stringify(player.calls));
+        keyClick(Qt.Key_R, Qt.AltModifier);
+        compare(root.calls.indexOf("random"), -1, JSON.stringify(root.calls));
+        // The same keys alone still work.
+        keyClick(Qt.Key_M);
+        compare(player.calls.indexOf("toggleMute") >= 0, true, JSON.stringify(player.calls));
+    }
+
     function test_escape_from_focused_empty_field_escalates() {
         const field = findChild(loader.item, "searchField");
         verify(field !== null, "searchField not found");

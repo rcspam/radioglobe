@@ -50,6 +50,12 @@ Item {
         })
 
     Keys.onPressed: event => {
+        // Ctrl / Alt / Meta combinations belong to the shell, to the text field
+        // (Ctrl+A, Ctrl+V) or to a global shortcut: Ctrl+M is not a mute.
+        if (event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier)) {
+            event.accepted = false;
+            return;
+        }
         if (searchBar.inputFocused) {
             // Typing: only list navigation is intercepted; letters go to the field.
             if (event.key === Qt.Key_Down || event.key === Qt.Key_Up) {
