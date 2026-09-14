@@ -232,6 +232,28 @@ TestCase {
         player.station = null;
     }
 
+    function test_located_favourites_are_on_the_globe() {
+        const globe = findChild(loader.item, "globe");
+        root.favorites = [
+            {
+                uuid: "local-1",
+                name: "Mine",
+                latitude: 2,
+                longitude: 2
+            },
+            {
+                uuid: "nowhere",
+                name: "No coords",
+                latitude: null,
+                longitude: null
+            }
+        ];
+        verify(globe.stations.some(s => s.uuid === "local-1"), "a located favourite gets a dot");
+        verify(!globe.stations.some(s => s.uuid === "nowhere"), "no coordinates, no dot");
+        root.favorites = [];
+        verify(!globe.stations.some(s => s.uuid === "local-1"));
+    }
+
     function test_edit_button_sends_the_current_station_to_root() {
         const playerBar = findChild(loader.item, "playerBar");
         player.station = {

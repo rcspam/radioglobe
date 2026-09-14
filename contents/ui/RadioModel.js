@@ -777,6 +777,30 @@ function applyLocalEdits(stations, favorites) {
     return output === null ? rows : output;
 }
 
+function isLocated(station) {
+    return !!station && station.latitude !== null && station.latitude !== undefined
+        && station.longitude !== null && station.longitude !== undefined;
+}
+
+// What the globe draws: the world list, plus every located favourite it does
+// not hold (stations added by hand, favourites outside the world cap), plus
+// the playing station when it is missing too. Returns the same array when
+// there is nothing to add, so the globe does not re-prepare its points.
+function withLocalStations(world, favorites, current) {
+    var rows = Array.isArray(world) ? world : [];
+    var seen = ({});
+    for (var i = 0; i < rows.length; i++) if (rows[i] && rows[i].uuid) seen["$" + rows[i].uuid] = true;
+    var extra = [];
+    var candidates = (Array.isArray(favorites) ? favorites : []).concat(current ? [current] : []);
+    for (var n = 0; n < candidates.length; n++) {
+        var station = candidates[n];
+        if (!isLocated(station) || !station.uuid || seen["$" + station.uuid]) continue;
+        seen["$" + station.uuid] = true;
+        extra.push(station);
+    }
+    return extra.length === 0 ? rows : rows.concat(extra);
+}
+
 // Radio Browser /json/add parameters for the same form. Empty values are
 // left out so the server applies its own defaults.
 function submitParams(fields) {

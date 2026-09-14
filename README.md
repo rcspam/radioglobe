@@ -83,7 +83,7 @@ Then add "RadioGlobe" from the widget list to a panel, the system tray, or the d
 | `M` | Mute |
 | Escape | Clear the search, then leave the current country, then close the popup |
 
-In the player bar, clicking the stop button stops playback; holding it down quits mpv entirely, like "Stop and quit mpv" in the right-click menu. Double-clicking the station name frames it on the globe, zoomed in to city level (a station outside the world list, a favourite for instance, is added to the globe for the occasion). On the globe, the mouse wheel zooms on the point under the cursor.
+In the player bar, clicking the stop button stops playback; holding it down quits mpv entirely, like "Stop and quit mpv" in the right-click menu. Double-clicking the station name frames it on the globe, zoomed in to city level. Favourites with a location always have a dot on the globe, even outside the world list (stations you added by hand included). On the globe, the mouse wheel zooms on the point under the cursor.
 
 Next to the search field, the pin button ("Keep open") stops the popup from closing when it loses focus, so you can keep browsing stations while you work in another window. It is remembered across sessions, and it does not show up when the widget sits on the desktop, where there is no popup to keep open.
 

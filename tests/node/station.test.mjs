@@ -294,3 +294,18 @@ test("applyLocalEdits swaps in edited favourites and keeps the array when nothin
     assert.equal(out[1].latitude, 5);
     assert.equal(world[1].name, "B", "input untouched");
 });
+
+test("withLocalStations adds located favourites and the playing station missing from the world", () => {
+    const world = [{ uuid: "a", latitude: 1, longitude: 1 }];
+    const favorites = [
+        { uuid: "a", latitude: 1, longitude: 1 },
+        { uuid: "local-1", name: "Mine", latitude: 2, longitude: 2 },
+        { uuid: "nowhere", name: "No coords", latitude: null, longitude: null },
+    ];
+    const out = model.withLocalStations(world, favorites, { uuid: "cur", latitude: 3, longitude: 3 });
+    assert.deepEqual(Array.from(out, s => s.uuid), ["a", "local-1", "cur"]);
+    assert.equal(world.length, 1, "input untouched");
+    assert.equal(model.withLocalStations(world, [favorites[0]], null), world, "same array when nothing to add");
+    assert.equal(model.withLocalStations(world, [], { uuid: "a", latitude: 1, longitude: 1 }), world);
+    assert.deepEqual(Array.from(model.withLocalStations(world, favorites, favorites[1]), s => s.uuid), ["a", "local-1"]);
+});

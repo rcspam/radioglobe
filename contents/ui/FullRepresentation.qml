@@ -100,17 +100,11 @@ Item {
         globe.globeScale = Math.max(globe.globeScale, 8);
     }
 
-    // The world list is capped, and favourites or stations added by hand
-    // may sit outside it: the playing station is appended when missing, so
-    // locating it always lands on a dot. Same array reference otherwise, so
-    // the globe does not re-prepare its points on every station change.
-    readonly property var globeStations: {
-        const world = root.worldStations;
-        const station = full.mediaPlayer.station;
-        if (!station || station.latitude === null || station.longitude === null || station.latitude === undefined || station.longitude === undefined)
-            return world;
-        return RadioModel.indexByUuid(world, station.uuid) >= 0 ? world : world.concat([station]);
-    }
+    // The world list is capped, and stations added by hand or favourites
+    // outside the cap are not in it: located favourites and the playing
+    // station are appended when missing, so they get a dot and locating
+    // always lands on one.
+    readonly property var globeStations: RadioModel.withLocalStations(root.worldStations, root.favorites, full.mediaPlayer.station)
 
     ColumnLayout {
         anchors.fill: parent
