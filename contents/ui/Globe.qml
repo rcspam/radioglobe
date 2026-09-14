@@ -49,6 +49,7 @@ Item {
     property var preparedCountries: []
     property var preparedGrid: []
     property var preparedStations: []
+    readonly property int signalDepthBuckets: 8
 
     signal stationActivated(var station)
     signal countryActivated(string code, string name)
@@ -391,6 +392,10 @@ Item {
         }
     }
 
+    // One path per dot meant about 4500 context calls per frame with 1500 dots
+    // on screen. Dots are binned by depth instead, and each bin is drawn as a
+    // single path: 8 paths per frame, with the fade quantised in steps of 0.06
+    // of alpha, which is below what the eye picks up.
     function paintSignals(ctx) {
         var rows = preparedStations;
         var latitude = centreLatitude * Math.PI / 180;
@@ -400,6 +405,9 @@ Item {
         var sinLongitude = Math.sin(longitude);
         var cosLongitude = Math.cos(longitude);
         var globeRadius = radius();
+        var bucketCount = signalDepthBuckets;
+        var buckets = new Array(bucketCount);
+        var markers = [];
         for (var i = 0; i < rows.length; i++) {
             var row = rows[i];
             var horizontal = row.worldX * cosLongitude + row.worldY * sinLongitude;
@@ -417,19 +425,44 @@ Item {
                 continue;
             var selected = selectedStation && row.station.uuid === selectedStation.uuid;
             var highlighted = highlightedStation && row.station.uuid === highlightedStation.uuid && !selected;
-            var markerRadius = selected ? 4.2 : (highlighted ? 3.7 : 1.7 + depth * 1.25);
+            if (selected || highlighted) {
+                markers.push(row.screenX, row.screenY, selected ? 1 : 0);
+                continue;
+            }
+            var bucket = Math.max(0, Math.min(bucketCount - 1, Math.floor(depth * bucketCount)));
+            if (!buckets[bucket])
+                buckets[bucket] = [];
+            buckets[bucket].push(row.screenX, row.screenY);
+        }
+        for (var b = 0; b < bucketCount; b++) {
+            var entries = buckets[b];
+            if (!entries || entries.length === 0)
+                continue;
+            var bucketDepth = (b + 0.5) / bucketCount;
+            var bucketRadius = 1.7 + bucketDepth * 1.25;
+            ctx.fillStyle = withAlpha(signalColor, 0.42 + bucketDepth * 0.48);
             ctx.beginPath();
-            ctx.arc(row.screenX, row.screenY, markerRadius, 0, Math.PI * 2);
-            ctx.fillStyle = selected || highlighted ? accentColor : withAlpha(signalColor, 0.42 + depth * 0.48);
+            for (var e = 0; e < entries.length; e += 2) {
+                // Without the moveTo, consecutive arcs are joined by a line
+                // and the single fill paints one connected blob.
+                ctx.moveTo(entries[e] + bucketRadius, entries[e + 1]);
+                ctx.arc(entries[e], entries[e + 1], bucketRadius, 0, Math.PI * 2);
+            }
+            ctx.fill();
+        }
+        // Last, so the crowd never covers the playing or hovered station.
+        for (var m = 0; m < markers.length; m += 3) {
+            var isSelected = markers[m + 2] === 1;
+            ctx.beginPath();
+            ctx.arc(markers[m], markers[m + 1], isSelected ? 4.2 : 3.7, 0, Math.PI * 2);
+            ctx.fillStyle = accentColor;
             ctx.fill();
 
-            if (selected || highlighted) {
-                ctx.beginPath();
-                ctx.arc(row.screenX, row.screenY, selected ? 8.5 : 7.5, 0, Math.PI * 2);
-                ctx.strokeStyle = withAlpha(accentColor, selected ? 0.72 : 0.92);
-                ctx.lineWidth = selected ? 1.2 : 1.4;
-                ctx.stroke();
-            }
+            ctx.beginPath();
+            ctx.arc(markers[m], markers[m + 1], isSelected ? 8.5 : 7.5, 0, Math.PI * 2);
+            ctx.strokeStyle = withAlpha(accentColor, isSelected ? 0.72 : 0.92);
+            ctx.lineWidth = isSelected ? 1.2 : 1.4;
+            ctx.stroke();
         }
     }
 
@@ -561,7 +594,10 @@ Item {
     Canvas {
         id: globeCanvas
         anchors.fill: parent
-        renderStrategy: Canvas.Cooperative
+        // Rasterisation moves to its own thread: the JS of onPaint still runs
+        // on the GUI thread, but the software painting of the whole canvas
+        // does not, which is what was stealing frames from the list.
+        renderStrategy: Canvas.Threaded
         onPaint: {
             var ctx = getContext("2d");
             if (ctx)
