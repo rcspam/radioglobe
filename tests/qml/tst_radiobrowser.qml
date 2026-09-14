@@ -252,10 +252,10 @@ TestCase {
         compare(calls[0].source, "local");
         compare(calls[0].n, 1);
         const url = answer("/json/stations/bycountrycodeexact/FR", 200, [raw("a"), raw("b")]);
-        verify(url.indexOf("limit=25") > 0);
+        verify(url.indexOf("limit=300") > 0);
         compare(calls[1].source, "network");
         compare(calls[1].n, 2);
-        verify(store["country:FR"] !== undefined);
+        verify(store["country:FR:300"] !== undefined);
         calls = [];
         rb.loadCountry("FR", (stations, source) => calls.push(source));
         compare(calls, ["local", "cache"]);

@@ -117,7 +117,9 @@ Item {
         const local = RadioModel.stationsForCountry(root._world, wanted, 200);
         if (local.length > 0)
             callback(local, "local");
-        const key = "country:" + wanted;
+        // The limit is part of the key: a cache written by an older build
+        // holds fewer rows than the current one promises.
+        const key = "country:" + wanted + ":300";
         const cached = root.cache ? root.cache.get(key) : null;
         if (cached && Array.isArray(cached.value) && root.now() - cached.savedAt < root.cacheTtlMs) {
             callback(cached.value, "cache");
@@ -127,11 +129,11 @@ Item {
             hidebroken: true,
             order: "clickcount",
             reverse: true,
-            limit: 25
+            limit: 300
         }, rows => {
             if (rows === null)
                 return;
-            const stations = root._locate(RadioModel.normalizeStations(rows, 25));
+            const stations = root._locate(RadioModel.normalizeStations(rows, 300));
             if (root.cache)
                 root.cache.set(key, stations, root.now());
             callback(stations, "network");

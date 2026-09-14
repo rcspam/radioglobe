@@ -7,7 +7,7 @@ A KDE Plasma 6 widget for exploring live radio stations on a rotatable globe and
 ## Features
 
 - A rotatable, zoomable globe (Canvas 2D) with one point per live radio station. Drag to spin, scroll to zoom, click a point to play, click a country to browse its stations
-- Stations come from the [Radio Browser](https://www.radio-browser.info/) community API: world view (up to a configurable cap, default 3000 stations), per-country lists, and free-text search across name, country and tag
+- Stations come from the [Radio Browser](https://www.radio-browser.info/) community API: world view (up to a configurable cap, default 3000 stations), per-country lists of up to 300 stations, and free-text search across name, country and tag
 - Playback through an external mpv process controlled over native MPRIS, so a broken stream can never freeze or crash the widget, and playback survives a `plasmashell` restart
 - World / Favorites / Recent tabs, a station list with country, codec and bitrate, and a player bar with previous / play-pause / next / stop / mute / volume / favorite
 - Panel or system tray icon with a playing badge, tooltip showing the current station and title, left click to open, middle click for a random station, wheel to change volume, right click for Plasma's widget menu with "Random station" and "Stop and quit mpv"
