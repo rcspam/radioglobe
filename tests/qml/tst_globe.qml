@@ -198,10 +198,10 @@ TestCase {
     // is under the 12 px hit radius, so the ceiling has to sit higher.
     function test_wheelZoomStepAndCeiling() {
         mouseWheel(globe, 400, 300, 0, 120);
-        fuzzyCompare(globe.globeScale, Math.exp(120 / 480), 0.001);
+        fuzzyCompare(globe.globeScale, Math.exp(120 / 360), 0.001);
         for (var i = 0; i < 60; i++)
             mouseWheel(globe, 400, 300, 0, 120);
-        compare(globe.globeScale, 64);
+        compare(globe.globeScale, 256);
     }
 
     function test_offscreenMarkersAreSkippedButEdgeMarkersRemainClickable() {
