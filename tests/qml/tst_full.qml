@@ -101,6 +101,10 @@ TestCase {
         function clearCountry() {
             root.calls.push("clearCountry");
         }
+
+        function openConfiguration() {
+            root.calls.push("configure");
+        }
     }
 
     QtObject {
@@ -367,6 +371,13 @@ TestCase {
         compare(button.visible, false);
         root.isOnDesktop = false;
         root.pinned = false;
+    }
+
+    function test_add_station_button_opens_the_configuration() {
+        const button = findChild(loader.item, "addStationButton");
+        verify(button !== null, "addStationButton not found");
+        mouseClick(button);
+        compare(root.calls.indexOf("configure") >= 0, true, JSON.stringify(root.calls));
     }
 
     function test_retry_button_appears_offline_and_reaches_the_browser() {

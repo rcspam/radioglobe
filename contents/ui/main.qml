@@ -47,6 +47,12 @@ PlasmoidItem {
         Plasmoid.configuration.pinned = value;
     }
 
+    // Opens the configuration dialog; Plasma has no way to land on a given
+    // page, so the "Add a station" page is one click away from there.
+    function openConfiguration() {
+        Plasmoid.internalAction("configure").trigger();
+    }
+
     // Pinned: the popup survives losing focus, which is what lets the user
     // click around while the station list stays on screen.
     hideOnWindowDeactivate: !root.pinned

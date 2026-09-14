@@ -112,6 +112,18 @@ Item {
                 onRandomRequested: root.playRandom()
             }
 
+            // The form lives in the configuration dialog ("Add a station"
+            // page): a Plasma config page is the one place with room for a
+            // map, and the dialog outlives the popup.
+            PlasmaComponents3.ToolButton {
+                objectName: "addStationButton"
+                icon.name: "list-add"
+                onClicked: root.openConfiguration()
+                Accessible.name: i18n("Add a station…")
+                PlasmaComponents3.ToolTip.text: i18n("Add a station…")
+                PlasmaComponents3.ToolTip.visible: hovered
+            }
+
             // Only a popup can be dismissed by a click elsewhere, so the pin
             // has nothing to do when the widget lives on the desktop.
             PlasmaComponents3.ToolButton {
