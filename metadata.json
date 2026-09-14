@@ -16,7 +16,7 @@
         "Id": "com.github.rcspam.radioglobe",
         "License": "MIT",
         "Name": "RadioGlobe",
-        "Version": "0.1.0",
+        "Version": "0.2.0",
         "Website": "https://github.com/rcspam/radioglobe"
     },
     "X-Plasma-API-Minimum-Version": "6.1",
