@@ -83,8 +83,8 @@ TestCase {
         });
     }
 
-    // The depth buckets share one beginPath/fill per bucket: a missing fill or
-    // a stray closePath would silently paint nothing at all.
+    // A missing fill or a stray closePath in the dot loop would silently paint
+    // nothing at all.
     function test_bucketedDotsReachTheCanvas() {
         // Everything but the dots painted black: the grid lines cross exactly
         // at the centre of the globe.
@@ -110,11 +110,12 @@ TestCase {
         });
     }
 
-    // Every dot of a depth bucket goes into one path closed by a single fill.
-    // Without the moveTo before each arc, the arcs are chained by a straight
-    // line and the fill paints the polygon they enclose: verified, the centre
-    // of this ring turns from black to #dedede when the moveTo is removed.
-    function test_bucketedDotsAreNotJoinedIntoOneBlob() {
+    // A depth bucket only picks the fill colour: every dot is still stroked as
+    // its own beginPath/arc/fill. Batching a bucket into a single path gives
+    // that path the whole globe as a bounding box, which the raster engine
+    // scan-converts in full, and a missing moveTo would paint the polygon the
+    // arcs enclose: verified, the centre of this ring turned #dedede.
+    function test_eachDotGetsItsOwnFill() {
         globe.backgroundColor = "#000000";
         globe.sphereColor = "#000000";
         globe.gridColor = "#000000";
@@ -136,23 +137,61 @@ TestCase {
             return grabImage(globe).pixel(centreX, centreY).toString() === Qt.rgba(0, 0, 0, 1).toString();
         });
 
-        // The same property at the call level: one moveTo per arc of a bucket.
-        let moveTos = 0;
+        // The same property at the call level: one closed path per dot.
+        let beginPaths = 0;
         let arcs = 0;
+        let fills = 0;
         const context = {
-            beginPath: function () {},
-            moveTo: function () {
-                moveTos += 1;
+            beginPath: function () {
+                beginPaths += 1;
             },
+            moveTo: function () {},
             arc: function () {
                 arcs += 1;
             },
-            fill: function () {},
+            fill: function () {
+                fills += 1;
+            },
             stroke: function () {}
         };
         globe.paintSignals(context);
         compare(arcs, ring.length);
-        compare(moveTos, arcs);
+        compare(beginPaths, arcs);
+        compare(fills, arcs);
+    }
+
+    // Threaded canvas: onPaint is re-run on the GUI thread at every frame of
+    // the render loop, without waiting for the worker to hand back the previous
+    // pass, so a burst of changes must leave with a single request.
+    function test_rapidChangesCoalesceIntoOnePaint() {
+        globe.stations = [
+            {
+                uuid: "dot",
+                latitude: 0,
+                longitude: 0
+            }
+        ];
+        // Long enough for the throttle window opened by init() to close.
+        wait(120);
+        const before = globe.paintCount;
+        const burst = 12;
+        const started = Date.now();
+        for (let i = 0; i < burst; i++)
+            globe.centreLongitude = i * 0.05;
+        const elapsed = Date.now() - started;
+        verify(elapsed < 8, "the burst itself took " + elapsed + " ms, longer than the throttle window");
+        // The first change sent the request, the other eleven were merged into
+        // the single re-issue the throttle fires at the end of its window.
+        verify(globe.paintDirty, "changes inside the window must be merged, not requested one by one");
+        tryVerify(function () {
+            return globe.paintCount > before;
+        });
+        // The merged state is not dropped: the window closes on a re-issue.
+        tryVerify(function () {
+            return !globe.paintDirty;
+        });
+        wait(120);
+        verify(globe.paintCount - before <= 2, "expected at most 2 paints for " + burst + " changes, got " + (globe.paintCount - before));
     }
 
     function test_offscreenMarkersAreSkippedButEdgeMarkersRemainClickable() {

@@ -50,6 +50,8 @@ Item {
     property var preparedGrid: []
     property var preparedStations: []
     readonly property int signalDepthBuckets: 8
+    property bool paintDirty: false
+    readonly property alias paintCount: paintCounter.value
 
     signal stationActivated(var station)
     signal countryActivated(string code, string name)
@@ -66,6 +68,22 @@ Item {
 
     function withAlpha(color, alpha) {
         return Qt.rgba(color.r, color.g, color.b, alpha);
+    }
+
+    // A Threaded canvas runs the JS of onPaint on the GUI thread again at every
+    // frame of the render loop, without waiting for the worker to be done with
+    // the previous pass. At 240 Hz that is four painting passes computed and
+    // thrown away for every texture the eye actually gets, and the GUI thread
+    // ends up saturated, so drags and list scrolling stutter. Requests are
+    // capped at one per 8 ms and the ones arriving in between are merged.
+    function schedulePaint() {
+        if (paintThrottle.running) {
+            paintDirty = true;
+            return;
+        }
+        paintDirty = false;
+        globeCanvas.requestPaint();
+        paintThrottle.restart();
     }
 
     function clearLandingHighlight() {
@@ -392,10 +410,11 @@ Item {
         }
     }
 
-    // One path per dot meant about 4500 context calls per frame with 1500 dots
-    // on screen. Dots are binned by depth instead, and each bin is drawn as a
-    // single path: 8 paths per frame, with the fade quantised in steps of 0.06
-    // of alpha, which is below what the eye picks up.
+    // Dots are binned by depth so the fade costs 8 Qt.rgba() and 8 fillStyle
+    // writes per frame instead of one per dot, quantised in steps of 0.06 of
+    // alpha which is below what the eye picks up. Each dot still gets its own
+    // beginPath/fill: a single path holding 1500 arcs has the whole globe for
+    // a bounding box, and the raster engine scan-converts all of it.
     function paintSignals(ctx) {
         var rows = preparedStations;
         var latitude = centreLatitude * Math.PI / 180;
@@ -441,14 +460,11 @@ Item {
             var bucketDepth = (b + 0.5) / bucketCount;
             var bucketRadius = 1.7 + bucketDepth * 1.25;
             ctx.fillStyle = withAlpha(signalColor, 0.42 + bucketDepth * 0.48);
-            ctx.beginPath();
             for (var e = 0; e < entries.length; e += 2) {
-                // Without the moveTo, consecutive arcs are joined by a line
-                // and the single fill paints one connected blob.
-                ctx.moveTo(entries[e] + bucketRadius, entries[e + 1]);
+                ctx.beginPath();
                 ctx.arc(entries[e], entries[e + 1], bucketRadius, 0, Math.PI * 2);
+                ctx.fill();
             }
-            ctx.fill();
         }
         // Last, so the crowd never covers the playing or hovered station.
         for (var m = 0; m < markers.length; m += 3) {
@@ -541,50 +557,50 @@ Item {
 
     onCountriesChanged: {
         preparedCountries = prepareCountryGeometry();
-        globeCanvas.requestPaint();
+        root.schedulePaint();
         if (activeCountryCode)
             focusCountry(activeCountryCode);
     }
     onStationsChanged: {
         preparedStations = prepareStationGeometry();
         refreshLandingHighlight();
-        globeCanvas.requestPaint();
+        root.schedulePaint();
     }
     onSelectedStationUuidChanged: {
         clearLandingHighlight();
-        globeCanvas.requestPaint();
+        root.schedulePaint();
     }
-    onActiveCountryCodeChanged: globeCanvas.requestPaint()
-    onBackgroundColorChanged: globeCanvas.requestPaint()
-    onSphereColorChanged: globeCanvas.requestPaint()
-    onLandColorChanged: globeCanvas.requestPaint()
-    onGridColorChanged: globeCanvas.requestPaint()
-    onOutlineColorChanged: globeCanvas.requestPaint()
-    onSignalColorChanged: globeCanvas.requestPaint()
-    onAccentColorChanged: globeCanvas.requestPaint()
+    onActiveCountryCodeChanged: root.schedulePaint()
+    onBackgroundColorChanged: root.schedulePaint()
+    onSphereColorChanged: root.schedulePaint()
+    onLandColorChanged: root.schedulePaint()
+    onGridColorChanged: root.schedulePaint()
+    onOutlineColorChanged: root.schedulePaint()
+    onSignalColorChanged: root.schedulePaint()
+    onAccentColorChanged: root.schedulePaint()
     onCentreLatitudeChanged: {
         updateHighlightPosition();
-        globeCanvas.requestPaint();
+        root.schedulePaint();
     }
     onCentreLongitudeChanged: {
         updateHighlightPosition();
-        globeCanvas.requestPaint();
+        root.schedulePaint();
     }
     onGlobeScaleChanged: {
         updateHighlightPosition();
-        globeCanvas.requestPaint();
+        root.schedulePaint();
     }
     onWidthChanged: {
         updateHighlightPosition();
-        globeCanvas.requestPaint();
+        root.schedulePaint();
     }
     onHeightChanged: {
         updateHighlightPosition();
-        globeCanvas.requestPaint();
+        root.schedulePaint();
     }
     onHighlightedStationChanged: {
         updateHighlightPosition();
-        globeCanvas.requestPaint();
+        root.schedulePaint();
     }
     onVisibleChanged: {
         if (!visible)
@@ -600,16 +616,33 @@ Item {
         renderStrategy: Canvas.Threaded
         onPaint: {
             var ctx = getContext("2d");
-            if (ctx)
-                root.paintGlobe(ctx);
+            if (!ctx)
+                return;
+            paintCounter.value += 1;
+            root.paintGlobe(ctx);
         }
+    }
+
+    // Read-only from the outside through root.paintCount.
+    QtObject {
+        id: paintCounter
+
+        property int value: 0
+    }
+
+    Timer {
+        id: paintThrottle
+
+        interval: 8
+        onTriggered: if (root.paintDirty)
+            root.schedulePaint()
     }
 
     Component.onCompleted: {
         preparedGrid = prepareGridGeometry();
         preparedCountries = prepareCountryGeometry();
         preparedStations = prepareStationGeometry();
-        globeCanvas.requestPaint();
+        root.schedulePaint();
     }
 
     HoverHandler {
