@@ -308,4 +308,8 @@ test("withLocalStations adds located favourites and the playing station missing 
     assert.equal(model.withLocalStations(world, [favorites[0]], null), world, "same array when nothing to add");
     assert.equal(model.withLocalStations(world, [], { uuid: "a", latitude: 1, longitude: 1 }), world);
     assert.deepEqual(Array.from(model.withLocalStations(world, favorites, favorites[1]), s => s.uuid), ["a", "local-1"]);
+    // An approximate spot saved in a favourite only shows with the option on.
+    const approx = { uuid: "approx", latitude: 4, longitude: 4, estimatedLocation: true };
+    assert.equal(model.withLocalStations(world, [approx], null), world);
+    assert.deepEqual(Array.from(model.withLocalStations(world, [approx], null, true), s => s.uuid), ["a", "approx"]);
 });

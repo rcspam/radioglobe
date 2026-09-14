@@ -793,9 +793,11 @@ function isLocated(station) {
 
 // What the globe draws: the world list, plus every located favourite it does
 // not hold (stations added by hand, favourites outside the world cap), plus
-// the playing station when it is missing too. Returns the same array when
-// there is nothing to add, so the globe does not re-prepare its points.
-function withLocalStations(world, favorites, current) {
+// the playing station when it is missing too. A favourite saved with an
+// approximate spot only counts while approximate locations are on. Returns
+// the same array when there is nothing to add, so the globe does not
+// re-prepare its points.
+function withLocalStations(world, favorites, current, approximate) {
     var rows = Array.isArray(world) ? world : [];
     var seen = ({});
     for (var i = 0; i < rows.length; i++) if (rows[i] && rows[i].uuid) seen["$" + rows[i].uuid] = true;
@@ -804,6 +806,7 @@ function withLocalStations(world, favorites, current) {
     for (var n = 0; n < candidates.length; n++) {
         var station = candidates[n];
         if (!isLocated(station) || !station.uuid || seen["$" + station.uuid]) continue;
+        if (station.estimatedLocation === true && approximate !== true) continue;
         seen["$" + station.uuid] = true;
         extra.push(station);
     }

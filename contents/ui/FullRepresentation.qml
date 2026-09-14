@@ -104,7 +104,7 @@ Item {
     // outside the cap are not in it: located favourites and the playing
     // station are appended when missing, so they get a dot and locating
     // always lands on one.
-    readonly property var globeStations: RadioModel.withLocalStations(root.worldStations, root.favorites, full.mediaPlayer.station)
+    readonly property var globeStations: RadioModel.withLocalStations(root.worldStations, root.favorites, full.mediaPlayer.station, root.approximateLocations)
 
     ColumnLayout {
         anchors.fill: parent

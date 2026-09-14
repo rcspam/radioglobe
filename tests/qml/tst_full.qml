@@ -52,6 +52,7 @@ TestCase {
         property var currentCountry: null
         property string searchText: ""
         property var favorites: []
+        property bool approximateLocations: false
         property bool expanded: true
         property bool isOnDesktop: false
         property bool pinned: false
