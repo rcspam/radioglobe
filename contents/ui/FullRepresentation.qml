@@ -15,7 +15,7 @@ Item {
 
     Layout.preferredWidth: Kirigami.Units.gridUnit * 45
     Layout.preferredHeight: Kirigami.Units.gridUnit * 30
-    Layout.minimumWidth: Kirigami.Units.gridUnit * 20
+    Layout.minimumWidth: Kirigami.Units.gridUnit * 22
     Layout.minimumHeight: Kirigami.Units.gridUnit * 18
 
     // `player` is an id from main.qml's context. Inside a PlayerBar block the
@@ -169,10 +169,13 @@ Item {
             rowSpacing: Kirigami.Units.smallSpacing
             columnSpacing: Kirigami.Units.smallSpacing
 
+            // Side by side, the list column takes 40 % of the width, or its
+            // own minimum when that is more (the player bar's controls do
+            // not shrink), and the globe gets what is left.
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.preferredWidth: full.narrow ? -1 : full.width * 0.6
+                Layout.minimumWidth: full.narrow ? 0 : Kirigami.Units.gridUnit * 10
                 spacing: 0
 
                 Globe {
@@ -224,9 +227,10 @@ Item {
             }
 
             ColumnLayout {
-                Layout.fillWidth: true
+                id: listColumn
+                Layout.fillWidth: full.narrow
                 Layout.fillHeight: true
-                Layout.preferredWidth: full.narrow ? -1 : full.width * 0.4
+                Layout.preferredWidth: full.narrow ? -1 : Math.max(full.width * 0.4, listColumn.Layout.minimumWidth)
                 spacing: Kirigami.Units.smallSpacing
 
                 StationList {

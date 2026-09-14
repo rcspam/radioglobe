@@ -141,14 +141,15 @@ ColumnLayout {
             PlasmaComponents3.ToolTip.text: i18n("Stop (hold to quit mpv)")
             PlasmaComponents3.ToolTip.visible: hovered
         }
-        Item {
-            Layout.fillWidth: true
-        }
         PlasmaComponents3.ToolButton {
             icon.name: bar.player && bar.player.muted ? "audio-volume-muted" : "audio-volume-high"
             onClicked: bar.muteRequested()
         }
+        // The slider takes the width the buttons leave, down to 4 grid
+        // units: that is what lets the whole bar fit a 40 % column.
         PlasmaComponents3.Slider {
+            Layout.fillWidth: true
+            Layout.minimumWidth: Kirigami.Units.gridUnit * 4
             Layout.preferredWidth: Kirigami.Units.gridUnit * 8
             from: 0
             to: 1

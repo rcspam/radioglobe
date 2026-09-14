@@ -47,10 +47,21 @@ PlasmoidItem {
         Plasmoid.configuration.pinned = value;
     }
 
-    // Opens the configuration dialog; Plasma has no way to land on a given
-    // page, so the "Add a station" page is one click away from there.
+    // Opens the configuration dialog on the "Add a station" page. Plasma
+    // opens on the first visible category, so config.qml lists that page
+    // first only while configStartPage says so.
     function openConfiguration() {
+        Plasmoid.configuration.configStartPage = "addStation";
         Plasmoid.internalAction("configure").trigger();
+        startPageReset.restart();
+    }
+
+    // Once the dialog is up, the flag goes back to normal so the widget
+    // menu's own "Configure" lands on General again.
+    Timer {
+        id: startPageReset
+        interval: 2000
+        onTriggered: Plasmoid.configuration.configStartPage = ""
     }
 
     // Pinned: the popup survives losing focus, which is what lets the user

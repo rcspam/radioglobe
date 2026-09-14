@@ -43,5 +43,11 @@
     <entry name="invertWheel" type="Bool">
       <default>false</default>
     </entry>
+    <!-- Not a setting: which page the next configuration dialog opens on
+         ("addStation" or empty). Set by the popup's "+" button, cleared by
+         the widget menu's "Configure" path. -->
+    <entry name="configStartPage" type="String">
+      <default></default>
+    </entry>
   </group>
 </kcfg>
