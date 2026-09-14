@@ -15,7 +15,9 @@ Item {
     property var cfg: null
     property string userAgent: "RadioGlobe"
     property int loadTimeoutMs: 15000
-    property int attachTimeoutMs: 3000
+    // A cold mpv start (disk cache, audio device probing) regularly needs more
+    // than 3 s before mpv-mpris registers on the bus.
+    property int attachTimeoutMs: 8000
     property int probeMs: 1500
     property int staleTimeoutMs: 5000
 

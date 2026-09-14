@@ -52,9 +52,12 @@ KCM.SimpleKCM {
     Kirigami.FormLayout {
         QQC2.SpinBox {
             id: maxStations
+            objectName: "maxStations"
             Kirigami.FormData.label: i18n("Maximum stations on the globe:")
             from: 500
-            to: 12000
+            // RadioBrowser caps the merged world at 5500 rows internally:
+            // asking for more only promises stations that never arrive.
+            to: 5000
             stepSize: 500
         }
         QQC2.TextField {
