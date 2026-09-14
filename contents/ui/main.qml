@@ -160,8 +160,15 @@ PlasmoidItem {
     onCurrentTabChanged: root._refreshList()
     onWorldStationsChanged: if (root.listSource === "world")
         root._refreshList()
-    onExpandedChanged: if (root.expanded)
-        radioBrowser.expandWorld()
+    onExpandedChanged: {
+        if (!root.expanded)
+            return;
+        // Opening the popup is the natural moment to try again after an outage.
+        if (radioBrowser.lastError === "offline")
+            radioBrowser.refresh();
+        else
+            radioBrowser.expandWorld();
+    }
 
     Loader {
         id: mprisLoader

@@ -138,6 +138,11 @@ TestCase {
         id: radioBrowser
 
         property string lastError: ""
+        property var calls: []
+
+        function refresh() {
+            radioBrowser.calls.push("refresh");
+        }
     }
 
     Loader {
@@ -152,6 +157,7 @@ TestCase {
     function init() {
         root.calls = [];
         player.calls = [];
+        radioBrowser.calls = [];
     }
 
     function test_loads_without_errors() {
@@ -292,6 +298,17 @@ TestCase {
         root.currentCountry = null;
         radioBrowser.lastError = "offline";
         compare(loader.item.statusLine, "Radio Browser unreachable, showing cached data");
+        radioBrowser.lastError = "";
+    }
+
+    function test_retry_button_appears_offline_and_reaches_the_browser() {
+        const button = findChild(loader.item, "retryButton");
+        verify(button !== null, "retryButton not found");
+        compare(button.visible, false);
+        radioBrowser.lastError = "offline";
+        compare(button.visible, true);
+        button.clicked();
+        compare(radioBrowser.calls.indexOf("refresh") >= 0, true, JSON.stringify(radioBrowser.calls));
         radioBrowser.lastError = "";
     }
 }

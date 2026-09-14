@@ -176,6 +176,43 @@ TestCase {
         compare(rb.worldStations.length, 0);
     }
 
+    function test_refresh_retries_after_going_offline() {
+        rb.start();
+        answer("/json/servers", 0, "");
+        answer("https://all.api.radio-browser.info/json/stations/search", 0, "");
+        compare(rb.lastError, "offline");
+        compare(pending.length, 0);
+        rb.refresh();
+        compare(rb.lastError, "");
+        verify(pending.length > 0, "refresh issued no request");
+        answer("/json/stations/search", 200, [raw("a")]);
+        compare(rb.lastError, "");
+        compare(rb.worldStations.length, 1);
+    }
+
+    function test_refresh_goes_to_the_network_even_on_a_fresh_cache() {
+        store["world"] = {
+            value: [
+                {
+                    uuid: "c",
+                    name: "Cached",
+                    url: "https://s/c",
+                    countryCode: "FR",
+                    latitude: 1,
+                    longitude: 1,
+                    clicks: 1
+                }
+            ],
+            savedAt: clock - 1000
+        };
+        rb.start();
+        compare(pending.length, 0);
+        rb.refresh();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a")]);
+        compare(rb.worldStations.map(s => s.uuid).sort().join(), "a,c");
+    }
+
     function test_expansion_uses_random_with_nonce_and_stops_when_dry() {
         rb.start();
         answer("/json/servers", 200, []);

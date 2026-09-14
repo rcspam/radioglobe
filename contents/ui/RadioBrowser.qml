@@ -63,8 +63,11 @@ Item {
         root._started = false;
     }
 
-    function start() {
-        if (root._started)
+    // `force` re-runs a start that already happened and goes to the network
+    // even when the cached world is still fresh: that is what refresh() needs
+    // after an outage, where the cache is what we are trying to get past.
+    function start(force) {
+        if (root._started && !force)
             return;
         root._started = true;
         const cached = root.cache ? root.cache.get("world") : null;
@@ -72,7 +75,7 @@ Item {
             root._world = cached.value;
             root._worldFromCache = true;
             root.worldUpdated();
-            if (root.now() - cached.savedAt < root.cacheTtlMs)
+            if (!force && root.now() - cached.savedAt < root.cacheTtlMs)
                 return;
         }
         root._api("/json/stations/search", {
@@ -86,6 +89,17 @@ Item {
                 return;
             root._absorb(rows);
         });
+    }
+
+    // Manual retry after "Radio Browser unreachable": clears the error and
+    // asks for the world again, ignoring both the started flag and a fresh
+    // cache, then resumes the expansion the outage interrupted.
+    function refresh() {
+        root._started = false;
+        root._lastError = "";
+        root.start(true);
+        if (root._world.length < root.worldLimit)
+            root.expandWorld();
     }
 
     function expandWorld() {

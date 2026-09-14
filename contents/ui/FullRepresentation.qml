@@ -137,13 +137,29 @@ Item {
                     onCountryActivated: (code, name) => root.openCountry(code, name)
                 }
 
-                PlasmaComponents3.Label {
+                RowLayout {
                     Layout.fillWidth: true
-                    text: full.statusLine
-                    textFormat: Text.PlainText
-                    elide: Text.ElideRight
-                    opacity: 0.7
-                    font: Kirigami.Theme.smallFont
+                    spacing: Kirigami.Units.smallSpacing
+
+                    PlasmaComponents3.Label {
+                        Layout.fillWidth: true
+                        text: full.statusLine
+                        textFormat: Text.PlainText
+                        elide: Text.ElideRight
+                        opacity: 0.7
+                        font: Kirigami.Theme.smallFont
+                    }
+
+                    // Only way out of the cached-data state: the world is
+                    // otherwise fetched once per session.
+                    PlasmaComponents3.ToolButton {
+                        objectName: "retryButton"
+                        visible: radioBrowser.lastError === "offline"
+                        icon.name: "view-refresh"
+                        text: i18n("Retry")
+                        font: Kirigami.Theme.smallFont
+                        onClicked: radioBrowser.refresh()
+                    }
                 }
             }
 
