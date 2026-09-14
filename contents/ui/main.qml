@@ -258,6 +258,21 @@ PlasmoidItem {
         id: cache
     }
 
+    // The "Add a station" config page writes favourites of its own. Our own
+    // writes in toggleFavorite come back through here too, hence the
+    // comparison: they are already in root.favorites.
+    Connections {
+        target: Plasmoid.configuration
+        function onFavoritesChanged() {
+            const parsed = root._parseList(Plasmoid.configuration.favorites);
+            if (JSON.stringify(parsed) === JSON.stringify(root.favorites))
+                return;
+            root.favorites = parsed;
+            if (root.currentTab === 1)
+                root._refreshList();
+        }
+    }
+
     Timer {
         id: listRefreshTimer
         interval: 250
