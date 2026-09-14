@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-14 11:03+0200\n"
+"POT-Creation-Date: 2026-09-14 11:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:79
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:85
 msgid "%1 signal"
 msgid_plural "%1 signals"
 msgstr[0] ""
@@ -28,15 +28,15 @@ msgstr[1] ""
 msgid "%1 · approximate location"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:78
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:84
 msgid "%1 · click another country to browse"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:63
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:66
 msgid "Absolute path, or leave empty to use mpv from PATH"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:79
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:82
 msgid "Check again"
 msgstr ""
 
@@ -52,7 +52,7 @@ msgstr ""
 msgid "Could not check (the command did not return). Try again."
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:60
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:65
 msgid "Favorites"
 msgstr ""
 
@@ -73,15 +73,15 @@ msgstr ""
 msgid "Live"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:55
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:56
 msgid "Maximum stations on the globe:"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:120
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:125
 msgid "No favorites yet"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:41
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:46
 msgid "No station playing"
 msgstr ""
 
@@ -89,7 +89,7 @@ msgstr ""
 msgid "No station selected"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:120
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:125
 msgid "No stations"
 msgstr ""
 
@@ -101,11 +101,11 @@ msgstr ""
 msgid "Not found. Install the “mpv” package."
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:120
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:125
 msgid "Nothing played yet"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:45
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:50
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:39
 msgid "Paused"
 msgstr ""
@@ -114,24 +114,24 @@ msgstr ""
 msgid "Pick a signal on the globe or a station in the list"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:47
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:52
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:41
 msgid "Playback failed"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:43
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:48
 msgid "Playing"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:76
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:82
 msgid "Radio Browser unreachable, showing cached data"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:85
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:88
 msgid "Radio Browser:"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:38
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:43
 msgid "RadioGlobe"
 msgstr ""
 
@@ -139,14 +139,19 @@ msgstr ""
 msgid "Random"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:63
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:65
+msgid "Random station"
+msgstr ""
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:68
 msgid "Recent"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:86
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:89
 msgid "Report played stations to the click counter"
 msgstr ""
 
+#: /home/rapha/SOURCES/radioglobe/contents/ui/FullRepresentation.qml:165
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:69
 msgid "Retry"
 msgstr ""
@@ -163,7 +168,11 @@ msgstr ""
 msgid "Stop (hold to quit mpv)"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:48
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:70
+msgid "Stop and quit mpv"
+msgstr ""
+
+#: /home/rapha/SOURCES/radioglobe/contents/ui/main.qml:53
 #: /home/rapha/SOURCES/radioglobe/contents/ui/PlayerBar.qml:43
 msgid "Stopped"
 msgstr ""
@@ -176,7 +185,7 @@ msgstr ""
 msgid "This station could not be played. It may be offline; retry or pick another one."
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:109
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:114
 msgid "Toggle favorite (F)"
 msgstr ""
 
@@ -184,7 +193,7 @@ msgstr ""
 msgid "Tune a random station (R)"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:57
+#: /home/rapha/SOURCES/radioglobe/contents/ui/StationList.qml:58
 msgid "World"
 msgstr ""
 
@@ -192,7 +201,7 @@ msgstr ""
 msgid "approximate location"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:62
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:65
 msgid "mpv executable:"
 msgstr ""
 
@@ -204,10 +213,10 @@ msgstr ""
 msgid "mpv started but did not appear on MPRIS. Install the “mpv-mpris” package."
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:73
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:76
 msgid "mpv-mpris:"
 msgstr ""
 
-#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:67
+#: /home/rapha/SOURCES/radioglobe/contents/ui/config/configGeneral.qml:70
 msgid "mpv:"
 msgstr ""

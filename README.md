@@ -10,7 +10,7 @@ A KDE Plasma 6 widget for exploring live radio stations on a rotatable globe and
 - Stations come from the [Radio Browser](https://www.radio-browser.info/) community API: world view (up to a configurable cap, default 3000 stations), per-country lists, and free-text search across name, country and tag
 - Playback through an external mpv process controlled over native MPRIS, so a broken stream can never freeze or crash the widget, and playback survives a `plasmashell` restart
 - World / Favorites / Recent tabs, a station list with country, codec and bitrate, and a player bar with previous / play-pause / next / stop / mute / volume / favorite
-- Panel or system tray icon with a playing badge, tooltip showing the current station and title, left click to open, middle click for a random station, right click to stop, wheel to change volume
+- Panel or system tray icon with a playing badge, tooltip showing the current station and title, left click to open, middle click for a random station, wheel to change volume, right click for Plasma's widget menu with "Random station" and "Stop and quit mpv"
 - Desktop widget form factor with a resizable globe + panel layout, and a compact layout on narrow widths
 - Full keyboard control (see Controls below), MPRIS integration with the Plasma Media Controller and multimedia keys
 - French translation included, other languages welcome via `po/`
@@ -46,9 +46,11 @@ To upgrade an existing install, use `--upgrade` instead of `--install`.
 ### From the repository
 
 ```bash
-scripts/build-translations.sh
-kpackagetool6 --type Plasma/Applet --install .
+scripts/package.sh
+kpackagetool6 --type Plasma/Applet --install dist/radioglobe-<version>.plasmoid
 ```
+
+`scripts/package.sh` compiles the translations and bundles only what the widget needs. Installing the checkout itself (`kpackagetool6 --install .`) would copy the tests, the docs and `.git` into your widget directory.
 
 Then add "RadioGlobe" from the widget list to a panel, the system tray, or the desktop.
 
@@ -60,7 +62,7 @@ Then add "RadioGlobe" from the widget list to a panel, the system tray, or the d
 |---|---|
 | Left | Open or close the popup |
 | Middle | Play a random station |
-| Right | Stop mpv completely (quits it) |
+| Right | Plasma's widget menu, with "Random station" and "Stop and quit mpv" |
 | Wheel | Adjust volume |
 
 ### Keyboard (full view)
@@ -77,7 +79,7 @@ Then add "RadioGlobe" from the widget list to a panel, the system tray, or the d
 | `M` | Mute |
 | Escape | Clear the search, then leave the current country, then close the popup |
 
-In the player bar, clicking the stop button stops playback; holding it down quits mpv entirely (same effect as right-clicking the panel icon).
+In the player bar, clicking the stop button stops playback; holding it down quits mpv entirely, like "Stop and quit mpv" in the right-click menu.
 
 ## Data and privacy
 
@@ -93,11 +95,11 @@ In the player bar, clicking the stop button stops playback; holding it down quit
 
 **mpv-mpris is not found**: RadioGlobe launches mpv, waits a few seconds for it to appear on MPRIS, and if it never does, kills mpv and shows an install message. Install `mpv-mpris` for your distribution (see Requirements) and make sure mpv actually loads it (the script normally lives under `/etc/mpv/scripts/` or a system mpv-mpris plugin directory, loaded automatically). Run `playerctl -l` while a station is playing: `mpv` should be listed as an MPRIS player.
 
-**mpv keeps playing after I close the widget or restart Plasma**: this is intentional. mpv runs as its own detached process so a plasmashell crash or restart (`plasmashell --replace`) does not interrupt playback; the widget reattaches to it automatically. To actually stop mpv, right-click the panel icon, or hold down the stop button in the player bar.
+**mpv keeps playing after I close the widget or restart Plasma**: this is intentional. mpv runs as its own detached process so a plasmashell crash or restart (`plasmashell --replace`) does not interrupt playback; the widget reattaches to it automatically. To actually stop mpv, pick "Stop and quit mpv" in the icon's right-click menu, or hold down the stop button in the player bar.
 
 **The mpv path setting doesn't work**: it must be an absolute path (e.g. `/usr/bin/mpv` or `/opt/mpv/bin/mpv`), not a bare command name or a `~`-relative path.
 
-**Radio Browser is unreachable**: RadioGlobe falls back to its last cached station list and shows "Radio Browser unreachable, showing cached data"; the globe stays populated from cache.
+**Radio Browser is unreachable**: RadioGlobe falls back to its last cached station list and shows "Radio Browser unreachable, showing cached data"; the globe stays populated from cache. A Retry button appears next to that message, and reopening the popup retries on its own.
 
 **A station won't play**: some entries in Radio Browser's directory are stale even after its own health checks. RadioGlobe shows an error banner with a retry button after about 15 seconds without a title update; it does not reconnect or skip to another station automatically.
 
@@ -108,7 +110,10 @@ tests/run                    # node unit tests, qmllint, qmlformat check, qmltes
 scripts/build-translations.sh
 plasmoidviewer -a .          # live preview
 scripts/package.sh           # builds dist/radioglobe-<version>.plasmoid
+kpackagetool6 --type Plasma/Applet --install .   # quick dev loop, see below
 ```
+
+`kpackagetool6 --install .` installs the checkout as it is, tests and docs included. It is handy to try a branch in a real panel (`--upgrade .` afterwards), but ship and install the `.plasmoid` built by `scripts/package.sh`.
 
 ## Credits
 
