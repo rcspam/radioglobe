@@ -82,6 +82,8 @@ Then add "RadioGlobe" from the widget list to a panel, the system tray, or the d
 
 In the player bar, clicking the stop button stops playback; holding it down quits mpv entirely, like "Stop and quit mpv" in the right-click menu.
 
+Next to the search field, the pin button ("Keep open") stops the popup from closing when it loses focus, so you can keep browsing stations while you work in another window. It is remembered across sessions, and it does not show up when the widget sits on the desktop, where there is no popup to keep open.
+
 ## Data and privacy
 
 - Station data comes from [Radio Browser](https://www.radio-browser.info/), a community-run, public-domain database (no attribution required, but credited below anyway)
