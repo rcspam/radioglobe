@@ -206,6 +206,28 @@ TestCase {
         compare(root.calls.indexOf("previous") >= 0, true, JSON.stringify(root.calls));
     }
 
+    function test_locating_the_current_station_frames_it_on_the_globe() {
+        const playerBar = findChild(loader.item, "playerBar");
+        const globe = findChild(loader.item, "globe");
+        globe.globeScale = 1;
+        player.station = {
+            uuid: "far",
+            name: "Far",
+            latitude: -33.9,
+            longitude: 151.2
+        };
+        playerBar.locateRequested();
+        fuzzyCompare(globe.centreLatitude, -33.9, 0.01);
+        fuzzyCompare(globe.centreLongitude, 151.2, 0.01);
+        verify(globe.globeScale >= 8, "zooms in to city level, got " + globe.globeScale);
+        // A playing station missing from the world list still shows up.
+        verify(globe.stations.some(s => s.uuid === "far"), "current station added to the globe");
+        globe.globeScale = 12;
+        playerBar.locateRequested();
+        compare(globe.globeScale, 12, "an existing closer zoom is kept");
+        player.station = null;
+    }
+
     function test_search_bar_reaches_root() {
         const searchBar = findChild(loader.item, "searchBar");
         verify(searchBar !== null, "searchBar not found");

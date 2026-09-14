@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.kirigami as Kirigami
 import "KeyMap.js" as KeyMap
+import "RadioModel.js" as RadioModel
 
 // Globe on the left, list + player on the right; stacks vertically when narrow.
 // Reads shared state from `root` (main.qml's PlasmoidItem) and `player`.
@@ -89,6 +90,28 @@ Item {
         searchBar.focusInput();
     }
 
+    // Frames the playing station on the globe, zooming in to city level
+    // unless the globe is already closer.
+    function locateCurrentStation() {
+        const station = full.mediaPlayer.station;
+        if (!station || station.latitude === null || station.longitude === null || station.latitude === undefined || station.longitude === undefined)
+            return;
+        globe.focusCoordinate(station.latitude, station.longitude);
+        globe.globeScale = Math.max(globe.globeScale, 8);
+    }
+
+    // The world list is capped, and favourites or stations added by hand
+    // may sit outside it: the playing station is appended when missing, so
+    // locating it always lands on a dot. Same array reference otherwise, so
+    // the globe does not re-prepare its points on every station change.
+    readonly property var globeStations: {
+        const world = root.worldStations;
+        const station = full.mediaPlayer.station;
+        if (!station || station.latitude === null || station.longitude === null || station.latitude === undefined || station.longitude === undefined)
+            return world;
+        return RadioModel.indexByUuid(world, station.uuid) >= 0 ? world : world.concat([station]);
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Kirigami.Units.smallSpacing
@@ -158,7 +181,7 @@ Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     countries: root.countries
-                    stations: root.worldStations
+                    stations: full.globeStations
                     selectedStation: player.station
                     activeCountryCode: root.currentCountry ? root.currentCountry.code : (player.station ? player.station.countryCode : "")
                     backgroundColor: Kirigami.Theme.backgroundColor
@@ -249,6 +272,7 @@ Item {
                     onMuteRequested: full.mediaPlayer.toggleMute()
                     onFavoriteRequested: if (full.mediaPlayer.station)
                         root.toggleFavorite(full.mediaPlayer.station)
+                    onLocateRequested: full.locateCurrentStation()
                 }
             }
         }

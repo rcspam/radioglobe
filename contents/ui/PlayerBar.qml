@@ -18,6 +18,8 @@ ColumnLayout {
     signal volumeRequested(real value)
     signal muteRequested
     signal favoriteRequested
+    // Double click on the station name: show it on the globe.
+    signal locateRequested
 
     // Deliberately shadows Item.state: this component has no QML states and
     // reads far better as the player state everywhere below.
@@ -75,22 +77,38 @@ ColumnLayout {
 
     RowLayout {
         Layout.fillWidth: true
-        ColumnLayout {
+        Item {
+            id: stationText
+            objectName: "stationText"
             Layout.fillWidth: true
-            spacing: 0
-            PlasmaComponents3.Label {
-                Layout.fillWidth: true
-                text: bar.primaryText
-                textFormat: Text.PlainText
-                elide: Text.ElideRight
-                font.bold: true
+            implicitHeight: stationTextColumn.implicitHeight
+
+            ColumnLayout {
+                id: stationTextColumn
+                anchors.fill: parent
+                spacing: 0
+
+                PlasmaComponents3.Label {
+                    Layout.fillWidth: true
+                    text: bar.primaryText
+                    textFormat: Text.PlainText
+                    elide: Text.ElideRight
+                    font.bold: true
+                }
+                PlasmaComponents3.Label {
+                    Layout.fillWidth: true
+                    text: bar.secondaryText
+                    textFormat: Text.PlainText
+                    elide: Text.ElideRight
+                    opacity: 0.75
+                }
             }
-            PlasmaComponents3.Label {
-                Layout.fillWidth: true
-                text: bar.secondaryText
-                textFormat: Text.PlainText
-                elide: Text.ElideRight
-                opacity: 0.75
+
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton
+                onDoubleClicked: if (bar.player && bar.player.station)
+                    bar.locateRequested()
             }
         }
         PlasmaComponents3.ToolButton {

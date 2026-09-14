@@ -28,6 +28,31 @@ TestCase {
         player: fakePlayer
     }
 
+    function test_double_click_on_the_station_asks_to_locate_it() {
+        let asked = 0;
+        bar.locateRequested.connect(() => asked++);
+        const text = findChild(bar, "stationText");
+        verify(text !== null, "stationText not found");
+        mouseDoubleClickSequence(text, 10, 10);
+        compare(asked, 0, "no station, nothing to locate");
+        // Outside the double-click interval of the first sequence.
+        wait(600);
+        bar.player = ({
+                state: "playing",
+                station: {
+                    uuid: "a",
+                    name: "FIP",
+                    latitude: 48.85,
+                    longitude: 2.35
+                },
+                track: "",
+                errorKind: ""
+            });
+        mouseDoubleClickSequence(text, 10, 10);
+        compare(asked, 1);
+        bar.player = fakePlayer;
+    }
+
     function test_player_bar_idle_and_playing_texts() {
         compare(bar.primaryText, "No station selected");
         fakePlayer = ({
@@ -143,8 +168,10 @@ TestCase {
             b: true
         })
 
+    // Below the player bar, so the two never overlap for mouse tests.
     Ui.StationList {
         id: list
+        y: 200
         width: 300
         height: 300
         favoriteCheck: uuid => favSet[uuid] === true
