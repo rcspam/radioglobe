@@ -19,6 +19,8 @@ ColumnLayout {
     signal muteRequested
     signal favoriteRequested
 
+    // Deliberately shadows Item.state: this component has no QML states and
+    // reads far better as the player state everywhere below.
     readonly property string state: bar.player ? String(bar.player.state) : "idle"
     readonly property string primaryText: bar.player && bar.player.station ? bar.player.station.name : i18n("No station selected")
     readonly property string secondaryText: {

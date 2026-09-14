@@ -24,7 +24,7 @@ Item {
             return i18n("Radio Browser unreachable, showing cached data");
         if (root.currentCountry)
             return i18n("%1 · click another country to browse", root.currentCountry.name);
-        return i18n("%1 signals", root.worldStations.length);
+        return i18np("%1 signal", "%1 signals", root.worldStations.length);
     }
 
     function focusSearch() {
@@ -38,6 +38,7 @@ Item {
 
         SearchBar {
             id: searchBar
+            objectName: "searchBar"
             Layout.fillWidth: true
             onSearchRequested: text => root.runSearch(text)
             onCleared: root.clearSearch()
@@ -59,6 +60,7 @@ Item {
 
                 Globe {
                     id: globe
+                    objectName: "globe"
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     countries: root.countries
@@ -96,6 +98,7 @@ Item {
 
                 StationList {
                     id: stationList
+                    objectName: "stationList"
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     stations: root.listStations
@@ -111,6 +114,7 @@ Item {
                 }
 
                 PlayerBar {
+                    objectName: "playerBar"
                     Layout.fillWidth: true
                     player: full.mediaPlayer
                     favorite: full.mediaPlayer.station ? root.isFavorite(full.mediaPlayer.station.uuid) : false

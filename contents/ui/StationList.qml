@@ -16,6 +16,11 @@ ColumnLayout {
     property int currentTab: 0
     property int selectedIndex: -1
 
+    // uuid of the row behind selectedIndex, kept so the selection survives a
+    // list refresh. Tracked by hand: it must still hold the previous value
+    // while onStationsChanged runs.
+    property string _selectedUuid: ""
+
     signal tabSelected(int index)
     signal activated(var station)
     signal favoriteToggled(var station)
@@ -35,12 +40,14 @@ ColumnLayout {
             list.activated(list.stations[list.selectedIndex]);
     }
 
-    onStationsChanged: list.selectedIndex = -1
+    // A refresh (new world batch, favourite toggled...) replaces the array
+    // wholesale, so the highlight follows the station rather than the row.
+    onStationsChanged: list.selectedIndex = RadioModel.indexByUuid(list.stations, list._selectedUuid)
+    onSelectedIndexChanged: list._selectedUuid = list.selectedIndex >= 0 && Array.isArray(list.stations) && list.selectedIndex < list.stations.length ? String(list.stations[list.selectedIndex].uuid || "") : ""
 
     spacing: 0
 
     PlasmaComponents3.TabBar {
-        id: tabs
         Layout.fillWidth: true
         currentIndex: list.currentTab
         onCurrentIndexChanged: if (currentIndex !== list.currentTab)
