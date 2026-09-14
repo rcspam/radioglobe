@@ -140,3 +140,36 @@ test("shellQuote wraps a value and escapes embedded single quotes", () => {
     assert.equal(model.shellQuote("it's"), "'it'\\''s'");
     assert.equal(model.shellQuote(42), "'42'");
 });
+
+test("sortWorld keeps home stations first, then sorts by clicks", () => {
+    const rows = [
+        { uuid: "de1", countryCode: "DE", clicks: 500 },
+        { uuid: "fr1", countryCode: "FR", clicks: 1 },
+        { uuid: "de2", countryCode: "DE", clicks: 900 },
+        { uuid: "fr2", countryCode: "FR", clicks: 0 },
+        { uuid: "us1", countryCode: "US", clicks: 700 },
+    ];
+    const out = model.sortWorld(rows, "FR");
+    assert.deepEqual(Array.from(out, s => s.uuid), ["fr1", "fr2", "de2", "us1", "de1"]);
+    assert.deepEqual(Array.from(rows, s => s.uuid), ["de1", "fr1", "de2", "fr2", "us1"], "input is not mutated");
+    assert.notEqual(out, rows);
+});
+
+test("sortWorld is stable between stations of equal rank", () => {
+    const rows = [
+        { uuid: "a", countryCode: "FR", clicks: 3 },
+        { uuid: "b", countryCode: "FR", clicks: 3 },
+        { uuid: "c", countryCode: "DE", clicks: 3 },
+        { uuid: "d", countryCode: "DE", clicks: 3 },
+    ];
+    assert.deepEqual(Array.from(model.sortWorld(rows, "FR"), s => s.uuid), ["a", "b", "c", "d"]);
+});
+
+test("sortWorld without a home country sorts by clicks only", () => {
+    const rows = [
+        { uuid: "a", countryCode: "FR", clicks: 1 },
+        { uuid: "b", countryCode: "DE", clicks: 5 },
+    ];
+    assert.deepEqual(Array.from(model.sortWorld(rows, ""), s => s.uuid), ["b", "a"]);
+    assert.deepEqual(Array.from(model.sortWorld(rows), s => s.uuid), ["b", "a"]);
+});

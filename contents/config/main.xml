@@ -28,6 +28,10 @@
     <entry name="maxWorldStations" type="Int">
       <default>3000</default>
     </entry>
+    <!-- ISO 3166-1 alpha-2 code. Empty means "take it from the locale". -->
+    <entry name="homeCountry" type="String">
+      <default></default>
+    </entry>
     <entry name="sendClicks" type="Bool">
       <default>true</default>
     </entry>

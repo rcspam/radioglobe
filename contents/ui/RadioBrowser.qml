@@ -19,6 +19,9 @@ Item {
         return Math.random();
     }
     property int worldLimit: 3000
+    // ISO 3166-1 alpha-2 code of the country whose stations are always loaded
+    // in full and kept at the front of the world list. Empty disables it.
+    property string homeCountry: ""
     property int cacheTtlMs: 24 * 3600 * 1000
     property bool sendClicks: true
     // The User-Agent header itself is set by Http.userAgent; this property is
@@ -89,6 +92,7 @@ Item {
                 return;
             root._absorb(rows);
         });
+        root._loadHome();
     }
 
     // Manual retry after "Radio Browser unreachable": clears the error and
@@ -197,6 +201,30 @@ Item {
         root.request(base + "/json/url/" + encodeURIComponent(String(uuid)), function () {});
     }
 
+    // The home country is fetched whole (up to 1000 geolocated stations) on top
+    // of the world batch, and _absorb keeps it first when it cuts the world
+    // down to worldLimit. Changing the setting reloads it right away.
+    function _loadHome() {
+        const code = String(root.homeCountry || "").toUpperCase();
+        if (!/^[A-Z]{2}$/.test(code))
+            return;
+        root._api("/json/stations/bycountrycodeexact/" + code, {
+            has_geo_info: true,
+            hidebroken: true,
+            order: "clickcount",
+            reverse: true,
+            limit: 1000
+        }, rows => {
+            if (rows !== null)
+                root._absorb(rows, 1000);
+        });
+    }
+
+    onHomeCountryChanged: {
+        if (root._started)
+            root._loadHome();
+    }
+
     function _expandRound(epoch) {
         if (epoch !== root._epoch)
             return;
@@ -228,12 +256,14 @@ Item {
     // (prioritizeStations keeps the first occurrence, fresh first), then the
     // geo/centroid step runs once on the combined set. Original coordinates
     // are kept here and in the cache; spreading apart overlapping points is
-    // purely a display concern handled by the worldStations binding.
-    function _absorb(rows) {
-        const fresh = RadioModel.dedupeByUrl(RadioModel.normalizeStations(rows, 500));
+    // purely a display concern handled by the worldStations binding. `maximum`
+    // caps how many fresh rows are read: the home batch brings more than the
+    // 500 of a world batch.
+    function _absorb(rows, maximum) {
+        const fresh = RadioModel.dedupeByUrl(RadioModel.normalizeStations(rows, Math.max(1, Number(maximum) || 500)));
         const combined = RadioModel.prioritizeStations(fresh, root._world, 100000);
         const located = RadioModel.mergeGeoStations(combined, [], root.countries);
-        const sorted = located.slice().sort((a, b) => (Number(b.clicks) || 0) - (Number(a.clicks) || 0));
+        const sorted = RadioModel.sortWorld(located, root.homeCountry);
         root._world = sorted.slice(0, Math.max(1, root.worldLimit));
         root._worldFromCache = false;
         if (root.cache)

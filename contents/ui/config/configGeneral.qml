@@ -10,8 +10,12 @@ KCM.SimpleKCM {
     id: page
 
     property alias cfg_maxWorldStations: maxStations.value
+    property alias cfg_homeCountry: homeCountry.text
     property alias cfg_mpvPath: mpvPath.text
     property alias cfg_sendClicks: sendClicks.checked
+
+    // "fr_FR" -> "FR". What an empty home country setting falls back to.
+    readonly property string localeCountry: Qt.locale().name.split("_")[1] || ""
 
     readonly property string checkingText: i18n("Checking…")
     readonly property string unknownText: i18n("Could not check (the command did not return). Try again.")
@@ -59,6 +63,23 @@ KCM.SimpleKCM {
             // asking for more only promises stations that never arrive.
             to: 5000
             stepSize: 500
+        }
+        QQC2.TextField {
+            id: homeCountry
+            objectName: "homeCountry"
+            Kirigami.FormData.label: i18n("Home country:")
+            placeholderText: i18n("Auto (%1 from your locale)", page.localeCountry)
+            maximumLength: 2
+            validator: RegularExpressionValidator {
+                regularExpression: /[A-Za-z]{0,2}/
+            }
+            // Radio Browser only matches country codes in upper case.
+            onEditingFinished: text = text.toUpperCase()
+        }
+        QQC2.Label {
+            text: i18n("All geolocated stations of this country are always loaded on the globe and kept first.")
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
         }
         QQC2.TextField {
             id: mpvPath

@@ -26,4 +26,22 @@ TestCase {
         compare(spin.to, 5000);
         page.destroy();
     }
+
+    // An empty home country falls back to the country of the user's locale,
+    // which the placeholder advertises. Radio Browser only knows upper case
+    // ISO codes, so whatever the user types is normalised.
+    function test_home_country_field_follows_the_locale_and_upper_cases() {
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/config/configGeneral.qml"));
+        compare(component.status, Component.Ready, component.errorString());
+        const page = component.createObject(null);
+        verify(page !== null, component.errorString());
+        compare(page.localeCountry, Qt.locale().name.split("_")[1] || "");
+        const field = findChild(page, "homeCountry");
+        verify(field !== null, "homeCountry not found");
+        compare(field.maximumLength, 2);
+        field.text = "fr";
+        field.editingFinished();
+        compare(page.cfg_homeCountry, "FR");
+        page.destroy();
+    }
 }

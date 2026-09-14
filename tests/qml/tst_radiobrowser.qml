@@ -82,6 +82,7 @@ TestCase {
         clock = 1000000;
         updates.clear();
         rb.reset();
+        rb.homeCountry = "";
     }
 
     function test_discovers_mirrors_and_loads_first_batch() {
@@ -259,6 +260,76 @@ TestCase {
         calls = [];
         rb.loadCountry("FR", (stations, source) => calls.push(source));
         compare(calls, ["local", "cache"]);
+        compare(pending.length, 0);
+    }
+
+    function test_home_country_is_loaded_after_the_world_batch() {
+        rb.homeCountry = "FR";
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a", {
+                countrycode: "DE"
+            })]);
+        const url = answer("/json/stations/bycountrycodeexact/FR", 200, [raw("f1"), raw("f2"), raw("f3")]);
+        verify(url.indexOf("has_geo_info=true") > 0, url);
+        verify(url.indexOf("limit=1000") > 0, url);
+        const uuids = rb.worldStations.map(s => s.uuid);
+        for (const uuid of ["f1", "f2", "f3"])
+            verify(uuids.indexOf(uuid) >= 0, uuid + " missing from " + uuids.join());
+        compare(pending.length, 0);
+    }
+
+    function test_home_country_stations_survive_the_cap() {
+        rb.homeCountry = "FR";
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("d1", {
+                countrycode: "DE",
+                clickcount: 100
+            }), raw("d2", {
+                countrycode: "DE",
+                clickcount: 99
+            }), raw("d3", {
+                countrycode: "DE",
+                clickcount: 98
+            }), raw("d4", {
+                countrycode: "DE",
+                clickcount: 97
+            }), raw("d5", {
+                countrycode: "DE",
+                clickcount: 96
+            })]);
+        answer("bycountrycodeexact/FR", 200, [raw("f1", {
+                clickcount: 1
+            }), raw("f2", {
+                clickcount: 1
+            }), raw("f3", {
+                clickcount: 1
+            })]);
+        compare(rb.worldStations.length, 6);
+        compare(rb.worldStations.map(s => s.uuid).sort().join(), "d1,d2,d3,f1,f2,f3");
+    }
+
+    function test_changing_home_country_loads_it_live() {
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a")]);
+        compare(pending.length, 0);
+        rb.homeCountry = "DE";
+        const url = answer("bycountrycodeexact/DE", 200, [raw("d", {
+                countrycode: "DE"
+            })]);
+        verify(url.indexOf("limit=1000") > 0, url);
+        verify(rb.worldStations.map(s => s.uuid).indexOf("d") >= 0);
+    }
+
+    function test_no_home_request_without_a_valid_code() {
+        rb.homeCountry = "FRA";
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a")]);
+        compare(pending.length, 0);
+        rb.homeCountry = "";
         compare(pending.length, 0);
     }
 

@@ -33,6 +33,9 @@ PlasmoidItem {
     property var worldStations: radioBrowser.worldStations
     property var countries: []
     readonly property bool mprisAvailable: mprisLoader.status === Loader.Ready
+    // The country whose stations are always on the globe: the configured one,
+    // or the one of the user's locale ("fr_FR" -> "FR") when it is empty.
+    readonly property string homeCountry: (Plasmoid.configuration.homeCountry || (Qt.locale().name.split("_")[1] || "")).toUpperCase()
 
     switchWidth: Kirigami.Units.gridUnit * 30
     switchHeight: Kirigami.Units.gridUnit * 20
@@ -234,6 +237,7 @@ PlasmoidItem {
         cache: cache
         countries: root.countries
         worldLimit: Plasmoid.configuration.maxWorldStations
+        homeCountry: root.homeCountry
         sendClicks: Plasmoid.configuration.sendClicks
         userAgentVersion: root.appVersion
     }

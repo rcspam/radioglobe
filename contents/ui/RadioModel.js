@@ -778,3 +778,30 @@ function spreadOverlapping(stations) {
     }
     return output;
 }
+
+// Ranks the world list before it is cut down to the configured cap: the
+// stations of the user's home country come first, whatever their popularity,
+// then everything else by click count. Ties keep their input order (the sort
+// runs on decorated indices, so it does not rely on the engine being stable)
+// and the input array is left untouched.
+function sortWorld(stations, homeCountry) {
+    var rows = Array.isArray(stations) ? stations : [];
+    var home = String(homeCountry || "").toUpperCase();
+    var decorated = [];
+    for (var i = 0; i < rows.length; i++) {
+        decorated.push({
+            station: rows[i],
+            index: i,
+            home: home !== "" && rows[i] && String(rows[i].countryCode || "").toUpperCase() === home,
+            clicks: Number(rows[i] && rows[i].clicks) || 0
+        });
+    }
+    decorated.sort(function (a, b) {
+        if (a.home !== b.home) return a.home ? -1 : 1;
+        if (a.clicks !== b.clicks) return b.clicks - a.clicks;
+        return a.index - b.index;
+    });
+    var output = [];
+    for (var n = 0; n < decorated.length; n++) output.push(decorated[n].station);
+    return output;
+}
