@@ -1,5 +1,7 @@
 # RadioGlobe
 
+After seeing [Radio Atlas](https://github.com/AksharP5/omarchy-radio-atlas) on Omarchy, I wanted to bring the same idea to KDE Plasma as a widget. RadioGlobe is that: an independent Plasma 6 plasmoid inspired by Radio Atlas (credited in [LICENSE](LICENSE)).
+
 A KDE Plasma 6 widget for exploring live radio stations on a rotatable globe and playing them through mpv.
 
 ![RadioGlobe](screenshots/full.png)
