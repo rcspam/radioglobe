@@ -348,6 +348,13 @@ PlasmoidItem {
     }
 
     Component.onCompleted: {
+        // First launch: give the popup its intended size before it ever opens
+        // (see popupWidth in main.xml). Later resizes by the user win: Plasma
+        // rewrites these two keys every time the popup closes.
+        if (!Plasmoid.configuration.popupWidth && !Plasmoid.configuration.popupHeight) {
+            Plasmoid.configuration.popupWidth = Kirigami.Units.gridUnit * 45;
+            Plasmoid.configuration.popupHeight = Kirigami.Units.gridUnit * 30;
+        }
         // Qt refuses XMLHttpRequest on local files unless QML_XHR_ALLOW_FILE_READ
         // is set, which plasmashell does not do, so the bundled GeoJSON is read
         // through the same executable engine the player already relies on.

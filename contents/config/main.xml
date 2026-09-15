@@ -60,6 +60,16 @@
     <entry name="invertWheel" type="Bool">
       <default>false</default>
     </entry>
+    <!-- Not settings: the popup size libplasma saves on every close and reads
+         first when the popup opens. Declared so main.qml can seed them at the
+         first launch, when a widget dropped from the explorer otherwise opens
+         its popup at an arbitrary small size. -->
+    <entry name="popupWidth" type="Int">
+      <default>0</default>
+    </entry>
+    <entry name="popupHeight" type="Int">
+      <default>0</default>
+    </entry>
     <!-- Not a setting: which page the next configuration dialog opens on
          ("addStation" or empty). Set by the popup's "+" button, cleared by
          the page itself once shown. -->
