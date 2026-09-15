@@ -24,4 +24,9 @@ ConfigModel {
         source: "config/configAddStation.qml"
         visible: Plasmoid.configuration.configStartPage !== "addStation"
     }
+    ConfigCategory {
+        name: i18n("Backup")
+        icon: "document-save"
+        source: "config/configBackup.qml"
+    }
 }

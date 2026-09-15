@@ -949,6 +949,67 @@ function pushHistory(history, station, nowMs, maximum) {
     return output;
 }
 
+// Settings the backup file carries, with the type each value must have.
+// Runtime state (mpv pid, last station, volume, pinned) stays out.
+var backupSettingTypes = ({
+    homeCountry: "string",
+    maxWorldStations: "number",
+    approximateLocations: "boolean",
+    mpvPath: "string",
+    sendClicks: "boolean",
+    icon: "string",
+    iconColor: "string",
+    badgeColor: "string",
+    invertWheel: "boolean"
+});
+
+function backupSettings(settings) {
+    var output = ({});
+    var input = settings || {};
+    for (var key in backupSettingTypes) {
+        if (typeof input[key] === backupSettingTypes[key]) output[key] = input[key];
+    }
+    return output;
+}
+
+function stationRows(rows) {
+    if (!Array.isArray(rows)) return [];
+    return rows.filter(function (row) {
+        return row && typeof row === "object" && typeof row.uuid === "string" && row.uuid !== "";
+    });
+}
+
+function buildBackup(favorites, history, settings) {
+    return ({
+        radioglobe: 1,
+        favorites: stationRows(favorites),
+        history: stationRows(history),
+        settings: backupSettings(settings)
+    });
+}
+
+// Reads a backup file back. Returns { ok: true, favorites, history, settings }
+// or { ok: false, error } with error "invalid-json" or "not-a-backup".
+function parseBackup(text) {
+    var data;
+    try {
+        data = JSON.parse(String(text));
+    } catch (error) {
+        return ({ ok: false, error: "invalid-json" });
+    }
+    if (!data || typeof data !== "object" || Array.isArray(data)
+            || typeof data.radioglobe !== "number"
+            || (data.favorites !== undefined && !Array.isArray(data.favorites))
+            || (data.history !== undefined && !Array.isArray(data.history)))
+        return ({ ok: false, error: "not-a-backup" });
+    return ({
+        ok: true,
+        favorites: stationRows(data.favorites),
+        history: stationRows(data.history),
+        settings: backupSettings(data.settings)
+    });
+}
+
 function isRawTitle(track, url) {
     var title = String(track || "").trim();
     if (!title) return true;
