@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import QtQuick.Layouts
 import "../../contents/ui" as Ui
 
 TestCase {
@@ -25,6 +26,22 @@ TestCase {
     function init() {
         log = [];
         compact._wheelAccumulator = 0;
+    }
+
+    // In a panel the containment fixes the thickness; the other side must
+    // follow so the icon fills a square, whatever the panel size.
+    function test_panel_icon_is_a_square_of_the_panel_thickness() {
+        compact.vertical = false;
+        compact.height = 40;
+        compare(compact.Layout.preferredWidth, 40);
+        compact.height = 64;
+        compare(compact.Layout.preferredWidth, 64);
+        compact.vertical = true;
+        compact.width = 36;
+        compare(compact.Layout.preferredHeight, 36);
+        compact.vertical = false;
+        compact.width = 48;
+        compact.height = 48;
     }
 
     function test_buttons_dispatch_actions() {

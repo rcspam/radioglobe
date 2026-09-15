@@ -24,8 +24,15 @@ Item {
     readonly property bool badgeVisible: compact.playing
     property real _wheelAccumulator: 0
 
+    // True in a vertical panel (main.qml binds it to the form factor).
+    property bool vertical: false
+
     Layout.minimumWidth: Kirigami.Units.iconSizes.small
     Layout.minimumHeight: Kirigami.Units.iconSizes.small
+    // The panel fixes one side; the other follows so the icon is a square of
+    // the panel thickness instead of staying at the minimum width.
+    Layout.preferredWidth: vertical ? -1 : height
+    Layout.preferredHeight: vertical ? width : -1
 
     Kirigami.Icon {
         id: icon
