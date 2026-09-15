@@ -280,8 +280,12 @@ PlasmoidItem {
         userAgent: root.userAgent
     }
 
-    Cache {
-        id: cache
+    // The cache needs QtQuick.LocalStorage, which stock Kubuntu does not ship
+    // (qml6-module-qtquick-localstorage). A Loader keeps the widget alive
+    // without it: stations are simply fetched again at every start.
+    Loader {
+        id: cacheLoader
+        source: "Cache.qml"
     }
 
     // The "Add a station" and "Backup" config pages write favourites and
@@ -318,7 +322,7 @@ PlasmoidItem {
     RadioBrowser {
         id: radioBrowser
         request: http.request
-        cache: cache
+        cache: cacheLoader.item
         countries: root.countries
         worldLimit: Plasmoid.configuration.maxWorldStations
         homeCountry: root.homeCountry

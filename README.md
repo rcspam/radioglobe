@@ -33,7 +33,15 @@ A KDE Plasma 6 widget for exploring live radio stations on a rotatable globe and
 
 Without mpv-mpris, mpv still plays audio but RadioGlobe cannot control it (no MPRIS interface to attach to), so it is a hard requirement, not an optional extra. The widget's settings page reports whether mpv and mpv-mpris are detected, with the install command for whichever is missing.
 
-Optional: the QtLocation QML module (`qml6-module-qtlocation` and `qt6-location-plugins` on Debian / Ubuntu, `qt6-location` on Arch Linux) shows the map on the "Add a station" page. Without it the page still works, with latitude and longitude typed by hand.
+Packages to install with the widget:
+
+| | Debian / Ubuntu / Kubuntu | Arch Linux | Fedora |
+|---|---|---|---|
+| Player (required) | `mpv mpv-mpris` | `mpv mpv-mpris` | `mpv mpv-mpris` |
+| Offline cache (recommended) | `qml6-module-qtquick-localstorage` | in `qt6-declarative` | in `qt6-qtdeclarative` |
+| Map on the "Add a station" page (optional) | `qml6-module-qtlocation qt6-location-plugins` | `qt6-location` | `qt6-qtlocation` |
+
+Without the offline cache module the widget still works, it just fetches the station lists again at every start (the settings page says which of these it found). Without QtLocation the "Add a station" page still works, with latitude and longitude typed by hand. The other QML modules used (`QtQuick.Dialogs`, `QtCore`, `QtQuick.Layouts`, `QtQuick.Controls`) come with Plasma itself.
 
 ## Install
 

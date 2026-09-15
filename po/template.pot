@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-15 18:57+0200\n"
+"POT-Creation-Date: 2026-09-15 21:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgstr ""
 msgid "%1 · click another country to browse"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:120
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:122
 msgid "Absolute path, or leave empty to use mpv from PATH"
 msgstr ""
 
@@ -68,7 +68,7 @@ msgstr ""
 msgid "All files (*)"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:103
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:105
 msgid "All geolocated stations of this country are always loaded on the globe and kept first."
 msgstr ""
 
@@ -80,12 +80,16 @@ msgstr ""
 msgid "Also publish on Radio Browser (public)"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:109
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:111
 msgid "Also show its stations without coordinates, at an approximate spot inside the country"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:94
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:96
 msgid "Auto (%1 from your locale)"
+msgstr ""
+
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:139
+msgid "Available"
 msgstr ""
 
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/config/config.qml:28
@@ -96,7 +100,7 @@ msgstr ""
 msgid "Cancel editing"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:136
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:144
 msgid "Check again"
 msgstr ""
 
@@ -108,7 +112,7 @@ msgstr ""
 msgid "Checking…"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:165
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:173
 msgid "Choose…"
 msgstr ""
 
@@ -140,8 +144,8 @@ msgstr ""
 msgid "Country code:"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:176
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:194
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:184
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:202
 msgid "Custom"
 msgstr ""
 
@@ -182,8 +186,8 @@ msgstr ""
 msgid "Favourites, history, home country, panel icon and the other options. Not the volume or the station being played."
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:70
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:73
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:72
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:75
 msgid "Found: %1"
 msgstr ""
 
@@ -191,7 +195,7 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:93
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:95
 msgid "Home country:"
 msgstr ""
 
@@ -199,7 +203,7 @@ msgstr ""
 msgid "Homepage:"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:171
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:179
 msgid "Icon colour:"
 msgstr ""
 
@@ -215,7 +219,7 @@ msgstr ""
 msgid "Install the QtLocation QML module (qml6-module-qtlocation on Debian and Ubuntu) to pick the location on a map."
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:208
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:216
 msgid "Invert the mouse wheel direction for the volume"
 msgstr ""
 
@@ -257,7 +261,7 @@ msgstr ""
 msgid "Map data © OpenStreetMap contributors"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:83
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:85
 msgid "Maximum stations on the globe:"
 msgstr ""
 
@@ -285,11 +289,15 @@ msgstr ""
 msgid "No stations"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:73
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:139
+msgid "Not available: the QtQuick.LocalStorage module is missing (package “qml6-module-qtquick-localstorage” on Debian and Ubuntu). Stations are fetched again at every start."
+msgstr ""
+
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:75
 msgid "Not found. Install the “mpv-mpris” package (media keys and the Media Player widget need it)."
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:70
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:72
 msgid "Not found. Install the “mpv” package."
 msgstr ""
 
@@ -297,11 +305,15 @@ msgstr ""
 msgid "Nothing played yet"
 msgstr ""
 
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:138
+msgid "Offline cache:"
+msgstr ""
+
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configAddStation.qml:291
 msgid "Optional"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:146
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:154
 msgid "Panel icon:"
 msgstr ""
 
@@ -327,7 +339,7 @@ msgstr ""
 msgid "Playing"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:189
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:197
 msgid "Playing badge colour:"
 msgstr ""
 
@@ -335,7 +347,7 @@ msgstr ""
 msgid "Published on Radio Browser. Added to your favourites."
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:112
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:114
 msgid "Radio Browser has no location for most stations. This places them at random inside their borders (the tooltip says “approximate location”), so the globe fills up but the dots do not mean much."
 msgstr ""
 
@@ -351,7 +363,7 @@ msgstr ""
 msgid "Radio Browser unreachable. Kept locally only."
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:142
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:150
 msgid "Radio Browser:"
 msgstr ""
 
@@ -379,7 +391,7 @@ msgstr ""
 msgid "Replaces the current favourites and history. Nothing is changed until you apply."
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:143
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:151
 msgid "Report played stations to the click counter"
 msgstr ""
 
@@ -482,7 +494,7 @@ msgstr ""
 msgid "approximate location"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:119
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:121
 msgid "mpv executable:"
 msgstr ""
 
@@ -494,10 +506,10 @@ msgstr ""
 msgid "mpv started but did not appear on MPRIS. Install the “mpv-mpris” package."
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:130
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:132
 msgid "mpv-mpris:"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:124
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:126
 msgid "mpv:"
 msgstr ""

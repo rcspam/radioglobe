@@ -115,6 +115,23 @@ TestCase {
         verify(store[rb.worldKey()] !== undefined);
     }
 
+    // QtQuick.LocalStorage is not installed on a stock Kubuntu: without a cache
+    // the world still loads from the network, nothing is written anywhere.
+    function test_works_without_a_cache() {
+        rb.cache = null;
+        rb.start();
+        answer("/json/servers", 200, [
+            {
+                name: "de1.api.radio-browser.info"
+            }
+        ]);
+        answer("/json/stations/search", 200, [raw("a"), raw("b")]);
+        compare(rb.worldStations.length, 2);
+        compare(rb.worldFromCache, false);
+        compare(Object.keys(store).length, 0);
+        rb.cache = fakeCache;
+    }
+
     function test_serves_cache_first_and_skips_network_when_fresh() {
         store[rb.worldKey()] = {
             value: [

@@ -37,6 +37,8 @@ KCM.SimpleKCM {
 
     property string mpvStatus: checkingText
     property string mprisStatus: checkingText
+    // Whether QtQuick.LocalStorage loads here: same check as the widget's cache Loader.
+    readonly property bool cacheAvailable: Qt.createComponent(Qt.resolvedUrl("../Cache.qml")).status === Component.Ready
 
     Ui.Exec {
         id: exec
@@ -129,6 +131,12 @@ KCM.SimpleKCM {
         QQC2.Label {
             Kirigami.FormData.label: i18n("mpv-mpris:")
             text: page.mprisStatus
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
+        }
+        QQC2.Label {
+            Kirigami.FormData.label: i18n("Offline cache:")
+            text: page.cacheAvailable ? i18n("Available") : i18n("Not available: the QtQuick.LocalStorage module is missing (package “qml6-module-qtquick-localstorage” on Debian and Ubuntu). Stations are fetched again at every start.")
             wrapMode: Text.Wrap
             Layout.fillWidth: true
         }
