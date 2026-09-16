@@ -57,6 +57,8 @@ TestCase {
         property bool isOnDesktop: false
         property bool pinned: false
         property var missingModules: []
+        property string distroFamily: ""
+        property string installCommand: ""
         property var calls: []
 
         function setPinned(value) {
@@ -194,6 +196,18 @@ TestCase {
         compare(banner.visible, true);
         verify(banner.text.indexOf("QtQuick.Dialogs") >= 0, banner.text);
         verify(banner.text.indexOf("qml6-module-qtquick-dialogs") >= 0, banner.text);
+        // unknown distribution: the three commands
+        verify(banner.text.indexOf("pacman") >= 0, banner.text);
+        // known one: a single command, and the copy action puts it on the clipboard
+        root.distroFamily = "deb";
+        root.installCommand = "sudo apt install qml6-module-qtquick-dialogs";
+        verify(banner.text.indexOf("pacman") < 0, banner.text);
+        verify(banner.text.indexOf("sudo apt install qml6-module-qtquick-dialogs") >= 0, banner.text);
+        compare(banner.actions.length, 1);
+        banner.actions[0].trigger();
+        compare(findChild(loader.item, "copyHelper").text, "sudo apt install qml6-module-qtquick-dialogs");
+        root.distroFamily = "";
+        root.installCommand = "";
         root.missingModules = [];
         compare(banner.visible, false);
     }

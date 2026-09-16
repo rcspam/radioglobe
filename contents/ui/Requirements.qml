@@ -106,5 +106,27 @@ QtObject {
         return root.missingRequired.map(m => m[distro]).join(" ");
     }
 
+    // The shell command that installs every missing module, for one family.
+    function installCommand(distro) {
+        const tools = ({
+                deb: "sudo apt install ",
+                arch: "sudo pacman -S ",
+                fedora: "sudo dnf install "
+            });
+        const pkgs = root.packages(distro);
+        return tools[distro] && pkgs ? tools[distro] + pkgs : "";
+    }
+
+    // "$ID $ID_LIKE" from /etc/os-release to one of the three families.
+    function familyFromOsRelease(ids) {
+        const words = String(ids || "").toLowerCase().split(/\s+/);
+        for (const family of [["debian", "ubuntu", "deb"], ["arch", "arch"], ["fedora", "rhel", "centos", "fedora"]]) {
+            const target = family[family.length - 1];
+            if (words.some(w => family.slice(0, -1).indexOf(w) >= 0))
+                return target;
+        }
+        return "";
+    }
+
     Component.onCompleted: probe()
 }

@@ -51,6 +51,30 @@ TestCase {
         compare(req.requiredPackages("fedora"), "some-fedora");
     }
 
+    function test_install_command_per_distribution_and_family_detection() {
+        req.modules = [
+            {
+                name: "No.Such.Module",
+                required: true,
+                deb: "a-deb",
+                arch: "a-arch",
+                fedora: "a-fedora"
+            }
+        ];
+        req.probe();
+        compare(req.installCommand("deb"), "sudo apt install a-deb");
+        compare(req.installCommand("arch"), "sudo pacman -S a-arch");
+        compare(req.installCommand("fedora"), "sudo dnf install a-fedora");
+        compare(req.installCommand(""), "");
+        compare(req.familyFromOsRelease("ubuntu debian"), "deb");
+        compare(req.familyFromOsRelease("linuxmint ubuntu debian"), "deb");
+        compare(req.familyFromOsRelease("arch"), "arch");
+        compare(req.familyFromOsRelease("endeavouros arch"), "arch");
+        compare(req.familyFromOsRelease("fedora"), "fedora");
+        compare(req.familyFromOsRelease("rhel centos fedora"), "fedora");
+        compare(req.familyFromOsRelease("nixos"), "");
+    }
+
     function test_default_list_covers_every_import_of_the_widget() {
         const fresh = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/Requirements.qml")).createObject(null);
         const names = fresh.modules.map(m => m.name);

@@ -291,6 +291,9 @@ PlasmoidItem {
 
     // What the host is missing (see Requirements.qml); the popup shows it.
     readonly property var missingModules: requirements.missingRequired.concat(requirements.missingOptional)
+    // "deb", "arch", "fedora" or "" when /etc/os-release names none of them.
+    property string distroFamily: ""
+    readonly property string installCommand: requirements.installCommand(root.distroFamily)
 
     Requirements {
         id: requirements
@@ -302,6 +305,7 @@ PlasmoidItem {
     Loader {
         id: execLoader
         source: "Exec.qml"
+        onLoaded: root.detectDistro()
     }
     readonly property var exec: execLoader.item ? execLoader.item : ({
             run: (cmd, callback) => callback(127, "")
@@ -366,7 +370,7 @@ PlasmoidItem {
     Player {
         id: player
         mpris: mprisLoader.item
-        exec: exec.run
+        exec: root.exec.run
         cfg: Plasmoid.configuration
         userAgent: root.userAgent
         onPlayingStarted: station => {
@@ -379,7 +383,23 @@ PlasmoidItem {
         }
     }
 
+    // Runs once Exec is loaded and something is missing; the order in which
+    // Component.onCompleted handlers fire is undefined, hence the two triggers.
+    property bool _distroAsked: false
+    function detectDistro() {
+        if (root._distroAsked || !execLoader.item || root.missingModules.length === 0)
+            return;
+        root._distroAsked = true;
+        // Through root.exec: the linter only knows the Loader item as a QObject.
+        root.exec.run(". /etc/os-release 2>/dev/null; echo \"$ID $ID_LIKE\"", (code, out) => {
+            if (code === 0)
+                root.distroFamily = requirements.familyFromOsRelease(out);
+        });
+    }
+    onMissingModulesChanged: root.detectDistro()
+
     Component.onCompleted: {
+        root.detectDistro();
         // First launch: give the popup its intended size before it ever opens
         // (see popupWidth in main.xml). Later resizes by the user win: Plasma
         // rewrites these two keys every time the popup closes.

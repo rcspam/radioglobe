@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-16 12:45+0200\n"
+"POT-Creation-Date: 2026-09-16 13:07+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -50,8 +50,8 @@ msgstr "Ajouter"
 msgid "Add a station"
 msgstr "Ajouter une radio"
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:159
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:160
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:189
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:190
 msgid "Add a station…"
 msgstr "Ajouter une radio…"
 
@@ -126,6 +126,10 @@ msgstr "Séparés par des virgules, ex. jazz,news"
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/PlayerBar.qml:40
 msgid "Connecting…"
 msgstr "Connexion…"
+
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:157
+msgid "Copy the install command"
+msgstr "Copier la commande d'installation"
 
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:36
 msgid "Could not check (the command did not return). Try again."
@@ -227,8 +231,8 @@ msgstr "Inverser le sens de la molette pour le volume"
 msgid "JSON files (*.json)"
 msgstr "Fichiers JSON (*.json)"
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:173
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:174
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:203
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:204
 msgid "Keep open"
 msgstr "Garder ouvert"
 
@@ -265,6 +269,14 @@ msgid "Maximum stations on the globe:"
 msgstr "Nombre maximal de stations sur le globe :"
 
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:117
+msgid ""
+"Missing QML modules: %1. Install them and restart Plasma:\n"
+"%2"
+msgstr ""
+"Modules QML manquants : %1. Installez-les puis redémarrez Plasma :\n"
+"%2"
+
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:119
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "Debian / Ubuntu: sudo apt install %2\n"
@@ -416,7 +428,7 @@ msgstr "Remplace les favoris et l'historique actuels. Rien ne change avant d'app
 msgid "Report played stations to the click counter"
 msgstr "Signaler les stations écoutées au compteur de clics"
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:236
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:266
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/PlayerBar.qml:74
 msgid "Retry"
 msgstr "Réessayer"

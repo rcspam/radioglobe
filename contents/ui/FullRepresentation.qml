@@ -106,15 +106,38 @@ Item {
     // always lands on one.
     readonly property var globeStations: RadioModel.withLocalStations(root.worldStations, root.favorites, full.mediaPlayer.station, root.approximateLocations)
 
-    // The packages to install for the modules main.qml found missing, one
-    // line per distribution family.
+    // The packages to install for the modules main.qml found missing: the
+    // command for this distribution when known, else one line per family.
     function requirementsText() {
         const missing = root.missingModules || [];
         if (missing.length === 0)
             return "";
         const names = missing.map(m => m.name).join(", ");
+        if (root.installCommand)
+            return i18n("Missing QML modules: %1. Install them and restart Plasma:\n%2", names, root.installCommand);
         const pkgs = distro => missing.map(m => m[distro]).join(" ");
         return i18n("Missing QML modules: %1. Install them and restart Plasma:\nDebian / Ubuntu: sudo apt install %2\nArch Linux: sudo pacman -S %3\nFedora: sudo dnf install %4", names, pkgs("deb"), pkgs("arch"), pkgs("fedora"));
+    }
+
+    // Everything to paste in a terminal: the detected command, or the three.
+    function requirementsCommand() {
+        const missing = root.missingModules || [];
+        if (root.installCommand)
+            return root.installCommand;
+        const pkgs = distro => missing.map(m => m[distro]).join(" ");
+        return "sudo apt install " + pkgs("deb") + "\nsudo pacman -S " + pkgs("arch") + "\nsudo dnf install " + pkgs("fedora");
+    }
+
+    // QML has no clipboard API of its own: a hidden TextEdit copies for us.
+    TextEdit {
+        id: copyHelper
+        objectName: "copyHelper"
+        visible: false
+        function copyText(value) {
+            text = value;
+            selectAll();
+            copy();
+        }
     }
 
     ColumnLayout {
@@ -129,6 +152,13 @@ Item {
             type: Kirigami.MessageType.Warning
             visible: (root.missingModules || []).length > 0
             text: full.requirementsText()
+            actions: [
+                Kirigami.Action {
+                    text: i18n("Copy the install command")
+                    icon.name: "edit-copy"
+                    onTriggered: copyHelper.copyText(full.requirementsCommand())
+                }
+            ]
         }
 
         RowLayout {

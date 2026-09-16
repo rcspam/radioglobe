@@ -6,7 +6,7 @@ qt6bin=/usr/lib/qt6/bin
 QMLLINT=${QMLLINT:-$qt6bin/qmllint}
 QMLFORMAT=${QMLFORMAT:-$qt6bin/qmlformat}
 QMLTESTRUNNER=${QMLTESTRUNNER:-$qt6bin/qmltestrunner}
-export QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software
+export QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QML_XHR_ALLOW_FILE_READ=1
 
 echo "== node"
 shopt -s nullglob

@@ -8,6 +8,21 @@ TestCase {
         return text;
     }
 
+    // Player has its own "exec" property: inside its block a bare "exec" is
+    // that property, not the root's object. main.qml must qualify it.
+    function test_main_qualifies_the_exec_handed_to_the_player() {
+        const source = String(readFile("../../contents/ui/main.qml"));
+        verify(source.indexOf("exec: root.exec.run") >= 0, "Player must get root.exec.run");
+        verify(source.indexOf("\n        exec: exec.run") < 0, "unqualified exec.run inside Player");
+    }
+
+    function readFile(relative) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", Qt.resolvedUrl(relative), false);
+        xhr.send();
+        return xhr.responseText;
+    }
+
     function test_config_page_compiles() {
         const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/config/configGeneral.qml"));
         compare(component.status, Component.Ready, component.errorString());

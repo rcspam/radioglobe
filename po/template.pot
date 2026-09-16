@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-16 12:45+0200\n"
+"POT-Creation-Date: 2026-09-16 13:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,8 +51,8 @@ msgstr ""
 msgid "Add a station"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:159
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:160
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:189
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:190
 msgid "Add a station…"
 msgstr ""
 
@@ -126,6 +126,10 @@ msgstr ""
 
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/PlayerBar.qml:40
 msgid "Connecting…"
+msgstr ""
+
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:157
+msgid "Copy the install command"
 msgstr ""
 
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configGeneral.qml:36
@@ -228,8 +232,8 @@ msgstr ""
 msgid "JSON files (*.json)"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:173
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:174
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:203
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:204
 msgid "Keep open"
 msgstr ""
 
@@ -266,6 +270,12 @@ msgid "Maximum stations on the globe:"
 msgstr ""
 
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:117
+msgid ""
+"Missing QML modules: %1. Install them and restart Plasma:\n"
+"%2"
+msgstr ""
+
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:119
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "Debian / Ubuntu: sudo apt install %2\n"
@@ -413,7 +423,7 @@ msgstr ""
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:236
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:266
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/PlayerBar.qml:74
 msgid "Retry"
 msgstr ""
