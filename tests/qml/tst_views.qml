@@ -216,6 +216,92 @@ TestCase {
         signalName: "tabSelected"
     }
 
+    SignalSpy {
+        id: removals
+        target: list
+        signalName: "removed"
+    }
+
+    SignalSpy {
+        id: renames
+        target: list
+        signalName: "renamed"
+    }
+
+    // The trash only exists on the Recent tab, the pencil only on Favorites.
+    function test_trash_and_pencil_follow_the_tab() {
+        list.stations = [
+            {
+                uuid: "a",
+                name: "A"
+            }
+        ];
+        const view = findChild(list, "stationView");
+        tryVerify(() => view.count === 1);
+        const row = view.itemAtIndex(0);
+        list.currentTab = 0;
+        compare(findChild(row, "removeButton").visible, false);
+        compare(findChild(row, "renameButton").visible, false);
+        list.currentTab = 2;
+        compare(findChild(row, "removeButton").visible, true);
+        compare(findChild(row, "renameButton").visible, false);
+        list.currentTab = 1;
+        compare(findChild(row, "removeButton").visible, false);
+        compare(findChild(row, "renameButton").visible, true);
+        list.currentTab = 0;
+    }
+
+    function test_trash_emits_removed_for_the_row() {
+        removals.clear();
+        list.stations = [
+            {
+                uuid: "a",
+                name: "A"
+            }
+        ];
+        list.currentTab = 2;
+        const view = findChild(list, "stationView");
+        tryVerify(() => view.count === 1);
+        const trash = findChild(view.itemAtIndex(0), "removeButton");
+        mouseClick(trash, trash.width / 2, trash.height / 2);
+        compare(removals.count, 1);
+        compare(removals.signalArguments[0][0].uuid, "a");
+        list.currentTab = 0;
+    }
+
+    function test_pencil_edits_the_name_inline_and_emits_renamed() {
+        renames.clear();
+        list.stations = [
+            {
+                uuid: "a",
+                name: "A"
+            }
+        ];
+        list.currentTab = 1;
+        const view = findChild(list, "stationView");
+        tryVerify(() => view.count === 1);
+        const row = view.itemAtIndex(0);
+        const pencil = findChild(row, "renameButton");
+        mouseClick(pencil, pencil.width / 2, pencil.height / 2);
+        const field = findChild(row, "renameField");
+        tryVerify(() => field.visible && field.activeFocus);
+        compare(field.text, "A");
+        field.text = "Renamed";
+        keyClick(Qt.Key_Return);
+        compare(renames.count, 1);
+        compare(renames.signalArguments[0][0].uuid, "a");
+        compare(renames.signalArguments[0][1], "Renamed");
+        tryVerify(() => !field.visible);
+        // Escape gives up without a signal
+        mouseClick(pencil, pencil.width / 2, pencil.height / 2);
+        tryVerify(() => field.visible);
+        field.text = "Dropped";
+        keyClick(Qt.Key_Escape);
+        compare(renames.count, 1);
+        tryVerify(() => !field.visible);
+        list.currentTab = 0;
+    }
+
     function test_station_list_selection_and_activation() {
         activations.clear();
         list.stations = [

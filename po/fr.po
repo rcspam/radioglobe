@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-15 21:07+0200\n"
+"POT-Creation-Date: 2026-09-16 12:01+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -177,7 +177,7 @@ msgstr "Exporter les réglages de RadioGlobe"
 msgid "Export:"
 msgstr "Exporter :"
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:65
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:69
 msgid "Favorites"
 msgstr "Favoris"
 
@@ -268,7 +268,7 @@ msgstr "Nombre maximal de stations sur le globe :"
 msgid "Name:"
 msgstr "Nom :"
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:193
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:277
 msgid "No favorites yet"
 msgstr "Aucun favori pour l’instant"
 
@@ -284,7 +284,7 @@ msgstr "Aucune station en lecture"
 msgid "No station selected"
 msgstr "Aucune station sélectionnée"
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:193
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:277
 msgid "No stations"
 msgstr "Aucune station"
 
@@ -300,7 +300,7 @@ msgstr "Introuvable. Installer le paquet « mpv-mpris » (nécessaire pour les t
 msgid "Not found. Install the “mpv” package."
 msgstr "Introuvable. Installer le paquet « mpv »."
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:193
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:277
 msgid "Nothing played yet"
 msgstr "Rien n’a encore été écouté"
 
@@ -382,9 +382,19 @@ msgstr "Station aléatoire"
 msgid "Reading…"
 msgstr "Lecture…"
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:68
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:72
 msgid "Recent"
 msgstr "Récents"
+
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:204
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:207
+msgid "Remove from recent"
+msgstr "Retirer des récents"
+
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:226
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:229
+msgid "Rename"
+msgstr "Renommer"
 
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configBackup.qml:172
 msgid "Replaces the current favourites and history. Nothing is changed until you apply."
@@ -476,8 +486,8 @@ msgstr "Ce fichier n'est pas du JSON valide."
 msgid "This station could not be played. It may be offline; retry or pick another one."
 msgstr "Cette station n’a pas pu être lue. Elle est peut-être hors ligne : réessayez ou choisissez-en une autre."
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:168
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:172
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:252
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:256
 msgid "Toggle favorite (F)"
 msgstr "Basculer le favori (F)"
 
@@ -485,7 +495,7 @@ msgstr "Basculer le favori (F)"
 msgid "Tune a random station (R)"
 msgstr "Écouter une station aléatoire (R)"
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:58
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:62
 msgid "World"
 msgstr "Monde"
 

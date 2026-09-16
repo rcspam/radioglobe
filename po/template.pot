@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-15 21:07+0200\n"
+"POT-Creation-Date: 2026-09-16 12:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -178,7 +178,7 @@ msgstr ""
 msgid "Export:"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:65
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:69
 msgid "Favorites"
 msgstr ""
 
@@ -269,7 +269,7 @@ msgstr ""
 msgid "Name:"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:193
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:277
 msgid "No favorites yet"
 msgstr ""
 
@@ -285,7 +285,7 @@ msgstr ""
 msgid "No station selected"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:193
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:277
 msgid "No stations"
 msgstr ""
 
@@ -301,7 +301,7 @@ msgstr ""
 msgid "Not found. Install the “mpv” package."
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:193
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:277
 msgid "Nothing played yet"
 msgstr ""
 
@@ -383,8 +383,18 @@ msgstr ""
 msgid "Reading…"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:68
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:72
 msgid "Recent"
+msgstr ""
+
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:204
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:207
+msgid "Remove from recent"
+msgstr ""
+
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:226
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:229
+msgid "Rename"
 msgstr ""
 
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configBackup.qml:172
@@ -477,8 +487,8 @@ msgstr ""
 msgid "This station could not be played. It may be offline; retry or pick another one."
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:168
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:172
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:252
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:256
 msgid "Toggle favorite (F)"
 msgstr ""
 
@@ -486,7 +496,7 @@ msgstr ""
 msgid "Tune a random station (R)"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:58
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:62
 msgid "World"
 msgstr ""
 

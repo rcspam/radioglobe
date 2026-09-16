@@ -24,6 +24,10 @@ ColumnLayout {
     signal tabSelected(int index)
     signal activated(var station)
     signal favoriteToggled(var station)
+    // Trash on the Recent tab.
+    signal removed(var station)
+    // Pencil on the Favorites tab; name already trimmed by the field.
+    signal renamed(var station, string name)
 
     function moveSelection(delta) {
         const count = Array.isArray(list.stations) ? list.stations.length : 0;
@@ -129,15 +133,41 @@ ColumnLayout {
                 PlasmaComponents3.Label {
                     id: nameLabel
                     anchors.left: parent.left
-                    anchors.right: starArea.left
+                    anchors.right: actionArea.left
                     anchors.top: parent.top
                     anchors.leftMargin: Kirigami.Units.smallSpacing * 2
                     anchors.rightMargin: Kirigami.Units.smallSpacing
-                    anchors.topMargin: Kirigami.Units.smallSpacing
                     text: row.modelData.name
                     textFormat: Text.PlainText
                     elide: Text.ElideRight
                     font.bold: row.playing
+                    visible: !renameField.visible
+                }
+
+                // Inline rename, shown by the pencil. Return commits, Escape
+                // or leaving the field drops the edit.
+                PlasmaComponents3.TextField {
+                    id: renameField
+                    objectName: "renameField"
+                    anchors.left: nameLabel.left
+                    anchors.right: nameLabel.right
+                    anchors.top: parent.top
+                    visible: false
+                    onAccepted: {
+                        const name = text.trim();
+                        visible = false;
+                        if (name !== "" && name !== row.modelData.name)
+                            list.renamed(row.modelData, name);
+                    }
+                    Keys.onEscapePressed: visible = false
+                    onActiveFocusChanged: if (!activeFocus)
+                        visible = false
+                    function open() {
+                        text = row.modelData.name;
+                        visible = true;
+                        forceActiveFocus();
+                        selectAll();
+                    }
                 }
 
                 PlasmaComponents3.Label {
@@ -153,6 +183,60 @@ ColumnLayout {
                     elide: Text.ElideRight
                     opacity: 0.7
                     font: Kirigami.Theme.smallFont
+                }
+
+                // Tab-specific button left of the star: the trash on Recent,
+                // the pencil on Favorites. An Item so the star keeps its place.
+                Item {
+                    id: actionArea
+                    anchors.right: starArea.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: (removeArea.visible || renameArea.visible) ? starArea.width : 0
+                    height: starArea.height
+
+                    MouseArea {
+                        id: removeArea
+                        objectName: "removeButton"
+                        anchors.fill: parent
+                        visible: list.currentTab === 2
+                        hoverEnabled: true
+                        onClicked: list.removed(row.modelData)
+                        PlasmaComponents3.ToolTip.text: i18n("Remove from recent")
+                        PlasmaComponents3.ToolTip.visible: removeArea.containsMouse
+                        Accessible.role: Accessible.Button
+                        Accessible.name: i18n("Remove from recent")
+                        Accessible.onPressAction: list.removed(row.modelData)
+
+                        Kirigami.Icon {
+                            anchors.centerIn: parent
+                            width: Kirigami.Units.iconSizes.smallMedium
+                            height: width
+                            source: "edit-delete-symbolic"
+                            opacity: removeArea.containsMouse ? 1 : 0.6
+                        }
+                    }
+
+                    MouseArea {
+                        id: renameArea
+                        objectName: "renameButton"
+                        anchors.fill: parent
+                        visible: list.currentTab === 1
+                        hoverEnabled: true
+                        onClicked: renameField.open()
+                        PlasmaComponents3.ToolTip.text: i18n("Rename")
+                        PlasmaComponents3.ToolTip.visible: renameArea.containsMouse
+                        Accessible.role: Accessible.Button
+                        Accessible.name: i18n("Rename")
+                        Accessible.onPressAction: renameField.open()
+
+                        Kirigami.Icon {
+                            anchors.centerIn: parent
+                            width: Kirigami.Units.iconSizes.smallMedium
+                            height: width
+                            source: "edit-rename"
+                            opacity: renameArea.containsMouse ? 1 : 0.6
+                        }
+                    }
                 }
 
                 MouseArea {

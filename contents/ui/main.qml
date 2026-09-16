@@ -149,6 +149,24 @@ PlasmoidItem {
             root._refreshList();
     }
 
+    function removeFromHistory(station) {
+        if (!station || !station.uuid)
+            return;
+        root.history = RadioModel.removeByUuid(root.history, station.uuid);
+        Plasmoid.configuration.history = JSON.stringify(root.history);
+        if (root.currentTab === 2)
+            root._refreshList();
+    }
+
+    function renameFavorite(station, name) {
+        if (!station || !station.uuid)
+            return;
+        root.favorites = RadioModel.renameFavorite(root.favorites, station.uuid, name);
+        Plasmoid.configuration.favorites = JSON.stringify(root.favorites);
+        if (root.currentTab === 1)
+            root._refreshList();
+    }
+
     function isFavorite(uuid) {
         return RadioModel.indexByUuid(root.favorites, uuid) >= 0;
     }

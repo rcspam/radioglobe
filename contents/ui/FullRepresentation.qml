@@ -253,6 +253,8 @@ Item {
                     }
                     onActivated: station => root.playFrom(root.listStations, station)
                     onFavoriteToggled: station => root.toggleFavorite(station)
+                    onRemoved: station => root.removeFromHistory(station)
+                    onRenamed: (station, name) => root.renameFavorite(station, name)
                 }
 
                 PlayerBar {

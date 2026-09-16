@@ -313,3 +313,22 @@ test("withLocalStations adds located favourites and the playing station missing 
     assert.equal(model.withLocalStations(world, [approx], null), world);
     assert.deepEqual(Array.from(model.withLocalStations(world, [approx], null, true), s => s.uuid), ["a", "approx"]);
 });
+
+test("removeByUuid drops one row and leaves the others in order", () => {
+    const rows = [{ uuid: "a" }, { uuid: "b" }, { uuid: "c" }];
+    assert.deepEqual(Array.from(model.removeByUuid(rows, "b"), r => r.uuid), ["a", "c"]);
+    assert.deepEqual(Array.from(model.removeByUuid(rows, "zz"), r => r.uuid), ["a", "b", "c"]);
+});
+
+test("renameFavorite changes the name, marks the local edit and refreshes meta", () => {
+    const favs = [{ uuid: "a", name: "Old", countryCode: "FR", codec: "MP3", bitrate: 128 }, { uuid: "b", name: "B" }];
+    const out = model.renameFavorite(favs, "a", "  New name ");
+    assert.equal(out[0].name, "New name");
+    assert.equal(out[0].localEdit, true);
+    assert.equal(out[0].meta, "FR · MP3 · 128 kbps");
+    assert.equal(out[1].name, "B");
+    assert.equal(out[1].localEdit, undefined);
+    // an empty name or an unknown uuid changes nothing
+    assert.equal(model.renameFavorite(favs, "a", "   ")[0].name, "Old");
+    assert.equal(model.renameFavorite(favs, "zz", "X").length, 2);
+});

@@ -935,6 +935,29 @@ function toggleFavorite(favorites, station) {
     return output;
 }
 
+function removeByUuid(rows, uuid) {
+    var input = Array.isArray(rows) ? rows : [];
+    return input.filter(function (row) { return !(row && row.uuid === uuid); });
+}
+
+// Renames a favourite in place of its row. The result is a local edit, like
+// the "Add a station" page's pencil: it replaces the Radio Browser row on the
+// globe and in the lists. Blank names and unknown uuids leave the list as is.
+function renameFavorite(favorites, uuid, name) {
+    var rows = Array.isArray(favorites) ? favorites : [];
+    var clean = cleanText(name, 200);
+    if (!clean) return rows;
+    return rows.map(function (row) {
+        if (!row || row.uuid !== uuid) return row;
+        var station = ({});
+        for (var key in row) station[key] = row[key];
+        station.name = clean;
+        station.localEdit = true;
+        station.meta = stationMeta(station);
+        return station;
+    });
+}
+
 function pushHistory(history, station, nowMs, maximum) {
     var rows = Array.isArray(history) ? history : [];
     if (!station || !station.uuid) return rows.slice();
