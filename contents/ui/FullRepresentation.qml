@@ -106,10 +106,30 @@ Item {
     // always lands on one.
     readonly property var globeStations: RadioModel.withLocalStations(root.worldStations, root.favorites, full.mediaPlayer.station, root.approximateLocations)
 
+    // The packages to install for the modules main.qml found missing, one
+    // line per distribution family.
+    function requirementsText() {
+        const missing = root.missingModules || [];
+        if (missing.length === 0)
+            return "";
+        const names = missing.map(m => m.name).join(", ");
+        const pkgs = distro => missing.map(m => m[distro]).join(" ");
+        return i18n("Missing QML modules: %1. Install them and restart Plasma:\nDebian / Ubuntu: sudo apt install %2\nArch Linux: sudo pacman -S %3\nFedora: sudo dnf install %4", names, pkgs("deb"), pkgs("arch"), pkgs("fedora"));
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Kirigami.Units.smallSpacing
         spacing: Kirigami.Units.smallSpacing
+
+        Kirigami.InlineMessage {
+            id: requirementsBanner
+            objectName: "requirementsBanner"
+            Layout.fillWidth: true
+            type: Kirigami.MessageType.Warning
+            visible: (root.missingModules || []).length > 0
+            text: full.requirementsText()
+        }
 
         RowLayout {
             Layout.fillWidth: true

@@ -289,9 +289,23 @@ PlasmoidItem {
             console.warn("[RadioGlobe] org.kde.plasma.private.mpris is not available")
     }
 
-    Exec {
-        id: exec
+    // What the host is missing (see Requirements.qml); the popup shows it.
+    readonly property var missingModules: requirements.missingRequired.concat(requirements.missingOptional)
+
+    Requirements {
+        id: requirements
     }
+
+    // Exec needs org.kde.plasma.plasma5support. Through a Loader the widget
+    // still comes up without it, with the banner saying what to install;
+    // commands then fail with exit code 127 instead of never answering.
+    Loader {
+        id: execLoader
+        source: "Exec.qml"
+    }
+    readonly property var exec: execLoader.item ? execLoader.item : ({
+            run: (cmd, callback) => callback(127, "")
+        })
 
     Http {
         id: http

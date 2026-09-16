@@ -56,6 +56,7 @@ TestCase {
         property bool expanded: true
         property bool isOnDesktop: false
         property bool pinned: false
+        property var missingModules: []
         property var calls: []
 
         function setPinned(value) {
@@ -174,6 +175,27 @@ TestCase {
         root.calls = [];
         player.calls = [];
         radioBrowser.calls = [];
+    }
+
+    // A missing QML module shows a banner with the packages to install,
+    // instead of the widget failing to load.
+    function test_missing_modules_banner() {
+        const banner = findChild(loader.item, "requirementsBanner");
+        compare(banner.visible, false);
+        root.missingModules = [
+            {
+                name: "QtQuick.Dialogs",
+                required: true,
+                deb: "qml6-module-qtquick-dialogs",
+                arch: "qt6-declarative",
+                fedora: "qt6-qtdeclarative"
+            }
+        ];
+        compare(banner.visible, true);
+        verify(banner.text.indexOf("QtQuick.Dialogs") >= 0, banner.text);
+        verify(banner.text.indexOf("qml6-module-qtquick-dialogs") >= 0, banner.text);
+        root.missingModules = [];
+        compare(banner.visible, false);
     }
 
     function test_loads_without_errors() {

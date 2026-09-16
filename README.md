@@ -41,7 +41,7 @@ Packages to install with the widget:
 | Offline cache (recommended) | `qml6-module-qtquick-localstorage` | in `qt6-declarative` | in `qt6-qtdeclarative` |
 | Map on the "Add a station" page (optional) | `qml6-module-qtlocation qt6-location-plugins` | `qt6-location` | `qt6-qtlocation` |
 
-Without the offline cache module the widget still works, it just fetches the station lists again at every start (the settings page says which of these it found). Without QtLocation the "Add a station" page still works, with latitude and longitude typed by hand. The other QML modules used (`QtQuick.Dialogs`, `QtCore`, `QtQuick.Layouts`, `QtQuick.Controls`) come with Plasma itself.
+At startup the widget checks every QML module it uses and, if one is missing, shows a banner at the top of the popup with the packages to install for Debian / Ubuntu, Arch Linux and Fedora. Without the offline cache module the widget still works, it just fetches the station lists again at every start (the settings page says which of these it found). Without QtLocation the "Add a station" page still works, with latitude and longitude typed by hand. The other QML modules used (`QtQuick.Dialogs`, `QtCore`, `QtQuick.Layouts`, `QtQuick.Controls`) come with Plasma itself.
 
 ## Install
 

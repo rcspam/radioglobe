@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-16 12:01+0200\n"
+"POT-Creation-Date: 2026-09-16 12:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,8 +51,8 @@ msgstr ""
 msgid "Add a station"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:139
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:140
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:159
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:160
 msgid "Add a station…"
 msgstr ""
 
@@ -228,8 +228,8 @@ msgstr ""
 msgid "JSON files (*.json)"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:153
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:154
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:173
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:174
 msgid "Keep open"
 msgstr ""
 
@@ -265,11 +265,19 @@ msgstr ""
 msgid "Maximum stations on the globe:"
 msgstr ""
 
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:117
+msgid ""
+"Missing QML modules: %1. Install them and restart Plasma:\n"
+"Debian / Ubuntu: sudo apt install %2\n"
+"Arch Linux: sudo pacman -S %3\n"
+"Fedora: sudo dnf install %4"
+msgstr ""
+
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/config/configAddStation.qml:278
 msgid "Name:"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:277
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:285
 msgid "No favorites yet"
 msgstr ""
 
@@ -285,7 +293,7 @@ msgstr ""
 msgid "No station selected"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:277
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:285
 msgid "No stations"
 msgstr ""
 
@@ -301,7 +309,7 @@ msgstr ""
 msgid "Not found. Install the “mpv” package."
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:277
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:285
 msgid "Nothing played yet"
 msgstr ""
 
@@ -387,13 +395,13 @@ msgstr ""
 msgid "Recent"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:204
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:207
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:212
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:215
 msgid "Remove from recent"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:226
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:229
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:234
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:237
 msgid "Rename"
 msgstr ""
 
@@ -405,7 +413,7 @@ msgstr ""
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:216
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/FullRepresentation.qml:236
 #: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/PlayerBar.qml:74
 msgid "Retry"
 msgstr ""
@@ -487,8 +495,8 @@ msgstr ""
 msgid "This station could not be played. It may be offline; retry or pick another one."
 msgstr ""
 
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:252
-#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:256
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:260
+#: /home/rapha/SOURCES/RAPHA/radioglobe/contents/ui/StationList.qml:264
 msgid "Toggle favorite (F)"
 msgstr ""
 
