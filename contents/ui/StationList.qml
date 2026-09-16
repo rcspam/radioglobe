@@ -145,28 +145,36 @@ ColumnLayout {
                 }
 
                 // Inline rename, shown by the pencil. Return commits, Escape
-                // or leaving the field drops the edit.
-                PlasmaComponents3.TextField {
+                // or leaving the field drops the edit. A Loader, not a plain
+                // TextField: one text field per recycled row sent plasmashell
+                // into a layout loop at 100 % CPU (seen on 6.6.6).
+                Loader {
                     id: renameField
-                    objectName: "renameField"
+                    objectName: "renameLoader"
                     anchors.left: nameLabel.left
                     anchors.right: nameLabel.right
                     anchors.top: parent.top
-                    visible: false
-                    onAccepted: {
-                        const name = text.trim();
-                        visible = false;
-                        if (name !== "" && name !== row.modelData.name)
-                            list.renamed(row.modelData, name);
-                    }
-                    Keys.onEscapePressed: visible = false
-                    onActiveFocusChanged: if (!activeFocus)
-                        visible = false
+                    active: false
+                    visible: active
                     function open() {
-                        text = row.modelData.name;
-                        visible = true;
-                        forceActiveFocus();
-                        selectAll();
+                        active = true;
+                    }
+                    sourceComponent: PlasmaComponents3.TextField {
+                        objectName: "renameField"
+                        text: row.modelData.name
+                        Component.onCompleted: {
+                            forceActiveFocus();
+                            selectAll();
+                        }
+                        onAccepted: {
+                            const name = text.trim();
+                            if (name !== "" && name !== row.modelData.name)
+                                list.renamed(row.modelData, name);
+                            renameField.active = false;
+                        }
+                        Keys.onEscapePressed: renameField.active = false
+                        onActiveFocusChanged: if (!activeFocus)
+                            renameField.active = false
                     }
                 }
 

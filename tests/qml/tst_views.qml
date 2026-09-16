@@ -283,22 +283,25 @@ TestCase {
         const row = view.itemAtIndex(0);
         const pencil = findChild(row, "renameButton");
         mouseClick(pencil, pencil.width / 2, pencil.height / 2);
-        const field = findChild(row, "renameField");
-        tryVerify(() => field.visible && field.activeFocus);
+        const loader = findChild(row, "renameLoader");
+        tryVerify(() => loader.active);
+        let field = findChild(row, "renameField");
+        tryVerify(() => field.activeFocus);
         compare(field.text, "A");
         field.text = "Renamed";
         keyClick(Qt.Key_Return);
         compare(renames.count, 1);
         compare(renames.signalArguments[0][0].uuid, "a");
         compare(renames.signalArguments[0][1], "Renamed");
-        tryVerify(() => !field.visible);
+        tryVerify(() => !loader.active);
         // Escape gives up without a signal
         mouseClick(pencil, pencil.width / 2, pencil.height / 2);
-        tryVerify(() => field.visible);
+        tryVerify(() => loader.active);
+        field = findChild(row, "renameField");
         field.text = "Dropped";
         keyClick(Qt.Key_Escape);
         compare(renames.count, 1);
-        tryVerify(() => !field.visible);
+        tryVerify(() => !loader.active);
         list.currentTab = 0;
     }
 
