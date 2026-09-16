@@ -42,6 +42,11 @@ Item {
     property bool _muted: false
     property real _volumeBeforeMute: 0.75
     property string _errorKind: ""
+    // Silent reopenings of the current station after an unexpected Stopped
+    // since the last successful load. One is allowed: servers cut streams and
+    // the HTTP reconnect does not catch every case (playlists, redirects).
+    property int _streamRetries: 0
+    readonly property int maxStreamRetries: 1
     property var _player: null
     property var _pendingStation: null
     property bool _userStopping: false
@@ -79,6 +84,7 @@ Item {
         root._track = "";
         root._errorKind = "";
         root._userStopping = false;
+        root._streamRetries = 0;
         if (root._state === "starting") {
             // mpv is already being launched: the attach will open this station.
             root._pendingStation = station;
@@ -291,7 +297,7 @@ Item {
     }
 
     function _launchCommand(binary) {
-        const options = ["--idle=yes", "--no-video", "--no-terminal", "--force-window=no", "--audio-display=no", "--ytdl=no", "--cache=yes", "--stream-lavf-o=reconnect=1,reconnect_streamed=1,reconnect_delay_max=5", "--audio-client-name=RadioGlobe", "--user-agent=" + root.userAgent];
+        const options = ["--idle=yes", "--no-video", "--no-terminal", "--force-window=no", "--audio-display=no", "--ytdl=no", "--cache=yes", "--cache-pause-initial=yes", "--cache-pause-wait=2", "--demuxer-readahead-secs=10", "--stream-lavf-o=reconnect=1,reconnect_streamed=1,reconnect_delay_max=5", "--audio-client-name=RadioGlobe", "--user-agent=" + root.userAgent];
         const quoted = options.map(option => RadioModel.shellQuote(option)).join(" ");
         // Backgrounded from a non-interactive sh, the child is not a process-group
         // leader, so setsid execs mpv in place: $! is mpv's own PID.
@@ -359,6 +365,7 @@ Item {
     function _loaded() {
         loadTimer.stop();
         probeTimer.stop();
+        root._streamRetries = 0;
         if (!root._player)
             return;
         if (Number(root._player.playbackStatus) !== root.statusPlaying) {
@@ -376,7 +383,12 @@ Item {
             return;
         const status = Number(root._player.playbackStatus);
         if (root._state === "playing" && status === root.statusStopped && !root._userStopping) {
-            root._fail("stream");
+            if (root._streamRetries < root.maxStreamRetries) {
+                root._streamRetries++;
+                root._openUri();
+            } else {
+                root._fail("stream");
+            }
         } else if (root._state === "playing" && status === root.statusPaused) {
             root._setState("paused");
         } else if (root._state === "paused" && status === root.statusPlaying) {
@@ -449,6 +461,10 @@ Item {
         root._trackAtOpen = "";
         root._muted = false;
         root._volume = 0.75;
+    }
+
+    function resetRetriesForTests(count) {
+        root._streamRetries = count;
     }
 
     function resetErrorForTests() {

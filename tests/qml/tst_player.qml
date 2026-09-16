@@ -282,12 +282,40 @@ TestCase {
         compare(c.calls.filter(x => x.indexOf("OpenUri") === 0).length, 2);
     }
 
-    function test_stopped_status_while_playing_is_a_stream_error() {
+    // A stream cut by the server: mpv reports Stopped. One silent retry first,
+    // the error only shows when the retried stream drops as well.
+    function test_stopped_status_while_playing_retries_once_then_errors() {
         const c = startAndAttach(2);
         c.setTrack("fip-midfi.mp3");
+        const opens = () => c.calls.filter(x => x.indexOf("OpenUri") === 0).length;
+        compare(opens(), 1);
+        c.setStatus(1);
+        compare(player.state, "loading");
+        compare(opens(), 2);
+        // the retry loads fine: the counter is armed again for the next cut
+        c.setStatus(2);
+        c.setTrack("fip-midfi.mp3 2");
+        tryCompare(player, "state", "playing", 1000);
+        c.setStatus(1);
+        compare(player.state, "loading");
+        compare(opens(), 3);
+        // second consecutive drop without a successful load: error
+        c.setStatus(2);
+        c.setTrack("fip-midfi.mp3 3");
+        tryCompare(player, "state", "playing", 1000);
+        player.resetRetriesForTests(1);
         c.setStatus(1);
         compare(player.state, "error");
         compare(player.errorKind, "stream");
+    }
+
+    function test_launch_command_buffers_before_playing() {
+        player.play(fip);
+        replyExec(0, "/usr/bin/mpv\n");
+        const launch = execLog[execLog.length - 1];
+        verify(launch.indexOf("'--cache-pause-initial=yes'") > 0, launch);
+        verify(launch.indexOf("'--cache-pause-wait=2'") > 0, launch);
+        verify(launch.indexOf("'--demuxer-readahead-secs=10'") > 0, launch);
     }
 
     function test_reattaches_to_existing_mpv_from_cfg() {
