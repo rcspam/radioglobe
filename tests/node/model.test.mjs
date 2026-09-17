@@ -482,3 +482,13 @@ test("countryGeoLimit gives the big countries three times the room", () => {
     assert.equal(model.countryGeoLimit("FR"), 500);
     assert.equal(model.countryGeoLimit("FR", 0), 500);
 });
+
+test("navigationTarget steps through the list, and enters it when the station is not there", () => {
+    const list = [{ uuid: "a" }, { uuid: "b" }, { uuid: "c" }];
+    assert.equal(model.navigationTarget(list, "a", 1).uuid, "b");
+    assert.equal(model.navigationTarget(list, "a", -1).uuid, "c");
+    assert.equal(model.navigationTarget(list, "zzz", 1).uuid, "a");
+    assert.equal(model.navigationTarget(list, "zzz", -1).uuid, "c");
+    assert.equal(model.navigationTarget(list, "", 1).uuid, "a");
+    assert.equal(model.navigationTarget([], "a", 1), null);
+});

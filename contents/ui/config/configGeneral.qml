@@ -25,6 +25,7 @@ KCM.SimpleKCM {
     property alias cfg_restoreLastStation: restoreLastStation.checked
     property alias cfg_autoplayLastStation: autoplayLastStation.checked
     property string cfg_icon: "map-globe"
+    property string cfg_nextPreviousSource: "queue"
     // Empty means "theme colour"; the check boxes drive that.
     property string cfg_iconColor: ""
     property string cfg_badgeColor: ""
@@ -255,6 +256,19 @@ KCM.SimpleKCM {
                 color: page.cfg_badgeColor || Kirigami.Theme.highlightColor
                 onAccepted: color => page.cfg_badgeColor = page.hex(color)
             }
+        }
+        QQC2.RadioButton {
+            objectName: "nextFromQueue"
+            Kirigami.FormData.label: i18n("Next and previous walk:")
+            text: i18n("The list the station was played from")
+            checked: page.cfg_nextPreviousSource !== "favorites"
+            onClicked: page.cfg_nextPreviousSource = "queue"
+        }
+        QQC2.RadioButton {
+            objectName: "nextFromFavorites"
+            text: i18n("The favorites")
+            checked: page.cfg_nextPreviousSource === "favorites"
+            onClicked: page.cfg_nextPreviousSource = "favorites"
         }
         QQC2.CheckBox {
             id: invertWheel

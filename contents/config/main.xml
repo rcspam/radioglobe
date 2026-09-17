@@ -80,6 +80,11 @@
     <entry name="autoplayLastStation" type="Bool">
       <default>false</default>
     </entry>
+    <!-- What next / previous walk: "queue" (the list the station was played
+         from) or "favorites". -->
+    <entry name="nextPreviousSource" type="String">
+      <default>queue</default>
+    </entry>
     <!-- Not settings: the popup size libplasma saves on every close and reads
          first when the popup opens. Declared so main.qml can seed them at the
          first launch, when a widget dropped from the explorer otherwise opens

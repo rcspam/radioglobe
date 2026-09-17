@@ -35,6 +35,7 @@ KCM.SimpleKCM {
     property int cfg_maxSearchStations: 500
     property bool cfg_restoreLastStation: true
     property bool cfg_autoplayLastStation: false
+    property string cfg_nextPreviousSource: "queue"
 
     property string exportStatus: ""
     property string importStatus: ""

@@ -1040,6 +1040,17 @@ function pickRandomStation(stations, recentUuids, random) {
     return candidates[index];
 }
 
+// Next / previous: the neighbour of the station in the list, or, when the
+// station is not in the list (the favourites as the source, playing
+// something else), the list's first or last entry.
+function navigationTarget(stations, uuid, delta) {
+    var rows = Array.isArray(stations) ? stations : [];
+    if (rows.length === 0) return null;
+    var neighbour = neighbourStation(rows, uuid, delta);
+    if (neighbour) return neighbour;
+    return Number(delta) < 0 ? rows[rows.length - 1] : rows[0];
+}
+
 function neighbourStation(stations, uuid, delta) {
     var rows = Array.isArray(stations) ? stations : [];
     if (rows.length === 0) return null;
@@ -1118,7 +1129,8 @@ var backupSettingTypes = ({
     maxCountryStations: "number",
     maxSearchStations: "number",
     restoreLastStation: "boolean",
-    autoplayLastStation: "boolean"
+    autoplayLastStation: "boolean",
+    nextPreviousSource: "string"
 });
 
 function backupSettings(settings) {

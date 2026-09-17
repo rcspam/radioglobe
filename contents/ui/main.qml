@@ -133,16 +133,21 @@ PlasmoidItem {
         player.play(current);
     }
 
-    function next() {
-        const target = RadioModel.neighbourStation(root.queue, player.station ? player.station.uuid : "", 1);
+    // Next / previous walk the list the station was played from, or the
+    // favourites when the setting says so.
+    function _step(delta) {
+        const list = Plasmoid.configuration.nextPreviousSource === "favorites" ? root.favorites : root.queue;
+        const target = RadioModel.navigationTarget(list, player.station ? player.station.uuid : "", delta);
         if (target)
             player.play(target);
     }
 
+    function next() {
+        root._step(1);
+    }
+
     function previous() {
-        const target = RadioModel.neighbourStation(root.queue, player.station ? player.station.uuid : "", -1);
-        if (target)
-            player.play(target);
+        root._step(-1);
     }
 
     function playRandom() {
