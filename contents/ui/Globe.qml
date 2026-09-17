@@ -62,6 +62,7 @@ Item {
     readonly property int signalDepthBuckets: 8
     property bool paintDirty: false
     readonly property alias paintCount: paintCounter.value
+    readonly property alias spherePaintCount: spherePaintCounter.value
 
     signal stationActivated(var station)
     signal countryActivated(string code, string name)
@@ -596,17 +597,7 @@ Item {
         if (!isFinite(globeRadius) || globeRadius <= 0)
             return;
         ctx.reset();
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, globeCanvas.width, globeCanvas.height);
-
-        var sphere = ctx.createRadialGradient(centreX - globeRadius * 0.28, centreY - globeRadius * 0.32, globeRadius * 0.04, centreX, centreY, globeRadius);
-        sphere.addColorStop(0, withAlpha(Qt.lighter(sphereColor, 1.7), 1));
-        sphere.addColorStop(0.62, sphereColor);
-        sphere.addColorStop(1, Qt.darker(sphereColor, 1.8));
-        ctx.beginPath();
-        ctx.arc(centreX, centreY, globeRadius, 0, Math.PI * 2);
-        ctx.fillStyle = sphere;
-        ctx.fill();
+        ctx.clearRect(0, 0, globeCanvas.width, globeCanvas.height);
 
         ctx.save();
         ctx.beginPath();
@@ -618,7 +609,27 @@ Item {
             paintDayNight(ctx, centreX, centreY, globeRadius);
         paintSignals(ctx);
         ctx.restore();
+    }
 
+    // Background, shaded disc and outline: nothing here moves with the
+    // rotation, so this layer is painted on size, zoom and theme changes only.
+    function paintSphere(ctx) {
+        var centreX = sphereCanvas.width / 2;
+        var centreY = sphereCanvas.height / 2;
+        var globeRadius = radius();
+        ctx.reset();
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, sphereCanvas.width, sphereCanvas.height);
+        if (!isFinite(globeRadius) || globeRadius <= 0)
+            return;
+        var sphere = ctx.createRadialGradient(centreX - globeRadius * 0.28, centreY - globeRadius * 0.32, globeRadius * 0.04, centreX, centreY, globeRadius);
+        sphere.addColorStop(0, withAlpha(Qt.lighter(sphereColor, 1.7), 1));
+        sphere.addColorStop(0.62, sphereColor);
+        sphere.addColorStop(1, Qt.darker(sphereColor, 1.8));
+        ctx.beginPath();
+        ctx.arc(centreX, centreY, globeRadius, 0, Math.PI * 2);
+        ctx.fillStyle = sphere;
+        ctx.fill();
         ctx.beginPath();
         ctx.arc(centreX, centreY, globeRadius, 0, Math.PI * 2);
         ctx.strokeStyle = withAlpha(outlineColor, 0.52);
@@ -680,11 +691,20 @@ Item {
         root.schedulePaint();
     }
     onActiveCountryCodeChanged: root.schedulePaint()
-    onBackgroundColorChanged: root.schedulePaint()
-    onSphereColorChanged: root.schedulePaint()
+    onBackgroundColorChanged: {
+        sphereCanvas.requestPaint();
+        root.schedulePaint();
+    }
+    onSphereColorChanged: {
+        sphereCanvas.requestPaint();
+        root.schedulePaint();
+    }
     onLandColorChanged: root.schedulePaint()
     onGridColorChanged: root.schedulePaint()
-    onOutlineColorChanged: root.schedulePaint()
+    onOutlineColorChanged: {
+        sphereCanvas.requestPaint();
+        root.schedulePaint();
+    }
     onSignalColorChanged: root.schedulePaint()
     onAccentColorChanged: root.schedulePaint()
     onShowDayNightChanged: {
@@ -705,14 +725,17 @@ Item {
     }
     onGlobeScaleChanged: {
         updateHighlightPosition();
+        sphereCanvas.requestPaint();
         root.schedulePaint();
     }
     onWidthChanged: {
         updateHighlightPosition();
+        sphereCanvas.requestPaint();
         root.schedulePaint();
     }
     onHeightChanged: {
         updateHighlightPosition();
+        sphereCanvas.requestPaint();
         root.schedulePaint();
     }
     onHighlightedStationChanged: {
@@ -733,6 +756,25 @@ Item {
         property: "globeScale"
         duration: 180
         easing.type: Easing.OutCubic
+    }
+
+    Canvas {
+        id: sphereCanvas
+        anchors.fill: parent
+        renderStrategy: Canvas.Threaded
+        onPaint: {
+            var ctx = getContext("2d");
+            if (!ctx)
+                return;
+            spherePaintCounter.value += 1;
+            root.paintSphere(ctx);
+        }
+    }
+
+    QtObject {
+        id: spherePaintCounter
+
+        property int value: 0
     }
 
     Canvas {

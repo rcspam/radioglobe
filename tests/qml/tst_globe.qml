@@ -236,6 +236,43 @@ TestCase {
         globe.countries = [];
     }
 
+    // The shaded disc does not depend on the rotation: its own canvas is
+    // painted on size, scale and colour changes only.
+    function test_sphereLayerIgnoresRotation() {
+        wait(120);
+        const before = globe.spherePaintCount;
+        globe.centreLongitude = 45;
+        globe.centreLatitude = 10;
+        wait(120);
+        compare(globe.spherePaintCount, before);
+        globe.globeScale = 2;
+        tryVerify(function () {
+            return globe.spherePaintCount > before;
+        });
+        const afterScale = globe.spherePaintCount;
+        globe.sphereColor = "#123456";
+        tryVerify(function () {
+            return globe.spherePaintCount > afterScale;
+        });
+    }
+
+    // What the two layers compose: background colour outside the disc, the
+    // sphere colour inside where nothing else is painted.
+    function test_sphereLayerShowsThroughTheGlobeCanvas() {
+        globe.backgroundColor = "#00ff00";
+        globe.sphereColor = "#0000ff";
+        globe.gridColor = "#0000ff";
+        globe.outlineColor = "#0000ff";
+        globe.countries = [];
+        globe.stations = [];
+        tryVerify(function () {
+            return Qt.colorEqual(grabImage(globe).pixel(2, 2), "#00ff00");
+        });
+        const centre = grabImage(globe).pixel(Math.round(globe.width / 2), Math.round(globe.height / 2));
+        // The gradient lightens the centre, so the check is "blue dominates".
+        verify(centre.b > 0.5 && centre.b > centre.g + 0.3, "inside the disc the sphere shows: " + centre);
+    }
+
     // A depth bucket only picks the fill colour: every dot is still stroked as
     // its own beginPath/arc/fill. Batching a bucket into a single path gives
     // that path the whole globe as a bounding box, which the raster engine
