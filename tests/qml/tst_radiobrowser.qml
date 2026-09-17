@@ -352,6 +352,36 @@ TestCase {
         compare(calls[0].n, 1);
     }
 
+    // The setting drives how many located stations a country asks for.
+    function test_country_limit_setting() {
+        rb.countryStationLimit = 200;
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a")]);
+        rb.loadCountry("FR", () => {});
+        answer("/json/stations/bycountrycodeexact/FR", 200, [raw("f")]);
+        const geoUrl = answer("/json/stations/search", 200, []);
+        verify(geoUrl.indexOf("limit=200") > 0, geoUrl);
+        verify(store["country:FR:300+200"] !== undefined);
+        rb.countryStationLimit = 500;
+    }
+
+    // And the search has its own.
+    function test_search_limit_setting() {
+        rb.searchStationLimit = 250;
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, []);
+        rb.search("Jazz", () => {});
+        answer("name=Jazz", 200, []);
+        answer("country=Jazz", 200, []);
+        answer("tag=jazz", 200, []);
+        const geoUrl = answer("name=Jazz", 200, []);
+        verify(geoUrl.indexOf("limit=250") > 0, geoUrl);
+        answer("tag=jazz", 200, []);
+        rb.searchStationLimit = 500;
+    }
+
     // A big country gets more located stations.
     function test_big_country_asks_for_more_located_stations() {
         rb.start();

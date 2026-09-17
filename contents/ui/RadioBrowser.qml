@@ -19,6 +19,10 @@ Item {
         return Math.random();
     }
     property int worldLimit: 3000
+    // Located stations asked for on top of the popular ones: for a country
+    // view (three times that in the largest countries) and for a search.
+    property int countryStationLimit: 500
+    property int searchStationLimit: 500
     // ISO 3166-1 alpha-2 code of the country whose stations are always loaded
     // in full and kept at the front of the world list. Empty disables it.
     property string homeCountry: ""
@@ -156,7 +160,7 @@ Item {
         const local = RadioModel.stationsForCountry(root._world, wanted, 200);
         // The limits are part of the key: a cache written by an older build
         // holds fewer rows than the current one promises.
-        const geoLimit = RadioModel.countryGeoLimit(wanted);
+        const geoLimit = RadioModel.countryGeoLimit(wanted, root.countryStationLimit);
         const key = "country:" + wanted + ":300+" + geoLimit;
         const cached = root.cache ? root.cache.get(key) : null;
         if (cached && Array.isArray(cached.value) && root.now() - cached.savedAt < root.cacheTtlMs) {
@@ -246,7 +250,7 @@ Item {
         // The popular results rarely have coordinates: the same name and tag
         // searches again, restricted to located stations and with room for
         // many more, so the globe fills up like a country view does.
-        const geoLimit = country ? RadioModel.countryGeoLimit(country) : 500;
+        const geoLimit = country ? RadioModel.countryGeoLimit(country, root.countryStationLimit) : root.searchStationLimit;
         variants.push({
             name: text,
             has_geo_info: true,

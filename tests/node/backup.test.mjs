@@ -20,6 +20,8 @@ test("buildBackup wraps favourites, history and the known settings only", () => 
         badgeColor: "#4fa710",
         invertWheel: false,
         showDayNight: false,
+        maxCountryStations: 500,
+        maxSearchStations: 500,
         mpvPid: 4242,
         lastStation: "{}",
     });
@@ -38,6 +40,8 @@ test("buildBackup wraps favourites, history and the known settings only", () => 
             badgeColor: "#4fa710",
             invertWheel: false,
             showDayNight: false,
+            maxCountryStations: 500,
+            maxSearchStations: 500,
         },
     });
 });

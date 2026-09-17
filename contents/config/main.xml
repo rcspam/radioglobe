@@ -28,6 +28,15 @@
     <entry name="maxWorldStations" type="Int">
       <default>3000</default>
     </entry>
+    <!-- Located stations fetched on top of the popular ones when a country
+         is opened (three times that for the largest countries) or a search
+         is run. -->
+    <entry name="maxCountryStations" type="Int">
+      <default>500</default>
+    </entry>
+    <entry name="maxSearchStations" type="Int">
+      <default>500</default>
+    </entry>
     <!-- ISO 3166-1 alpha-2 code. Empty means "take it from the locale". -->
     <entry name="homeCountry" type="String">
       <default></default>

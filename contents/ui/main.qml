@@ -373,6 +373,8 @@ PlasmoidItem {
         cache: cacheLoader.item
         countries: root.countries
         worldLimit: Plasmoid.configuration.maxWorldStations
+        countryStationLimit: Plasmoid.configuration.maxCountryStations
+        searchStationLimit: Plasmoid.configuration.maxSearchStations
         homeCountry: root.homeCountry
         approximateLocations: Plasmoid.configuration.approximateLocations
         sendClicks: Plasmoid.configuration.sendClicks

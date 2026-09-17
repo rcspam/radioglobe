@@ -405,16 +405,17 @@ function zoomAnchoredCentre(cursorX, cursorY, width, height, oldScale, newScale,
   return current
 }
 
-// How many located stations a country view asks for. Countries over about
-// two million square kilometres get three times the room: their stations
-// are spread out, five hundred dots would look sparse.
+// How many located stations a country view asks for: the setting, times
+// three for countries over about two million square kilometres, whose
+// stations are spread out (five hundred dots would look sparse there).
 var bigCountries = ({
   RU: true, CA: true, US: true, CN: true, BR: true, AU: true, IN: true,
   AR: true, KZ: true, DZ: true, CD: true, SA: true, MX: true
 })
 
-function countryGeoLimit(code) {
-  return bigCountries[String(code || "").toUpperCase()] ? 1500 : 500
+function countryGeoLimit(code, base) {
+  var limit = Number(base) > 0 ? Number(base) : 500
+  return bigCountries[String(code || "").toUpperCase()] ? limit * 3 : limit
 }
 
 // Douglas-Peucker on a GeoJSON ring ([longitude, latitude] pairs), tolerance
@@ -1113,7 +1114,9 @@ var backupSettingTypes = ({
     iconColor: "string",
     badgeColor: "string",
     invertWheel: "boolean",
-    showDayNight: "boolean"
+    showDayNight: "boolean",
+    maxCountryStations: "number",
+    maxSearchStations: "number"
 });
 
 function backupSettings(settings) {

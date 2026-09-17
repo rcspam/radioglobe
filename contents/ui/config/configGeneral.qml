@@ -12,6 +12,8 @@ KCM.SimpleKCM {
     id: page
 
     property alias cfg_maxWorldStations: maxStations.value
+    property alias cfg_maxCountryStations: maxCountryStations.value
+    property alias cfg_maxSearchStations: maxSearchStations.value
     property alias cfg_homeCountry: homeCountry.text
     property alias cfg_mpvPath: mpvPath.text
     property alias cfg_sendClicks: sendClicks.checked
@@ -89,6 +91,28 @@ KCM.SimpleKCM {
             // asking for more only promises stations that never arrive.
             to: 5000
             stepSize: 500
+        }
+        QQC2.SpinBox {
+            id: maxCountryStations
+            objectName: "maxCountryStations"
+            Kirigami.FormData.label: i18n("Located stations per country:")
+            from: 100
+            to: 3000
+            stepSize: 100
+        }
+        QQC2.Label {
+            text: i18n("On top of the 300 most listened. Three times that for the largest countries (Russia, Canada, the United States, China, Brazil, Australia, India…).")
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
+            opacity: 0.7
+        }
+        QQC2.SpinBox {
+            id: maxSearchStations
+            objectName: "maxSearchStations"
+            Kirigami.FormData.label: i18n("Located stations per search:")
+            from: 100
+            to: 3000
+            stepSize: 100
         }
         QQC2.TextField {
             id: homeCountry
