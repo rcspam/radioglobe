@@ -85,7 +85,8 @@ Item {
     // the previous pass. At 240 Hz that is four painting passes computed and
     // thrown away for every texture the eye actually gets, and the GUI thread
     // ends up saturated, so drags and list scrolling stutter. Requests are
-    // capped at one per 8 ms and the ones arriving in between are merged.
+    // capped at one per 16 ms (60 frames per second is plenty for a drag)
+    // and the ones arriving in between are merged.
     function schedulePaint() {
         if (paintThrottle.running) {
             paintDirty = true;
@@ -745,7 +746,7 @@ Item {
     Timer {
         id: paintThrottle
 
-        interval: 8
+        interval: 16
         onTriggered: if (root.paintDirty)
             root.schedulePaint()
     }

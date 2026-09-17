@@ -246,7 +246,7 @@ TestCase {
         for (let i = 0; i < burst; i++)
             globe.centreLongitude = i * 0.05;
         const elapsed = Date.now() - started;
-        verify(elapsed < 8, "the burst itself took " + elapsed + " ms, longer than the throttle window");
+        verify(elapsed < 16, "the burst itself took " + elapsed + " ms, longer than the throttle window");
         // The first change sent the request, the other eleven were merged into
         // the single re-issue the throttle fires at the end of its window.
         verify(globe.paintDirty, "changes inside the window must be merged, not requested one by one");
@@ -259,6 +259,15 @@ TestCase {
         });
         wait(120);
         verify(globe.paintCount - before <= 2, "expected at most 2 paints for " + burst + " changes, got " + (globe.paintCount - before));
+
+        // Sixty changes spread over 400 ms: at most one paint per 16 ms.
+        const start = globe.paintCount;
+        for (let j = 0; j < 60; j++) {
+            globe.centreLongitude = j * 0.1;
+            wait(6);
+        }
+        wait(60);
+        verify(globe.paintCount - start <= 26, "expected at most 26 paints in 400 ms, got " + (globe.paintCount - start));
     }
 
     // spreadOverlapping puts duplicates 0.08 degrees apart: at scale 24 that
