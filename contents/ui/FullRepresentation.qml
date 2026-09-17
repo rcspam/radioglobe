@@ -94,14 +94,32 @@ Item {
         searchBar.focusInput();
     }
 
+    function hasCoordinates(station) {
+        return station && station.latitude !== null && station.longitude !== null && station.latitude !== undefined && station.longitude !== undefined;
+    }
+
+    // Centres the globe on a station: on its coordinates, or, when Radio
+    // Browser has none, on its country (most stations have no location).
+    function centreOn(station) {
+        if (!station)
+            return false;
+        if (full.hasCoordinates(station)) {
+            globe.focusCoordinate(station.latitude, station.longitude);
+            return true;
+        }
+        if (station.countryCode) {
+            globe.focusCountry(String(station.countryCode).toUpperCase());
+            return false;
+        }
+        return false;
+    }
+
     // Frames the playing station on the globe, zooming in to city level
-    // unless the globe is already closer.
+    // unless the globe is already closer; a country stays at the current
+    // zoom, it is not a city.
     function locateCurrentStation() {
-        const station = full.mediaPlayer.station;
-        if (!station || station.latitude === null || station.longitude === null || station.latitude === undefined || station.longitude === undefined)
-            return;
-        globe.focusCoordinate(station.latitude, station.longitude);
-        globe.globeScale = Math.max(globe.globeScale, 8);
+        if (full.centreOn(full.mediaPlayer.station))
+            globe.globeScale = Math.max(globe.globeScale, 8);
     }
 
     // During a search, or in a country, the globe is a map of the list: the
@@ -402,8 +420,7 @@ Item {
     Connections {
         target: player
         function onPlayingStarted(station) {
-            if (station && station.latitude !== null && station.longitude !== null)
-                globe.focusCoordinate(station.latitude, station.longitude);
+            full.centreOn(station);
         }
     }
 

@@ -271,6 +271,42 @@ TestCase {
         player.station = null;
     }
 
+    function loadCountries() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", Qt.resolvedUrl("../../contents/data/countries.json"), false);
+        xhr.send();
+        return JSON.parse(xhr.responseText).features;
+    }
+
+    // No coordinates: the globe centres on the station's country instead,
+    // both when it starts playing and on a locate request.
+    function test_station_without_coordinates_centres_its_country() {
+        const playerBar = findChild(loader.item, "playerBar");
+        const globe = findChild(loader.item, "globe");
+        root.countries = loadCountries();
+        globe.globeScale = 1;
+        globe.centreLatitude = 0;
+        globe.centreLongitude = 0;
+        const somewhereInJapan = {
+            uuid: "jp",
+            name: "Somewhere in Japan",
+            countryCode: "JP",
+            latitude: null,
+            longitude: null
+        };
+        player.playingStarted(somewhereInJapan);
+        verify(globe.centreLatitude > 30 && globe.centreLatitude < 45, "latitude " + globe.centreLatitude);
+        verify(globe.centreLongitude > 125 && globe.centreLongitude < 150, "longitude " + globe.centreLongitude);
+        globe.centreLatitude = 0;
+        globe.centreLongitude = 0;
+        player.station = somewhereInJapan;
+        playerBar.locateRequested();
+        verify(globe.centreLongitude > 125 && globe.centreLongitude < 150, "longitude " + globe.centreLongitude);
+        compare(globe.globeScale, 1, "a country is not a city: no zoom");
+        player.station = null;
+        root.countries = [];
+    }
+
     function test_located_favourites_are_on_the_globe() {
         const globe = findChild(loader.item, "globe");
         root.favorites = [
