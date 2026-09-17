@@ -102,13 +102,15 @@ Item {
         globe.globeScale = Math.max(globe.globeScale, 8);
     }
 
-    // During a search the globe is a map of the matches: the results only,
-    // no favourites, so the filter is one. Otherwise the world list is capped,
-    // and stations added by hand or favourites outside the cap are not in it:
-    // located favourites are appended when missing, so they get a dot. The
-    // playing station is always there, so locating it always lands on a dot.
+    // During a search, or in a country, the globe is a map of the list: the
+    // results only, no favourites, so the filter is one. Otherwise the world
+    // list is capped, and stations added by hand or favourites outside the
+    // cap are not in it: located favourites are appended when missing, so
+    // they get a dot. The playing station is always there, so locating it
+    // always lands on a dot.
     readonly property bool searching: root.listSource === "search"
-    readonly property var globeStations: RadioModel.withLocalStations(full.searching ? root.listStations : root.worldStations, full.searching ? [] : root.favorites, full.mediaPlayer.station, root.approximateLocations)
+    readonly property bool filtered: full.searching || root.listSource === "country"
+    readonly property var globeStations: RadioModel.withLocalStations(full.filtered ? root.listStations : root.worldStations, full.filtered ? [] : root.favorites, full.mediaPlayer.station, root.approximateLocations)
 
     // The packages to install for the modules main.qml found missing: the
     // command for this distribution when known, else one line per family.

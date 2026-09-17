@@ -292,9 +292,9 @@ TestCase {
         verify(!globe.stations.some(s => s.uuid === "local-1"));
     }
 
-    // During a search the globe shows the matches only (plus the playing
-    // station), not the world and not the favourites; clearing it brings
-    // the world back.
+    // During a search, or in a country, the globe shows the list (plus the
+    // playing station), not the world and not the favourites; the World tab
+    // brings the world back.
     function test_search_filters_the_globe() {
         const globe = findChild(loader.item, "globe");
         root.favorites = [
@@ -322,6 +322,23 @@ TestCase {
         root.listSource = "search";
         compare(globe.stations.map(s => s.uuid).sort().join(","), "hit,playing");
         compare(loader.item.statusLine, "1 match on the globe");
+        // A country is a filter too: its stations only, favourites aside.
+        root.currentCountry = {
+            code: "FR",
+            name: "France"
+        };
+        root.listStations = [
+            {
+                uuid: "fr1",
+                name: "Radio Nova",
+                latitude: 48,
+                longitude: 2
+            }
+        ];
+        root.listSource = "country";
+        compare(globe.stations.map(s => s.uuid).sort().join(","), "fr1,playing");
+        compare(loader.item.statusLine, "France · click another country to browse");
+        root.currentCountry = null;
         root.listStations = root.worldStations;
         root.listSource = "world";
         verify(globe.stations.some(s => s.uuid === "a"), "the world is back");
