@@ -301,19 +301,46 @@ TestCase {
         let calls = [];
         rb.loadCountry("fr", (stations, source) => calls.push({
                 n: stations.length,
+                first: stations[0].uuid,
                 source
             }));
         compare(calls[0].source, "local");
         compare(calls[0].n, 1);
+        // Two requests: the 300 most clicked for the list, and the located
+        // ones for the globe (the popular ones rarely have coordinates).
         const url = answer("/json/stations/bycountrycodeexact/FR", 200, [raw("a"), raw("b")]);
         verify(url.indexOf("limit=300") > 0);
+        compare(calls.length, 1, "the list waits for both answers");
+        const geoUrl = answer("/json/stations/search", 200, [raw("b", {
+                clickcount: 9
+            }), raw("c", {
+                geo_lat: 48.8,
+                geo_long: 2.3,
+                clickcount: 50
+            })]);
+        verify(geoUrl.indexOf("countrycode=FR") > 0, geoUrl);
+        verify(geoUrl.indexOf("has_geo_info=true") > 0, geoUrl);
+        verify(geoUrl.indexOf("limit=500") > 0, geoUrl);
         compare(calls[1].source, "network");
-        compare(calls[1].n, 2);
-        verify(store["country:FR:300"] !== undefined);
+        // a, b, c merged without duplicates, most clicked first.
+        compare(calls[1].n, 3);
+        compare(calls[1].first, "c");
+        verify(store["country:FR:300+500"] !== undefined);
         calls = [];
         rb.loadCountry("FR", (stations, source) => calls.push(source));
         compare(calls, ["local", "cache"]);
         compare(pending.length, 0);
+    }
+
+    // A big country gets more located stations.
+    function test_big_country_asks_for_more_located_stations() {
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a")]);
+        rb.loadCountry("US", () => {});
+        answer("/json/stations/bycountrycodeexact/US", 200, [raw("u")]);
+        const geoUrl = answer("/json/stations/search", 200, []);
+        verify(geoUrl.indexOf("limit=1500") > 0, geoUrl);
     }
 
     // An upgrading user has a fresh world cache that predates the home
@@ -652,10 +679,11 @@ TestCase {
         rb.loadCountry("FR", () => {});
         compare(pending.length, 1, "a stale discovery response must not re-open the discovering gate");
         verify(pending[0].url.indexOf("/json/servers") >= 0, pending[0].url);
-        // Resolving "B" flushes both queued callers (the original world fetch
-        // and the loadCountry() call above); neither is a further discovery.
+        // Resolving "B" flushes the queued callers (the original world fetch
+        // and the two requests of the loadCountry() call above); none is a
+        // further discovery.
         answer("/json/servers", 200, []);
-        compare(pending.length, 2);
+        compare(pending.length, 3);
         const urls = pending.map(p => p.url);
         verify(urls.some(u => u.indexOf("/json/stations/search") >= 0), urls.join(", "));
         verify(urls.every(u => u.indexOf("/json/servers") < 0), urls.join(", "));

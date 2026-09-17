@@ -471,3 +471,11 @@ test("simplifyRing on the real countries gives the three detail levels", () => {
     assert.ok(count(0.1) < 8600 && count(0.1) > 8200, "0.1 degree: " + count(0.1));
     assert.ok(count(0.35) < 4600 && count(0.35) > 4200, "0.35 degree: " + count(0.35));
 });
+
+test("countryGeoLimit gives the big countries room for more dots", () => {
+    assert.equal(model.countryGeoLimit("FR"), 500);
+    assert.equal(model.countryGeoLimit("us"), 1500);
+    assert.equal(model.countryGeoLimit("CN"), 1500);
+    assert.equal(model.countryGeoLimit("RU"), 1500);
+    assert.equal(model.countryGeoLimit(""), 500);
+});

@@ -405,6 +405,18 @@ function zoomAnchoredCentre(cursorX, cursorY, width, height, oldScale, newScale,
   return current
 }
 
+// How many located stations a country view asks for. Countries over about
+// two million square kilometres get three times the room: their stations
+// are spread out, five hundred dots would look sparse.
+var bigCountries = ({
+  RU: true, CA: true, US: true, CN: true, BR: true, AU: true, IN: true,
+  AR: true, KZ: true, DZ: true, CD: true, SA: true, MX: true
+})
+
+function countryGeoLimit(code) {
+  return bigCountries[String(code || "").toUpperCase()] ? 1500 : 500
+}
+
 // Douglas-Peucker on a GeoJSON ring ([longitude, latitude] pairs), tolerance
 // in degrees. Iterative (a stack, no recursion) so a 1 000-point coastline
 // cannot blow the stack. The first and last points always stay; a ring too

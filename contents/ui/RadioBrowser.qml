@@ -153,27 +153,49 @@ Item {
         const local = RadioModel.stationsForCountry(root._world, wanted, 200);
         if (local.length > 0)
             callback(local, "local");
-        // The limit is part of the key: a cache written by an older build
+        // The limits are part of the key: a cache written by an older build
         // holds fewer rows than the current one promises.
-        const key = "country:" + wanted + ":300";
+        const geoLimit = RadioModel.countryGeoLimit(wanted);
+        const key = "country:" + wanted + ":300+" + geoLimit;
         const cached = root.cache ? root.cache.get(key) : null;
         if (cached && Array.isArray(cached.value) && root.now() - cached.savedAt < root.cacheTtlMs) {
             callback(cached.value, "cache");
             return;
         }
+        // Two requests: the most clicked stations for the list, and the ones
+        // with coordinates for the globe. The popular ones rarely have a
+        // location (72 of France's top 300), the located ones are far more
+        // numerous (546) and mostly further down the popularity list.
+        const groups = [null, null];
+        let remaining = groups.length;
+        const absorb = (index, rows) => {
+            groups[index] = rows === null ? [] : RadioModel.normalizeStations(rows, index === 0 ? 300 : geoLimit);
+            remaining -= 1;
+            if (remaining > 0)
+                return;
+            if (groups[0].length === 0 && groups[1].length === 0)
+                return;
+            const merged = RadioModel.combineStations(groups, 300 + geoLimit, false);
+            merged.sort((a, b) => (Number(b.clicks) || 0) - (Number(a.clicks) || 0));
+            const stations = root._locate(merged);
+            if (root.cache)
+                root.cache.set(key, stations, root.now());
+            callback(stations, "network");
+        };
         root._api("/json/stations/bycountrycodeexact/" + wanted, {
             hidebroken: true,
             order: "clickcount",
             reverse: true,
             limit: 300
-        }, rows => {
-            if (rows === null)
-                return;
-            const stations = root._locate(RadioModel.normalizeStations(rows, 300));
-            if (root.cache)
-                root.cache.set(key, stations, root.now());
-            callback(stations, "network");
-        });
+        }, rows => absorb(0, rows));
+        root._api("/json/stations/search", {
+            countrycode: wanted,
+            has_geo_info: true,
+            hidebroken: true,
+            order: "clickcount",
+            reverse: true,
+            limit: geoLimit
+        }, rows => absorb(1, rows));
     }
 
     function search(query, callback) {
