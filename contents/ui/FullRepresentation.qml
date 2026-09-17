@@ -260,7 +260,7 @@ Item {
 
                         PlasmaComponents3.ToolButton {
                             objectName: "zoomInButton"
-                            icon.name: "zoom-in"
+                            icon.name: "list-add"
                             enabled: globe.canZoomIn
                             focusPolicy: Qt.NoFocus
                             onClicked: globe.zoomIn()
@@ -271,7 +271,7 @@ Item {
 
                         PlasmaComponents3.ToolButton {
                             objectName: "zoomOutButton"
-                            icon.name: "zoom-out"
+                            icon.name: "list-remove"
                             enabled: globe.canZoomOut
                             focusPolicy: Qt.NoFocus
                             onClicked: globe.zoomOut()
