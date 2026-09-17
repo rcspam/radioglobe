@@ -330,6 +330,7 @@ Item {
                     currentUuid: player.station ? player.station.uuid : ""
                     favoriteCheck: uuid => root.isFavorite(uuid)
                     currentTab: root.currentTab
+                    loading: root.loadingCountry
                     onTabSelected: index => {
                         if (index === 0) {
                             // Picking World means "show me the world again":

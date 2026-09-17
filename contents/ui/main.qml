@@ -172,6 +172,11 @@ PlasmoidItem {
         return RadioModel.indexByUuid(root.favorites, uuid) >= 0;
     }
 
+    // True between the click on a country and its stations arriving: the
+    // list is emptied meanwhile and says "Loading…", so the country lands
+    // in one go instead of replacing the previous list a second later.
+    property bool loadingCountry: false
+
     function openCountry(code, name) {
         root._selectWorldTab();
         root.currentCountry = {
@@ -181,16 +186,20 @@ PlasmoidItem {
         // Claim the source before the request goes out, so a world refresh
         // arriving meanwhile does not send _refreshList back through here.
         root.listSource = "country";
+        root.listStations = [];
+        root.loadingCountry = true;
         radioBrowser.loadCountry(code, (stations, source) => {
             if (root.currentTab === 0 && root.currentCountry && root.currentCountry.code === code) {
                 root.listStations = stations;
                 root.listSource = "country";
+                root.loadingCountry = false;
             }
         });
     }
 
     function clearCountry() {
         root.currentCountry = null;
+        root.loadingCountry = false;
         root._refreshList();
     }
 
@@ -231,6 +240,7 @@ PlasmoidItem {
     }
 
     function _refreshList() {
+        root.loadingCountry = false;
         if (root.currentTab === 1) {
             root.listStations = root.favorites;
             root.listSource = "favorites";

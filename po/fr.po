@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-17 20:00+0200\n"
+"POT-Creation-Date: 2026-09-17 20:27+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -35,7 +35,7 @@ msgid_plural "%1 signals"
 msgstr[0] "%1 signal"
 msgstr[1] "%1 signaux"
 
-#: contents/ui/Globe.qml:1074
+#: contents/ui/Globe.qml:1115
 msgid "%1 · approximate location"
 msgstr "%1 · position approximative"
 
@@ -55,8 +55,8 @@ msgstr "Ajouter"
 msgid "Add a station"
 msgstr "Ajouter une radio"
 
-#: contents/ui/FullRepresentation.qml:193
-#: contents/ui/FullRepresentation.qml:194
+#: contents/ui/FullRepresentation.qml:195
+#: contents/ui/FullRepresentation.qml:196
 msgid "Add a station…"
 msgstr "Ajouter une radio…"
 
@@ -132,7 +132,7 @@ msgstr "Séparés par des virgules, ex. jazz,news"
 msgid "Connecting…"
 msgstr "Connexion…"
 
-#: contents/ui/FullRepresentation.qml:161
+#: contents/ui/FullRepresentation.qml:163
 msgid "Copy the install command"
 msgstr "Copier la commande d'installation"
 
@@ -185,7 +185,7 @@ msgstr "Exporter les réglages de RadioGlobe"
 msgid "Export:"
 msgstr "Exporter :"
 
-#: contents/ui/StationList.qml:70
+#: contents/ui/StationList.qml:72
 msgid "Favorites"
 msgstr "Favoris"
 
@@ -235,12 +235,12 @@ msgstr "Inverser le sens de la molette pour le volume"
 msgid "JSON files (*.json)"
 msgstr "Fichiers JSON (*.json)"
 
-#: contents/ui/FullRepresentation.qml:207
-#: contents/ui/FullRepresentation.qml:208
+#: contents/ui/FullRepresentation.qml:209
+#: contents/ui/FullRepresentation.qml:210
 msgid "Keep open"
 msgstr "Garder ouvert"
 
-#: contents/ui/Globe.qml:1072
+#: contents/ui/Globe.qml:1113
 msgid "Landed near · %1"
 msgstr "À proximité de · %1"
 
@@ -255,6 +255,10 @@ msgstr "En direct"
 #: contents/ui/config/configBackup.qml:168
 msgid "Load from a file…"
 msgstr "Charger depuis un fichier…"
+
+#: contents/ui/StationList.qml:301
+msgid "Loading…"
+msgstr "Chargement…"
 
 #: contents/ui/config/configAddStation.qml:313
 msgid "Location:"
@@ -272,7 +276,7 @@ msgstr "Données cartographiques © les contributeurs d'OpenStreetMap"
 msgid "Maximum stations on the globe:"
 msgstr "Nombre maximal de stations sur le globe :"
 
-#: contents/ui/FullRepresentation.qml:121
+#: contents/ui/FullRepresentation.qml:123
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "%2"
@@ -280,7 +284,7 @@ msgstr ""
 "Modules QML manquants : %1. Installez-les puis redémarrez Plasma :\n"
 "%2"
 
-#: contents/ui/FullRepresentation.qml:123
+#: contents/ui/FullRepresentation.qml:125
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "Debian / Ubuntu: sudo apt install %2\n"
@@ -296,7 +300,7 @@ msgstr ""
 msgid "Name:"
 msgstr "Nom :"
 
-#: contents/ui/StationList.qml:298
+#: contents/ui/StationList.qml:301
 msgid "No favorites yet"
 msgstr "Aucun favori pour l’instant"
 
@@ -312,7 +316,7 @@ msgstr "Aucune station en lecture"
 msgid "No station selected"
 msgstr "Aucune station sélectionnée"
 
-#: contents/ui/StationList.qml:298
+#: contents/ui/StationList.qml:301
 msgid "No stations"
 msgstr "Aucune station"
 
@@ -328,7 +332,7 @@ msgstr "Introuvable. Installer le paquet « mpv-mpris » (nécessaire pour les t
 msgid "Not found. Install the “mpv” package."
 msgstr "Introuvable. Installer le paquet « mpv »."
 
-#: contents/ui/StationList.qml:298
+#: contents/ui/StationList.qml:301
 msgid "Nothing played yet"
 msgstr "Rien n’a encore été écouté"
 
@@ -408,15 +412,15 @@ msgstr "Station aléatoire"
 msgid "Reading…"
 msgstr "Lecture…"
 
-#: contents/ui/StationList.qml:73
+#: contents/ui/StationList.qml:75
 msgid "Recent"
 msgstr "Récents"
 
-#: contents/ui/StationList.qml:225 contents/ui/StationList.qml:228
+#: contents/ui/StationList.qml:227 contents/ui/StationList.qml:230
 msgid "Remove from recent"
 msgstr "Retirer des récents"
 
-#: contents/ui/StationList.qml:247 contents/ui/StationList.qml:250
+#: contents/ui/StationList.qml:249 contents/ui/StationList.qml:252
 msgid "Rename"
 msgstr "Renommer"
 
@@ -428,7 +432,7 @@ msgstr "Remplace les favoris et l'historique actuels. Rien ne change avant d'app
 msgid "Report played stations to the click counter"
 msgstr "Signaler les stations écoutées au compteur de clics"
 
-#: contents/ui/FullRepresentation.qml:308 contents/ui/PlayerBar.qml:74
+#: contents/ui/FullRepresentation.qml:310 contents/ui/PlayerBar.qml:74
 msgid "Retry"
 msgstr "Réessayer"
 
@@ -512,7 +516,7 @@ msgstr "Ce fichier n'est pas du JSON valide."
 msgid "This station could not be played. It may be offline; retry or pick another one."
 msgstr "Cette station n’a pas pu être lue. Elle est peut-être hors ligne : réessayez ou choisissez-en une autre."
 
-#: contents/ui/StationList.qml:273 contents/ui/StationList.qml:277
+#: contents/ui/StationList.qml:275 contents/ui/StationList.qml:279
 msgid "Toggle favorite (F)"
 msgstr "Basculer le favori (F)"
 
@@ -520,21 +524,21 @@ msgstr "Basculer le favori (F)"
 msgid "Tune a random station (R)"
 msgstr "Écouter une station aléatoire (R)"
 
-#: contents/ui/StationList.qml:63
+#: contents/ui/StationList.qml:65
 msgid "World"
 msgstr "Monde"
 
-#: contents/ui/FullRepresentation.qml:271
-#: contents/ui/FullRepresentation.qml:272
+#: contents/ui/FullRepresentation.qml:273
+#: contents/ui/FullRepresentation.qml:274
 msgid "Zoom in"
 msgstr "Zoom avant"
 
-#: contents/ui/FullRepresentation.qml:282
-#: contents/ui/FullRepresentation.qml:283
+#: contents/ui/FullRepresentation.qml:284
+#: contents/ui/FullRepresentation.qml:285
 msgid "Zoom out"
 msgstr "Zoom arrière"
 
-#: contents/ui/Globe.qml:1087
+#: contents/ui/Globe.qml:1128
 msgid "approximate location"
 msgstr "position approximative"
 

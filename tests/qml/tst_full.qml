@@ -51,6 +51,7 @@ TestCase {
         property int currentTab: 0
         property var currentCountry: null
         property string searchText: ""
+        property bool loadingCountry: false
         property var favorites: []
         property bool approximateLocations: false
         property bool showDayNight: true
@@ -346,6 +347,14 @@ TestCase {
         compare(loader.item.statusLine, "2 signals");
         root.favorites = [];
         player.station = null;
+    }
+
+    function test_list_shows_the_country_loading_state() {
+        const list = findChild(loader.item, "stationList");
+        compare(list.loading, false);
+        root.loadingCountry = true;
+        compare(list.loading, true);
+        root.loadingCountry = false;
     }
 
     function test_edit_button_sends_the_current_station_to_root() {

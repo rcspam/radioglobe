@@ -150,9 +150,10 @@ Item {
         const wanted = String(code || "").toUpperCase();
         if (!wanted)
             return;
+        // The stations of the country already in the world list: only the
+        // fallback when the network fails. Handing them out right away made
+        // the view fill in two waves.
         const local = RadioModel.stationsForCountry(root._world, wanted, 200);
-        if (local.length > 0)
-            callback(local, "local");
         // The limits are part of the key: a cache written by an older build
         // holds fewer rows than the current one promises.
         const geoLimit = RadioModel.countryGeoLimit(wanted);
@@ -173,8 +174,11 @@ Item {
             remaining -= 1;
             if (remaining > 0)
                 return;
-            if (groups[0].length === 0 && groups[1].length === 0)
+            if (groups[0].length === 0 && groups[1].length === 0) {
+                if (local.length > 0)
+                    callback(local, "local");
                 return;
+            }
             const merged = RadioModel.combineStations(groups, 300 + geoLimit, false);
             merged.sort((a, b) => (Number(b.clicks) || 0) - (Number(a.clicks) || 0));
             const stations = root._locate(merged);

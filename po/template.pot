@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-17 20:00+0200\n"
+"POT-Creation-Date: 2026-09-17 20:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,7 +36,7 @@ msgid_plural "%1 signals"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/Globe.qml:1074
+#: contents/ui/Globe.qml:1115
 msgid "%1 · approximate location"
 msgstr ""
 
@@ -56,8 +56,8 @@ msgstr ""
 msgid "Add a station"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:193
-#: contents/ui/FullRepresentation.qml:194
+#: contents/ui/FullRepresentation.qml:195
+#: contents/ui/FullRepresentation.qml:196
 msgid "Add a station…"
 msgstr ""
 
@@ -133,7 +133,7 @@ msgstr ""
 msgid "Connecting…"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:161
+#: contents/ui/FullRepresentation.qml:163
 msgid "Copy the install command"
 msgstr ""
 
@@ -186,7 +186,7 @@ msgstr ""
 msgid "Export:"
 msgstr ""
 
-#: contents/ui/StationList.qml:70
+#: contents/ui/StationList.qml:72
 msgid "Favorites"
 msgstr ""
 
@@ -236,12 +236,12 @@ msgstr ""
 msgid "JSON files (*.json)"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:207
-#: contents/ui/FullRepresentation.qml:208
+#: contents/ui/FullRepresentation.qml:209
+#: contents/ui/FullRepresentation.qml:210
 msgid "Keep open"
 msgstr ""
 
-#: contents/ui/Globe.qml:1072
+#: contents/ui/Globe.qml:1113
 msgid "Landed near · %1"
 msgstr ""
 
@@ -255,6 +255,10 @@ msgstr ""
 
 #: contents/ui/config/configBackup.qml:168
 msgid "Load from a file…"
+msgstr ""
+
+#: contents/ui/StationList.qml:301
+msgid "Loading…"
 msgstr ""
 
 #: contents/ui/config/configAddStation.qml:313
@@ -273,13 +277,13 @@ msgstr ""
 msgid "Maximum stations on the globe:"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:121
+#: contents/ui/FullRepresentation.qml:123
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "%2"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:123
+#: contents/ui/FullRepresentation.qml:125
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "Debian / Ubuntu: sudo apt install %2\n"
@@ -291,7 +295,7 @@ msgstr ""
 msgid "Name:"
 msgstr ""
 
-#: contents/ui/StationList.qml:298
+#: contents/ui/StationList.qml:301
 msgid "No favorites yet"
 msgstr ""
 
@@ -307,7 +311,7 @@ msgstr ""
 msgid "No station selected"
 msgstr ""
 
-#: contents/ui/StationList.qml:298
+#: contents/ui/StationList.qml:301
 msgid "No stations"
 msgstr ""
 
@@ -323,7 +327,7 @@ msgstr ""
 msgid "Not found. Install the “mpv” package."
 msgstr ""
 
-#: contents/ui/StationList.qml:298
+#: contents/ui/StationList.qml:301
 msgid "Nothing played yet"
 msgstr ""
 
@@ -403,15 +407,15 @@ msgstr ""
 msgid "Reading…"
 msgstr ""
 
-#: contents/ui/StationList.qml:73
+#: contents/ui/StationList.qml:75
 msgid "Recent"
 msgstr ""
 
-#: contents/ui/StationList.qml:225 contents/ui/StationList.qml:228
+#: contents/ui/StationList.qml:227 contents/ui/StationList.qml:230
 msgid "Remove from recent"
 msgstr ""
 
-#: contents/ui/StationList.qml:247 contents/ui/StationList.qml:250
+#: contents/ui/StationList.qml:249 contents/ui/StationList.qml:252
 msgid "Rename"
 msgstr ""
 
@@ -423,7 +427,7 @@ msgstr ""
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:308 contents/ui/PlayerBar.qml:74
+#: contents/ui/FullRepresentation.qml:310 contents/ui/PlayerBar.qml:74
 msgid "Retry"
 msgstr ""
 
@@ -507,7 +511,7 @@ msgstr ""
 msgid "This station could not be played. It may be offline; retry or pick another one."
 msgstr ""
 
-#: contents/ui/StationList.qml:273 contents/ui/StationList.qml:277
+#: contents/ui/StationList.qml:275 contents/ui/StationList.qml:279
 msgid "Toggle favorite (F)"
 msgstr ""
 
@@ -515,21 +519,21 @@ msgstr ""
 msgid "Tune a random station (R)"
 msgstr ""
 
-#: contents/ui/StationList.qml:63
+#: contents/ui/StationList.qml:65
 msgid "World"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:271
-#: contents/ui/FullRepresentation.qml:272
+#: contents/ui/FullRepresentation.qml:273
+#: contents/ui/FullRepresentation.qml:274
 msgid "Zoom in"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:282
-#: contents/ui/FullRepresentation.qml:283
+#: contents/ui/FullRepresentation.qml:284
+#: contents/ui/FullRepresentation.qml:285
 msgid "Zoom out"
 msgstr ""
 
-#: contents/ui/Globe.qml:1087
+#: contents/ui/Globe.qml:1128
 msgid "approximate location"
 msgstr ""
 

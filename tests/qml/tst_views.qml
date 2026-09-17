@@ -437,6 +437,21 @@ TestCase {
         compare(tabs.signalArguments[0][0], 0);
     }
 
+    // While a country is being fetched the empty list says so, instead of
+    // "No stations".
+    function test_empty_list_says_loading_while_loading() {
+        const before = list.stations;
+        list.stations = [];
+        const placeholder = findChild(list, "placeholder");
+        verify(placeholder !== null, "placeholder not found");
+        compare(placeholder.visible, true);
+        compare(placeholder.text, "No stations");
+        list.loading = true;
+        compare(placeholder.text, "Loading…");
+        list.loading = false;
+        list.stations = before;
+    }
+
     function countRows(item) {
         let rows = item.objectName === "stationRow" ? 1 : 0;
         for (let i = 0; i < item.children.length; i++)

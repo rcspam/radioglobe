@@ -304,13 +304,13 @@ TestCase {
                 first: stations[0].uuid,
                 source
             }));
-        compare(calls[0].source, "local");
-        compare(calls[0].n, 1);
+        // No early wave from the world list: everything lands at once.
+        compare(calls.length, 0);
         // Two requests: the 300 most clicked for the list, and the located
         // ones for the globe (the popular ones rarely have coordinates).
         const url = answer("/json/stations/bycountrycodeexact/FR", 200, [raw("a"), raw("b")]);
         verify(url.indexOf("limit=300") > 0);
-        compare(calls.length, 1, "the list waits for both answers");
+        compare(calls.length, 0, "the list waits for both answers");
         const geoUrl = answer("/json/stations/search", 200, [raw("b", {
                 clickcount: 9
             }), raw("c", {
@@ -321,15 +321,35 @@ TestCase {
         verify(geoUrl.indexOf("countrycode=FR") > 0, geoUrl);
         verify(geoUrl.indexOf("has_geo_info=true") > 0, geoUrl);
         verify(geoUrl.indexOf("limit=500") > 0, geoUrl);
-        compare(calls[1].source, "network");
+        compare(calls[0].source, "network");
         // a, b, c merged without duplicates, most clicked first.
-        compare(calls[1].n, 3);
-        compare(calls[1].first, "c");
+        compare(calls[0].n, 3);
+        compare(calls[0].first, "c");
         verify(store["country:FR:300+500"] !== undefined);
         calls = [];
         rb.loadCountry("FR", (stations, source) => calls.push(source));
-        compare(calls, ["local", "cache"]);
+        compare(calls, ["cache"]);
         compare(pending.length, 0);
+    }
+
+    // Offline, the stations of the country already in the world list are
+    // better than nothing.
+    function test_country_falls_back_to_the_world_list_when_the_network_fails() {
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a"), raw("z", {
+                countrycode: "DE"
+            })]);
+        const calls = [];
+        rb.loadCountry("FR", (stations, source) => calls.push({
+                n: stations.length,
+                source
+            }));
+        answer("/json/stations/bycountrycodeexact/FR", 500, "");
+        answer("/json/stations/search", 500, "");
+        compare(calls.length, 1);
+        compare(calls[0].source, "local");
+        compare(calls[0].n, 1);
     }
 
     // A big country gets more located stations.

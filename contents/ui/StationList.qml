@@ -15,6 +15,8 @@ ColumnLayout {
         return false;
     }
     property int currentTab: 0
+    // A country is being fetched: the empty list says so.
+    property bool loading: false
     property int selectedIndex: -1
 
     // uuid of the row behind selectedIndex, kept so the selection survives a
@@ -291,11 +293,12 @@ ColumnLayout {
         }
 
         PlasmaExtras.PlaceholderMessage {
+            objectName: "placeholder"
             anchors.centerIn: parent
             width: parent.width - Kirigami.Units.gridUnit * 2
             visible: view.count === 0
             iconName: "radio"
-            text: list.currentTab === 1 ? i18n("No favorites yet") : list.currentTab === 2 ? i18n("Nothing played yet") : i18n("No stations")
+            text: list.loading ? i18n("Loading…") : (list.currentTab === 1 ? i18n("No favorites yet") : list.currentTab === 2 ? i18n("Nothing played yet") : i18n("No stations"))
         }
     }
 }
