@@ -434,3 +434,40 @@ test("terminatorGeometry: a sun mostly in front leaves less than half the disc i
     for (const p of geometry.night)
         assert.ok(p.x <= 1e-9);
 });
+
+test("simplifyRing drops the points that stay within the tolerance", () => {
+    // A straight run of ten points, one of them bent away by a full degree.
+    const ring = [];
+    for (let i = 0; i <= 9; i++)
+        ring.push([i, 0]);
+    ring[5] = [5, 1];
+    // The bend stays, and so do its neighbours: 0.78 degree off the new chords.
+    const kept = model.simplifyRing(ring, 0.35);
+    assert.deepEqual(Array.from(kept, p => [...p]), [[0, 0], [4, 0], [5, 1], [6, 0], [9, 0]]);
+    // A tolerance wider than the bend flattens the whole run.
+    assert.deepEqual(Array.from(model.simplifyRing(ring, 1.5), p => [...p]), [[0, 0], [9, 0]]);
+});
+
+test("simplifyRing keeps everything at tolerance zero and on tiny rings", () => {
+    const ring = [[0, 0], [1, 0.1], [2, 0], [3, 0.1], [4, 0], [5, 0.1], [6, 0], [7, 0.1], [8, 0]];
+    assert.equal(model.simplifyRing(ring, 0), ring);
+    const tiny = [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [0, 0]];
+    assert.equal(model.simplifyRing(tiny, 5), tiny);
+});
+
+test("simplifyRing on the real countries gives the three detail levels", () => {
+    const features = JSON.parse(fs.readFileSync(path.join(testDir, "../../contents/data/countries.json"), "utf8")).features;
+    function count(tolerance) {
+        let points = 0;
+        for (const feature of features) {
+            const geometry = feature.geometry;
+            const polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
+            for (const polygon of polygons)
+                points += model.simplifyRing(polygon[0], tolerance).length;
+        }
+        return points;
+    }
+    assert.equal(count(0), 10642);
+    assert.ok(count(0.1) < 8600 && count(0.1) > 8200, "0.1 degree: " + count(0.1));
+    assert.ok(count(0.35) < 4600 && count(0.35) > 4200, "0.35 degree: " + count(0.35));
+});

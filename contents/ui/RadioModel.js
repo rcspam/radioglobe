@@ -405,6 +405,48 @@ function zoomAnchoredCentre(cursorX, cursorY, width, height, oldScale, newScale,
   return current
 }
 
+// Douglas-Peucker on a GeoJSON ring ([longitude, latitude] pairs), tolerance
+// in degrees. Iterative (a stack, no recursion) so a 1 000-point coastline
+// cannot blow the stack. The first and last points always stay; a ring too
+// small to bother with, or a zero tolerance, comes back untouched.
+function simplifyRing(ring, toleranceDegrees) {
+  var tolerance = Number(toleranceDegrees) || 0
+  if (!Array.isArray(ring) || ring.length < 8 || tolerance <= 0) return ring
+  var keep = new Array(ring.length)
+  keep[0] = true
+  keep[ring.length - 1] = true
+  var limit = tolerance * tolerance
+  var stack = [[0, ring.length - 1]]
+  while (stack.length) {
+    var segment = stack.pop()
+    var first = segment[0]
+    var last = segment[1]
+    if (last - first < 2) continue
+    var ax = ring[first][0], ay = ring[first][1]
+    var dx = ring[last][0] - ax, dy = ring[last][1] - ay
+    var length2 = dx * dx + dy * dy
+    var farthest = -1
+    var farthestDistance2 = 0
+    for (var i = first + 1; i < last; i++) {
+      var px = ring[i][0] - ax, py = ring[i][1] - ay
+      var t = length2 > 0 ? Math.max(0, Math.min(1, (px * dx + py * dy) / length2)) : 0
+      var ex = px - t * dx, ey = py - t * dy
+      var distance2 = ex * ex + ey * ey
+      if (distance2 > farthestDistance2) {
+        farthestDistance2 = distance2
+        farthest = i
+      }
+    }
+    if (farthest >= 0 && farthestDistance2 > limit) {
+      keep[farthest] = true
+      stack.push([first, farthest], [farthest, last])
+    }
+  }
+  var output = []
+  for (var k = 0; k < ring.length; k++) if (keep[k]) output.push(ring[k])
+  return output
+}
+
 // Where the Sun is overhead at that instant: declination from the NOAA
 // solar position formulas (true longitude of the Sun, obliquity, nutation),
 // longitude from UTC time corrected by the equation of time. Accurate to a
