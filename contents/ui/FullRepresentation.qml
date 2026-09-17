@@ -83,6 +83,8 @@ Item {
             return i18n("Radio Browser unreachable, showing cached data");
         if (root.currentCountry)
             return i18n("%1 · click another country to browse", root.currentCountry.name);
+        if (full.searching)
+            return i18np("%1 match on the globe", "%1 matches on the globe", root.listStations.length);
         return i18np("%1 signal", "%1 signals", root.worldStations.length);
     }
 
@@ -100,11 +102,13 @@ Item {
         globe.globeScale = Math.max(globe.globeScale, 8);
     }
 
-    // The world list is capped, and stations added by hand or favourites
-    // outside the cap are not in it: located favourites and the playing
-    // station are appended when missing, so they get a dot and locating
-    // always lands on one.
-    readonly property var globeStations: RadioModel.withLocalStations(root.worldStations, root.favorites, full.mediaPlayer.station, root.approximateLocations)
+    // During a search the globe is a map of the matches: the results only,
+    // no favourites, so the filter is one. Otherwise the world list is capped,
+    // and stations added by hand or favourites outside the cap are not in it:
+    // located favourites are appended when missing, so they get a dot. The
+    // playing station is always there, so locating it always lands on a dot.
+    readonly property bool searching: root.listSource === "search"
+    readonly property var globeStations: RadioModel.withLocalStations(full.searching ? root.listStations : root.worldStations, full.searching ? [] : root.favorites, full.mediaPlayer.station, root.approximateLocations)
 
     // The packages to install for the modules main.qml found missing: the
     // command for this distribution when known, else one line per family.

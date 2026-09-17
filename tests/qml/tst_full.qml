@@ -292,6 +292,45 @@ TestCase {
         verify(!globe.stations.some(s => s.uuid === "local-1"));
     }
 
+    // During a search the globe shows the matches only (plus the playing
+    // station), not the world and not the favourites; clearing it brings
+    // the world back.
+    function test_search_filters_the_globe() {
+        const globe = findChild(loader.item, "globe");
+        root.favorites = [
+            {
+                uuid: "fav",
+                name: "Mine",
+                latitude: 2,
+                longitude: 2
+            }
+        ];
+        player.station = {
+            uuid: "playing",
+            name: "On air",
+            latitude: 5,
+            longitude: 5
+        };
+        root.listStations = [
+            {
+                uuid: "hit",
+                name: "Jazz FM",
+                latitude: 10,
+                longitude: 10
+            }
+        ];
+        root.listSource = "search";
+        compare(globe.stations.map(s => s.uuid).sort().join(","), "hit,playing");
+        compare(loader.item.statusLine, "1 match on the globe");
+        root.listStations = root.worldStations;
+        root.listSource = "world";
+        verify(globe.stations.some(s => s.uuid === "a"), "the world is back");
+        verify(globe.stations.some(s => s.uuid === "fav"), "and so are the favourites");
+        compare(loader.item.statusLine, "2 signals");
+        root.favorites = [];
+        player.station = null;
+    }
+
     function test_edit_button_sends_the_current_station_to_root() {
         const playerBar = findChild(loader.item, "playerBar");
         player.station = {
