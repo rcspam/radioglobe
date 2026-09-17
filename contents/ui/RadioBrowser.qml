@@ -243,6 +243,19 @@ Item {
                     countrycode: text.toUpperCase()
                 });
         }
+        // The popular results rarely have coordinates: the same name and tag
+        // searches again, restricted to located stations and with room for
+        // many more, so the globe fills up like a country view does.
+        const geoLimit = country ? RadioModel.countryGeoLimit(country) : 500;
+        variants.push({
+            name: text,
+            has_geo_info: true,
+            limit: geoLimit
+        }, {
+            tag: text.toLowerCase(),
+            has_geo_info: true,
+            limit: geoLimit
+        });
         const groups = variants.map(() => null);
         let remaining = variants.length;
         variants.forEach((filter, index) => {
@@ -250,11 +263,11 @@ Item {
             root._api("/json/stations/search", params, rows => {
                 if (epoch !== root._epoch)
                     return;
-                groups[index] = rows === null ? [] : RadioModel.normalizeStations(rows, 80);
+                groups[index] = rows === null ? [] : RadioModel.normalizeStations(rows, params.limit);
                 remaining -= 1;
                 if (remaining > 0 || generation !== root._searchGeneration)
                     return;
-                const merged = RadioModel.dedupeByUrl(RadioModel.combineStations(groups, 240, false));
+                const merged = RadioModel.dedupeByUrl(RadioModel.combineStations(groups, 240 + geoLimit * 2, false));
                 merged.sort((a, b) => (Number(b.clicks) || 0) - (Number(a.clicks) || 0));
                 callback(root._locate(merged), true);
             });

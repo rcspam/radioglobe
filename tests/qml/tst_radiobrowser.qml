@@ -539,8 +539,15 @@ TestCase {
             }), raw("b")]);
         answer("country=Jazz", 200, []);
         answer("tag=jazz", 200, [raw("b"), raw("c")]);
+        // Plus the located ones, by name and by tag, so the globe fills up:
+        // the popular results rarely have coordinates.
+        compare(results.length, 1, "waits for the located requests");
+        const geoName = answer("name=Jazz", 200, [raw("d")]);
+        verify(geoName.indexOf("has_geo_info=true") > 0, geoName);
+        verify(geoName.indexOf("limit=500") > 0, geoName);
+        answer("tag=jazz", 200, [raw("d"), raw("e")]);
         compare(results[1].final, true);
-        compare(results[1].n, 3);
+        compare(results[1].n, 5);
     }
 
     // "fr" is an ISO code, not a station name: a fourth request looks it up.
@@ -563,15 +570,31 @@ TestCase {
             }), "FR");
         compare(results[0].final, false);
         compare(results[0].uuids, "a");
-        compare(pending.length, 2, pending.map(p => p.url).join(", "));
+        compare(pending.length, 4, pending.map(p => p.url).join(", "));
         verify(pending.every(p => p.url.indexOf("countrycode=FR") > 0), pending.map(p => p.url).join(", "));
         verify(!pending.some(p => p.url.indexOf("country=Jazz") > 0));
         answer("name=Jazz", 200, [raw("a", {
                 name: "Jazz FM"
             })]);
         answer("tag=jazz", 200, [raw("c")]);
+        answer("name=Jazz", 200, []);
+        answer("tag=jazz", 200, [raw("d")]);
         compare(results[1].final, true);
-        compare(results[1].uuids, "a,c");
+        compare(results[1].uuids, "a,c,d");
+    }
+
+    // In a large country the located requests ask for more.
+    function test_search_inside_a_big_country_asks_for_more_located_stations() {
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, []);
+        rb.search("Jazz", () => {}, "US");
+        answer("name=Jazz", 200, []);
+        answer("tag=jazz", 200, []);
+        const geoName = answer("name=Jazz", 200, []);
+        verify(geoName.indexOf("limit=1500") > 0, geoName);
+        answer("tag=jazz", 200, []);
+        compare(pending.length, 0);
     }
 
     function test_two_letter_search_also_asks_for_the_country_code() {
@@ -582,6 +605,8 @@ TestCase {
         rb.search("fr", (stations, isFinal) => finals.push(isFinal));
         answer("name=fr", 200, []);
         answer("country=Fr", 200, []);
+        answer("tag=fr", 200, []);
+        answer("name=fr", 200, []);
         answer("tag=fr", 200, []);
         compare(finals.indexOf(true), -1, "delivered before the country code answered");
         const url = answer("countrycode=FR", 200, [raw("a")]);
@@ -595,7 +620,8 @@ TestCase {
         answer("/json/servers", 200, []);
         answer("/json/stations/search", 200, []);
         rb.search("jazz", () => {});
-        compare(pending.length, 3);
+        // name, country, tag, plus name and tag among the located stations
+        compare(pending.length, 5);
         verify(pending.some(p => p.url.indexOf("country=Jazz") > 0), pending.map(p => p.url).join(", "));
     }
 
@@ -615,8 +641,12 @@ TestCase {
         answer("name=one", 200, []);
         answer("country=One", 200, []);
         answer("tag=one", 200, []);
+        answer("name=one", 200, []);
+        answer("tag=one", 200, []);
         answer("name=two", 200, []);
         answer("country=Two", 200, []);
+        answer("tag=two", 200, []);
+        answer("name=two", 200, []);
         answer("tag=two", 200, []);
         compare(finals, ["two"]);
     }
