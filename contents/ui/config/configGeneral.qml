@@ -87,6 +87,10 @@ KCM.SimpleKCM {
     Component.onCompleted: probe()
 
     Kirigami.FormLayout {
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: i18n("Globe")
+        }
         QQC2.SpinBox {
             id: maxStations
             objectName: "maxStations"
@@ -150,6 +154,11 @@ KCM.SimpleKCM {
             id: showDayNight
             text: i18n("Shade the night side of the globe")
         }
+
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: i18n("Playback")
+        }
         QQC2.CheckBox {
             id: restoreLastStation
             objectName: "restoreLastStation"
@@ -162,39 +171,33 @@ KCM.SimpleKCM {
             text: i18n("Start playing it")
             enabled: restoreLastStation.checked
         }
-        QQC2.TextField {
-            id: mpvPath
-            Kirigami.FormData.label: i18n("mpv executable:")
-            placeholderText: i18n("Absolute path, or leave empty to use mpv from PATH")
-            onEditingFinished: page.probe()
+        QQC2.RadioButton {
+            objectName: "nextFromQueue"
+            Kirigami.FormData.label: i18n("Next and previous walk:")
+            text: i18n("The list the station was played from")
+            checked: page.cfg_nextPreviousSource !== "favorites"
+            onClicked: page.cfg_nextPreviousSource = "queue"
         }
-        QQC2.Label {
-            Kirigami.FormData.label: i18n("mpv:")
-            text: page.mpvStatus
-            wrapMode: Text.Wrap
-            Layout.fillWidth: true
+        QQC2.RadioButton {
+            objectName: "nextFromFavorites"
+            text: i18n("The favorites")
+            checked: page.cfg_nextPreviousSource === "favorites"
+            onClicked: page.cfg_nextPreviousSource = "favorites"
         }
-        QQC2.Label {
-            Kirigami.FormData.label: i18n("mpv-mpris:")
-            text: page.mprisStatus
-            wrapMode: Text.Wrap
-            Layout.fillWidth: true
-        }
-        QQC2.Label {
-            Kirigami.FormData.label: i18n("Offline cache:")
-            text: page.cacheAvailable ? i18n("Available") : i18n("Not available: the QtQuick.LocalStorage module is missing (package “qml6-module-qtquick-localstorage” on Debian and Ubuntu). Stations are fetched again at every start.")
-            wrapMode: Text.Wrap
-            Layout.fillWidth: true
-        }
-        QQC2.Button {
-            text: i18n("Check again")
-            icon.name: "view-refresh"
-            onClicked: page.probe()
+        QQC2.CheckBox {
+            id: invertWheel
+            Kirigami.FormData.label: i18n("Mouse wheel on the icon:")
+            text: i18n("Invert the direction for the volume")
         }
         QQC2.CheckBox {
             id: sendClicks
             Kirigami.FormData.label: i18n("Radio Browser:")
             text: i18n("Report played stations to the click counter")
+        }
+
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: i18n("Appearance")
         }
         RowLayout {
             Kirigami.FormData.label: i18n("Panel icon:")
@@ -257,22 +260,39 @@ KCM.SimpleKCM {
                 onAccepted: color => page.cfg_badgeColor = page.hex(color)
             }
         }
-        QQC2.RadioButton {
-            objectName: "nextFromQueue"
-            Kirigami.FormData.label: i18n("Next and previous walk:")
-            text: i18n("The list the station was played from")
-            checked: page.cfg_nextPreviousSource !== "favorites"
-            onClicked: page.cfg_nextPreviousSource = "queue"
+
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: i18n("System")
         }
-        QQC2.RadioButton {
-            objectName: "nextFromFavorites"
-            text: i18n("The favorites")
-            checked: page.cfg_nextPreviousSource === "favorites"
-            onClicked: page.cfg_nextPreviousSource = "favorites"
+        QQC2.TextField {
+            id: mpvPath
+            Kirigami.FormData.label: i18n("mpv executable:")
+            placeholderText: i18n("Absolute path, or leave empty to use mpv from PATH")
+            onEditingFinished: page.probe()
         }
-        QQC2.CheckBox {
-            id: invertWheel
-            text: i18n("Invert the mouse wheel direction for the volume")
+        QQC2.Label {
+            Kirigami.FormData.label: i18n("mpv:")
+            text: page.mpvStatus
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
+        }
+        QQC2.Label {
+            Kirigami.FormData.label: i18n("mpv-mpris:")
+            text: page.mprisStatus
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
+        }
+        QQC2.Label {
+            Kirigami.FormData.label: i18n("Offline cache:")
+            text: page.cacheAvailable ? i18n("Available") : i18n("Not available: the QtQuick.LocalStorage module is missing (package “qml6-module-qtquick-localstorage” on Debian and Ubuntu). Stations are fetched again at every start.")
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
+        }
+        QQC2.Button {
+            text: i18n("Check again")
+            icon.name: "view-refresh"
+            onClicked: page.probe()
         }
     }
 }
