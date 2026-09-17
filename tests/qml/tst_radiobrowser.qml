@@ -544,6 +544,36 @@ TestCase {
     }
 
     // "fr" is an ISO code, not a station name: a fourth request looks it up.
+    // With a country open, the search stays inside it: the local pass only
+    // looks at that country's stations, the requests carry its code, and the
+    // "is it a country name" variants are pointless.
+    function test_search_inside_a_country() {
+        rb.start();
+        answer("/json/servers", 200, []);
+        answer("/json/stations/search", 200, [raw("a", {
+                name: "Jazz FM"
+            }), raw("z", {
+                name: "Jazz Berlin",
+                countrycode: "DE"
+            })]);
+        let results = [];
+        rb.search("Jazz", (stations, isFinal) => results.push({
+                uuids: stations.map(s => s.uuid).join(","),
+                final: isFinal
+            }), "FR");
+        compare(results[0].final, false);
+        compare(results[0].uuids, "a");
+        compare(pending.length, 2, pending.map(p => p.url).join(", "));
+        verify(pending.every(p => p.url.indexOf("countrycode=FR") > 0), pending.map(p => p.url).join(", "));
+        verify(!pending.some(p => p.url.indexOf("country=Jazz") > 0));
+        answer("name=Jazz", 200, [raw("a", {
+                name: "Jazz FM"
+            })]);
+        answer("tag=jazz", 200, [raw("c")]);
+        compare(results[1].final, true);
+        compare(results[1].uuids, "a,c");
+    }
+
     function test_two_letter_search_also_asks_for_the_country_code() {
         rb.start();
         answer("/json/servers", 200, []);

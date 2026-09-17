@@ -81,6 +81,8 @@ Item {
     readonly property string statusLine: {
         if (radioBrowser.lastError === "offline")
             return i18n("Radio Browser unreachable, showing cached data");
+        if (full.searching && root.currentCountry)
+            return i18np("%1 match in %2", "%1 matches in %2", root.listStations.length, root.currentCountry.name);
         if (root.currentCountry)
             return i18n("%1 · click another country to browse", root.currentCountry.name);
         if (full.searching)

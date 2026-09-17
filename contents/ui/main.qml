@@ -211,12 +211,13 @@ PlasmoidItem {
         }
         root._selectWorldTab();
         root.listSource = "search";
+        // Inside an open country, the search is limited to it.
         radioBrowser.search(text, (stations, isFinal) => {
             if (root.currentTab === 0 && root.searchText === text) {
                 root.listStations = stations;
                 root.listSource = "search";
             }
-        });
+        }, root.currentCountry ? root.currentCountry.code : "");
     }
 
     function clearSearch() {

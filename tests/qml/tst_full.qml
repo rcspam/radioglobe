@@ -16,8 +16,8 @@ TestCase {
         return String(text).replace("%1", a).replace("%2", b);
     }
 
-    function i18np(singular, plural, count) {
-        return String(count === 1 ? singular : plural).replace("%1", count);
+    function i18np(singular, plural, count, b) {
+        return String(count === 1 ? singular : plural).replace("%1", count).replace("%2", b);
     }
 
     QtObject {
@@ -323,6 +323,13 @@ TestCase {
         root.listSource = "search";
         compare(globe.stations.map(s => s.uuid).sort().join(","), "hit,playing");
         compare(loader.item.statusLine, "1 match on the globe");
+        // Searching inside a country: the status says where.
+        root.currentCountry = {
+            code: "FR",
+            name: "France"
+        };
+        compare(loader.item.statusLine, "1 match in France");
+        root.currentCountry = null;
         // A country is a filter too: its stations only, favourites aside.
         root.currentCountry = {
             code: "FR",

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-17 20:27+0200\n"
+"POT-Creation-Date: 2026-09-17 20:29+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -23,13 +23,19 @@ msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] "%1 favori importé. Appliquez pour le garder."
 msgstr[1] "%1 favoris importés. Appliquez pour les garder."
 
-#: contents/ui/FullRepresentation.qml:87
+#: contents/ui/FullRepresentation.qml:85
+msgid "%1 match in %2"
+msgid_plural "%1 matches in %2"
+msgstr[0] "%1 résultat en %2"
+msgstr[1] "%1 résultats en %2"
+
+#: contents/ui/FullRepresentation.qml:89
 msgid "%1 match on the globe"
 msgid_plural "%1 matches on the globe"
 msgstr[0] "%1 résultat sur le globe"
 msgstr[1] "%1 résultats sur le globe"
 
-#: contents/ui/FullRepresentation.qml:88
+#: contents/ui/FullRepresentation.qml:90
 msgid "%1 signal"
 msgid_plural "%1 signals"
 msgstr[0] "%1 signal"
@@ -39,7 +45,7 @@ msgstr[1] "%1 signaux"
 msgid "%1 · approximate location"
 msgstr "%1 · position approximative"
 
-#: contents/ui/FullRepresentation.qml:85
+#: contents/ui/FullRepresentation.qml:87
 msgid "%1 · click another country to browse"
 msgstr "%1 · cliquez sur un autre pays pour parcourir"
 
@@ -55,8 +61,8 @@ msgstr "Ajouter"
 msgid "Add a station"
 msgstr "Ajouter une radio"
 
-#: contents/ui/FullRepresentation.qml:195
-#: contents/ui/FullRepresentation.qml:196
+#: contents/ui/FullRepresentation.qml:197
+#: contents/ui/FullRepresentation.qml:198
 msgid "Add a station…"
 msgstr "Ajouter une radio…"
 
@@ -132,7 +138,7 @@ msgstr "Séparés par des virgules, ex. jazz,news"
 msgid "Connecting…"
 msgstr "Connexion…"
 
-#: contents/ui/FullRepresentation.qml:163
+#: contents/ui/FullRepresentation.qml:165
 msgid "Copy the install command"
 msgstr "Copier la commande d'installation"
 
@@ -235,8 +241,8 @@ msgstr "Inverser le sens de la molette pour le volume"
 msgid "JSON files (*.json)"
 msgstr "Fichiers JSON (*.json)"
 
-#: contents/ui/FullRepresentation.qml:209
-#: contents/ui/FullRepresentation.qml:210
+#: contents/ui/FullRepresentation.qml:211
+#: contents/ui/FullRepresentation.qml:212
 msgid "Keep open"
 msgstr "Garder ouvert"
 
@@ -276,7 +282,7 @@ msgstr "Données cartographiques © les contributeurs d'OpenStreetMap"
 msgid "Maximum stations on the globe:"
 msgstr "Nombre maximal de stations sur le globe :"
 
-#: contents/ui/FullRepresentation.qml:123
+#: contents/ui/FullRepresentation.qml:125
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "%2"
@@ -284,7 +290,7 @@ msgstr ""
 "Modules QML manquants : %1. Installez-les puis redémarrez Plasma :\n"
 "%2"
 
-#: contents/ui/FullRepresentation.qml:125
+#: contents/ui/FullRepresentation.qml:127
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "Debian / Ubuntu: sudo apt install %2\n"
@@ -432,7 +438,7 @@ msgstr "Remplace les favoris et l'historique actuels. Rien ne change avant d'app
 msgid "Report played stations to the click counter"
 msgstr "Signaler les stations écoutées au compteur de clics"
 
-#: contents/ui/FullRepresentation.qml:310 contents/ui/PlayerBar.qml:74
+#: contents/ui/FullRepresentation.qml:312 contents/ui/PlayerBar.qml:74
 msgid "Retry"
 msgstr "Réessayer"
 
@@ -528,13 +534,13 @@ msgstr "Écouter une station aléatoire (R)"
 msgid "World"
 msgstr "Monde"
 
-#: contents/ui/FullRepresentation.qml:273
-#: contents/ui/FullRepresentation.qml:274
+#: contents/ui/FullRepresentation.qml:275
+#: contents/ui/FullRepresentation.qml:276
 msgid "Zoom in"
 msgstr "Zoom avant"
 
-#: contents/ui/FullRepresentation.qml:284
-#: contents/ui/FullRepresentation.qml:285
+#: contents/ui/FullRepresentation.qml:286
+#: contents/ui/FullRepresentation.qml:287
 msgid "Zoom out"
 msgstr "Zoom arrière"
 

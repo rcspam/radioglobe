@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-17 20:27+0200\n"
+"POT-Creation-Date: 2026-09-17 20:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,13 +24,19 @@ msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/FullRepresentation.qml:87
+#: contents/ui/FullRepresentation.qml:85
+msgid "%1 match in %2"
+msgid_plural "%1 matches in %2"
+msgstr[0] ""
+msgstr[1] ""
+
+#: contents/ui/FullRepresentation.qml:89
 msgid "%1 match on the globe"
 msgid_plural "%1 matches on the globe"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/FullRepresentation.qml:88
+#: contents/ui/FullRepresentation.qml:90
 msgid "%1 signal"
 msgid_plural "%1 signals"
 msgstr[0] ""
@@ -40,7 +46,7 @@ msgstr[1] ""
 msgid "%1 · approximate location"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:85
+#: contents/ui/FullRepresentation.qml:87
 msgid "%1 · click another country to browse"
 msgstr ""
 
@@ -56,8 +62,8 @@ msgstr ""
 msgid "Add a station"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:195
-#: contents/ui/FullRepresentation.qml:196
+#: contents/ui/FullRepresentation.qml:197
+#: contents/ui/FullRepresentation.qml:198
 msgid "Add a station…"
 msgstr ""
 
@@ -133,7 +139,7 @@ msgstr ""
 msgid "Connecting…"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:163
+#: contents/ui/FullRepresentation.qml:165
 msgid "Copy the install command"
 msgstr ""
 
@@ -236,8 +242,8 @@ msgstr ""
 msgid "JSON files (*.json)"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:209
-#: contents/ui/FullRepresentation.qml:210
+#: contents/ui/FullRepresentation.qml:211
+#: contents/ui/FullRepresentation.qml:212
 msgid "Keep open"
 msgstr ""
 
@@ -277,13 +283,13 @@ msgstr ""
 msgid "Maximum stations on the globe:"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:123
+#: contents/ui/FullRepresentation.qml:125
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "%2"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:125
+#: contents/ui/FullRepresentation.qml:127
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "Debian / Ubuntu: sudo apt install %2\n"
@@ -427,7 +433,7 @@ msgstr ""
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:310 contents/ui/PlayerBar.qml:74
+#: contents/ui/FullRepresentation.qml:312 contents/ui/PlayerBar.qml:74
 msgid "Retry"
 msgstr ""
 
@@ -523,13 +529,13 @@ msgstr ""
 msgid "World"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:273
-#: contents/ui/FullRepresentation.qml:274
+#: contents/ui/FullRepresentation.qml:275
+#: contents/ui/FullRepresentation.qml:276
 msgid "Zoom in"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:284
-#: contents/ui/FullRepresentation.qml:285
+#: contents/ui/FullRepresentation.qml:286
+#: contents/ui/FullRepresentation.qml:287
 msgid "Zoom out"
 msgstr ""
 

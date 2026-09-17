@@ -202,38 +202,47 @@ Item {
         }, rows => absorb(1, rows));
     }
 
-    function search(query, callback) {
+    // With a country code, the search stays inside that country: the quick
+    // local pass looks at its stations only and every request carries the
+    // code; guessing whether the text is a country name is then pointless.
+    function search(query, callback, countryCode) {
         const text = String(query || "").trim();
         if (!text)
             return;
+        const country = String(countryCode || "").toUpperCase();
         root._searchGeneration += 1;
         const generation = root._searchGeneration;
         const epoch = root._epoch;
-        callback(RadioModel.searchStations(root._world, text, 80), false);
+        const pool = country ? RadioModel.stationsForCountry(root._world, country, 100000) : root._world;
+        callback(RadioModel.searchStations(pool, text, 80), false);
         const common = {
             hidebroken: true,
             order: "clickcount",
             reverse: true,
             limit: 80
         };
+        if (country)
+            common.countrycode = country;
         const variants = [
             {
                 name: text
             },
             {
-                // Radio Browser stores country names capitalised and matches
-                // them case-sensitively: "france" finds nothing.
-                country: text.charAt(0).toUpperCase() + text.slice(1)
-            },
-            {
                 tag: text.toLowerCase()
             }
         ];
-        // Two letters are far more likely an ISO country code than a name.
-        if (/^[a-z]{2}$/i.test(text))
+        if (!country) {
             variants.push({
-                countrycode: text.toUpperCase()
+                // Radio Browser stores country names capitalised and matches
+                // them case-sensitively: "france" finds nothing.
+                country: text.charAt(0).toUpperCase() + text.slice(1)
             });
+            // Two letters are far more likely an ISO country code than a name.
+            if (/^[a-z]{2}$/i.test(text))
+                variants.push({
+                    countrycode: text.toUpperCase()
+                });
+        }
         const groups = variants.map(() => null);
         let remaining = variants.length;
         variants.forEach((filter, index) => {
