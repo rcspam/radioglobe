@@ -183,6 +183,12 @@ PlasmoidItem {
             code: code,
             name: name
         };
+        // With text in the search field, a country click means "the same
+        // search, in that country", not the whole country.
+        if (root.searchText.trim()) {
+            root.runSearch(root.searchText);
+            return;
+        }
         // Claim the source before the request goes out, so a world refresh
         // arriving meanwhile does not send _refreshList back through here.
         root.listSource = "country";
