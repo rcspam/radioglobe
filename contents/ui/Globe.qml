@@ -61,6 +61,11 @@ Item {
     property var preparedStations: []
     readonly property int signalDepthBuckets: 8
     property bool paintDirty: false
+    // While the globe moves the canvas paints without antialiasing (about a
+    // third cheaper); the frame painted when it stops is antialiased again.
+    readonly property bool moving: dragHandler.active || kineticAnimation.running || zoomAnimation.running
+    onMovingChanged: if (!moving)
+        root.schedulePaint()
     readonly property alias paintCount: paintCounter.value
     readonly property alias spherePaintCount: spherePaintCounter.value
 
@@ -522,11 +527,10 @@ Item {
             var bucketDepth = (b + 0.5) / bucketCount;
             var bucketRadius = 1.7 + bucketDepth * 1.25;
             ctx.fillStyle = withAlpha(signalColor, 0.42 + bucketDepth * 0.48);
-            for (var e = 0; e < entries.length; e += 2) {
-                ctx.beginPath();
-                ctx.arc(entries[e], entries[e + 1], bucketRadius, 0, Math.PI * 2);
-                ctx.fill();
-            }
+            // A rect per dot: no path to build, a third of the raster cost
+            // of an arc, and at 2 to 3 px a square reads as a dot.
+            for (var e = 0; e < entries.length; e += 2)
+                ctx.fillRect(entries[e] - bucketRadius, entries[e + 1] - bucketRadius, bucketRadius * 2, bucketRadius * 2);
         }
         // Last, so the crowd never covers the playing or hovered station.
         for (var m = 0; m < markers.length; m += 3) {
@@ -779,7 +783,9 @@ Item {
 
     Canvas {
         id: globeCanvas
+        objectName: "globeCanvas"
         anchors.fill: parent
+        antialiasing: !root.moving
         // Rasterisation moves to its own thread: the JS of onPaint still runs
         // on the GUI thread, but the software painting of the whole canvas
         // does not, which is what was stealing frames from the list.

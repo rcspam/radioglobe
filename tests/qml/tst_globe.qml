@@ -28,6 +28,7 @@ TestCase {
 
     function init() {
         globe.stopZoomAnimation();
+        globe.stopKineticRotation(true);
         globe.centreLatitude = 0;
         globe.centreLongitude = 0;
         globe.globeScale = 1;
@@ -215,10 +216,9 @@ TestCase {
         globe.centreLatitude = 20;
         globe.centreLongitude = 20;
         globe.countries = loadCountries();
-        const samples = [
-            [400, 300], // centre of the view, in the Sahara
-            [400 + globe.radius() * 0.55, 300 + globe.radius() * 0.25], // Indian Ocean
-            [400 - globe.radius() * 0.6, 300 - globe.radius() * 0.1] // Atlantic
+        const samples = [[400, 300] // centre of the view, in the Sahara
+            , [400 + globe.radius() * 0.55, 300 + globe.radius() * 0.25] // Indian Ocean
+            , [400 - globe.radius() * 0.6, 300 - globe.radius() * 0.1] // Atlantic
         ];
         function pixels() {
             const image = grabImage(globe);
@@ -273,6 +273,40 @@ TestCase {
         verify(centre.b > 0.5 && centre.b > centre.g + 0.3, "inside the disc the sphere shows: " + centre);
     }
 
+    // Antialiasing is dropped while the globe moves and comes back, with a
+    // final paint, once it stops.
+    function test_antialiasingOffWhileDragging() {
+        const canvas = findChild(globe, "globeCanvas");
+        verify(canvas !== null, "globeCanvas not found");
+        compare(globe.moving, false);
+        compare(canvas.antialiasing, true);
+        mousePress(globe, 400, 300);
+        mouseMove(globe, 420, 300);
+        mouseMove(globe, 440, 300);
+        tryCompare(globe, "moving", true);
+        compare(canvas.antialiasing, false);
+        const before = globe.paintCount;
+        mouseRelease(globe, 440, 300);
+        // The release may launch the inertia (deferred): end it, the globe
+        // is at rest either way.
+        wait(50);
+        globe.stopKineticRotation(true);
+        tryCompare(globe, "moving", false);
+        compare(canvas.antialiasing, true);
+        tryVerify(function () {
+            return globe.paintCount > before;
+        });
+    }
+
+    function test_antialiasingOffDuringButtonZoom() {
+        const canvas = findChild(globe, "globeCanvas");
+        globe.zoomIn();
+        tryCompare(globe, "moving", true);
+        compare(canvas.antialiasing, false);
+        tryCompare(globe, "moving", false);
+        compare(canvas.antialiasing, true);
+    }
+
     // A depth bucket only picks the fill colour: every dot is still stroked as
     // its own beginPath/arc/fill. Batching a bucket into a single path gives
     // that path the whole globe as a bounding box, which the raster engine
@@ -300,10 +334,10 @@ TestCase {
             return grabImage(globe).pixel(centreX, centreY).toString() === Qt.rgba(0, 0, 0, 1).toString();
         });
 
-        // The same property at the call level: one closed path per dot.
+        // The same property at the call level: one fillRect per dot, no path.
         let beginPaths = 0;
         let arcs = 0;
-        let fills = 0;
+        let rects = 0;
         const context = {
             beginPath: function () {
                 beginPaths += 1;
@@ -312,15 +346,16 @@ TestCase {
             arc: function () {
                 arcs += 1;
             },
-            fill: function () {
-                fills += 1;
+            fillRect: function () {
+                rects += 1;
             },
+            fill: function () {},
             stroke: function () {}
         };
         globe.paintSignals(context);
-        compare(arcs, ring.length);
-        compare(beginPaths, arcs);
-        compare(fills, arcs);
+        compare(rects, ring.length);
+        compare(arcs, 0);
+        compare(beginPaths, 0);
     }
 
     // Threaded canvas: onPaint is re-run on the GUI thread at every frame of
@@ -466,6 +501,7 @@ TestCase {
         var context = {
             beginPath: function () {},
             moveTo: function () {},
+            fillRect: function () {},
             arc: function (x, y, radius) {
                 arcs.push({
                     x: x,
@@ -477,11 +513,11 @@ TestCase {
             stroke: function () {}
         };
         globe.paintSignals(context);
-        // The plain dot goes through the depth buckets, the selected marker
-        // and its halo are still drawn one path each, on top.
-        compare(arcs.length, 3);
-        compare(arcs[1].radius, 4.2);
-        compare(arcs[2].radius, 8.5);
+        // The plain dot is a fillRect; the selected marker and its halo are
+        // still drawn one path each, on top.
+        compare(arcs.length, 2);
+        compare(arcs[0].radius, 4.2);
+        compare(arcs[1].radius, 8.5);
         compare(globe.stationUnderPointer(0, globe.height / 2).uuid, "edge");
         compare(globe.stationUnderPointer(globe.width / 2, globe.height / 2).uuid, "centre");
 
