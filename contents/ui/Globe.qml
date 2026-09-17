@@ -527,10 +527,19 @@ Item {
             var bucketDepth = (b + 0.5) / bucketCount;
             var bucketRadius = 1.7 + bucketDepth * 1.25;
             ctx.fillStyle = withAlpha(signalColor, 0.42 + bucketDepth * 0.48);
-            // A rect per dot: no path to build, a third of the raster cost
-            // of an arc, and at 2 to 3 px a square reads as a dot.
-            for (var e = 0; e < entries.length; e += 2)
-                ctx.fillRect(entries[e] - bucketRadius, entries[e + 1] - bucketRadius, bucketRadius * 2, bucketRadius * 2);
+            // Round dots at rest. While the globe moves, a rect per dot: no
+            // path to build, a third of the raster cost of an arc, and at 2
+            // to 3 px in motion nobody can tell.
+            if (moving) {
+                for (var e = 0; e < entries.length; e += 2)
+                    ctx.fillRect(entries[e] - bucketRadius, entries[e + 1] - bucketRadius, bucketRadius * 2, bucketRadius * 2);
+            } else {
+                for (var d = 0; d < entries.length; d += 2) {
+                    ctx.beginPath();
+                    ctx.arc(entries[d], entries[d + 1], bucketRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
         }
         // Last, so the crowd never covers the playing or hovered station.
         for (var m = 0; m < markers.length; m += 3) {

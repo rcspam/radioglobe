@@ -334,7 +334,8 @@ TestCase {
             return grabImage(globe).pixel(centreX, centreY).toString() === Qt.rgba(0, 0, 0, 1).toString();
         });
 
-        // The same property at the call level: one fillRect per dot, no path.
+        // The same property at the call level: at rest one closed path per
+        // dot (round), while moving one fillRect per dot (cheaper, unseen).
         let beginPaths = 0;
         let arcs = 0;
         let rects = 0;
@@ -353,9 +354,17 @@ TestCase {
             stroke: function () {}
         };
         globe.paintSignals(context);
+        compare(arcs, ring.length);
+        compare(beginPaths, ring.length);
+        compare(rects, 0);
+        globe.zoomIn();
+        tryCompare(globe, "moving", true);
+        arcs = 0;
+        beginPaths = 0;
+        globe.paintSignals(context);
         compare(rects, ring.length);
         compare(arcs, 0);
-        compare(beginPaths, 0);
+        globe.stopZoomAnimation();
     }
 
     // Threaded canvas: onPaint is re-run on the GUI thread at every frame of
@@ -513,11 +522,11 @@ TestCase {
             stroke: function () {}
         };
         globe.paintSignals(context);
-        // The plain dot is a fillRect; the selected marker and its halo are
-        // still drawn one path each, on top.
-        compare(arcs.length, 2);
-        compare(arcs[0].radius, 4.2);
-        compare(arcs[1].radius, 8.5);
+        // The plain dot goes through the depth buckets, the selected marker
+        // and its halo are still drawn one path each, on top.
+        compare(arcs.length, 3);
+        compare(arcs[1].radius, 4.2);
+        compare(arcs[2].radius, 8.5);
         compare(globe.stationUnderPointer(0, globe.height / 2).uuid, "edge");
         compare(globe.stationUnderPointer(globe.width / 2, globe.height / 2).uuid, "centre");
 
