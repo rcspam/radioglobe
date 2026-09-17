@@ -44,6 +44,10 @@ Item {
     property bool showDayNight: true
     property color nightColor: "#000000"
     property real nightOpacity: 0.45
+    // Twilight instead of a hard line; the band is ±twilightWidth in units
+    // of p·sun (0.18 is about ten degrees each side of the terminator).
+    property bool nightFade: true
+    property real twilightWidth: 0.18
     property var sun: RadioModel.subsolarPoint(new Date())
 
     property var hoveredStation: null
@@ -566,10 +570,51 @@ Item {
     // terminator, both under the station dots. The polygon comes from the
     // model in unit disc coordinates; more segments at deeper zooms so the
     // curve stays smooth when a small part of it spans the whole view.
+    // Soft boundary: the shade ramps up across the twilight band instead of
+    // switching at the terminator. Drawn as stacked layers, each the region
+    // p·sun < t for thresholds spread over ±twilightWidth, with an alpha
+    // chosen so the full stack reaches nightOpacity. Fewer layers while
+    // the globe moves.
+    function paintTwilight(ctx, centreX, centreY, globeRadius, steps) {
+        var layers = moving ? 3 : 8;
+        var alpha = 1 - Math.pow(1 - nightOpacity, 1 / layers);
+        ctx.fillStyle = withAlpha(nightColor, alpha);
+        for (var layer = 0; layer < layers; layer++) {
+            var threshold = twilightWidth - 2 * twilightWidth * (layer + 0.5) / layers;
+            var region = RadioModel.nightRegion(sun, centreLatitude, centreLongitude, threshold, steps);
+            if (region.empty)
+                continue;
+            ctx.beginPath();
+            if (region.full) {
+                ctx.arc(centreX, centreY, globeRadius, 0, Math.PI * 2);
+                ctx.fill();
+                continue;
+            }
+            var rings = region.hole ? [region.points, region.hole] : [region.points];
+            for (var r = 0; r < rings.length; r++) {
+                var ring = rings[r];
+                for (var i = 0; i < ring.length; i++) {
+                    var x = centreX + ring[i].x * globeRadius;
+                    var y = centreY - ring[i].y * globeRadius;
+                    if (i === 0)
+                        ctx.moveTo(x, y);
+                    else
+                        ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+            }
+            ctx.fill();
+        }
+    }
+
     function paintDayNight(ctx, centreX, centreY, globeRadius) {
         if (!sun)
             return;
         var steps = Math.min(512, Math.round(64 * Math.sqrt(Math.max(1, globeScale))));
+        if (nightFade) {
+            paintTwilight(ctx, centreX, centreY, globeRadius, steps);
+            return;
+        }
         var geometry = RadioModel.terminatorGeometry(sun, centreLatitude, centreLongitude, steps);
         ctx.fillStyle = withAlpha(nightColor, nightOpacity);
         if (geometry.night.length === 0) {
@@ -735,6 +780,7 @@ Item {
     }
     onNightColorChanged: root.schedulePaint()
     onNightOpacityChanged: root.schedulePaint()
+    onNightFadeChanged: root.schedulePaint()
     onSunChanged: root.schedulePaint()
     onCentreLatitudeChanged: {
         updateHighlightPosition();

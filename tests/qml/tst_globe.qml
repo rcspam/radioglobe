@@ -147,6 +147,44 @@ TestCase {
         });
     }
 
+    // With the soft boundary, the shade ramps up across the twilight band
+    // instead of switching at the terminator; the far night side is as dark
+    // as with the hard boundary.
+    function test_softBoundaryFadesAcrossTheTwilight() {
+        globe.backgroundColor = "#000000";
+        globe.sphereColor = "#000000";
+        globe.gridColor = "#000000";
+        globe.outlineColor = "#000000";
+        globe.signalColor = "#000000";
+        globe.nightColor = "#ffffff";
+        // Not 1: every layer of the stack would be opaque, no ramp to see.
+        globe.nightOpacity = 0.9;
+        globe.showDayNight = true;
+        globe.sun = {
+            latitude: 0,
+            longitude: 90
+        };
+        const centreX = Math.round(globe.width / 2);
+        const centreY = Math.round(globe.height / 2);
+        const radius = globe.radius();
+        // Just west of the terminator: inside the twilight band.
+        const dusk = Math.round(centreX - radius * 0.05);
+        const night = Math.round(centreX - radius * 0.6);
+        globe.nightFade = false;
+        tryVerify(function () {
+            return grabImage(globe).pixel(dusk, centreY).r > 0.85;
+        });
+        globe.nightFade = true;
+        tryVerify(function () {
+            const p = grabImage(globe).pixel(dusk, centreY);
+            return p.r > 0.3 && p.r < 0.85;
+        });
+        const far = grabImage(globe).pixel(night, centreY);
+        verify(far.r > 0.85, "deep night is shaded like the hard boundary: " + far);
+        const day = grabImage(globe).pixel(Math.round(centreX + radius * 0.6), centreY);
+        compare(day.toString(), Qt.rgba(0, 0, 0, 1).toString());
+    }
+
     // Stations are painted after the shade, so a night-side signal keeps its
     // colour instead of being dimmed with the land under it.
     function test_stationsStayOnTopOfTheNightShade() {

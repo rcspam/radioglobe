@@ -405,6 +405,96 @@ function zoomAnchoredCentre(cursorX, cursorY, width, height, oldScale, newScale,
   return current
 }
 
+// The part of the visible disc where p·sun < threshold (threshold 0 is the
+// night hemisphere, a positive one reaches into the day side: the twilight
+// bands are drawn by stacking a few of these). Unit disc coordinates, x
+// right, y up. `points` is the polygon to fill, `hole` a second ring to cut
+// out of it when the day cap sits entirely inside the disc; `full` and
+// `empty` cover the disc being all night or all day.
+function nightRegion(sun, centreLatitude, centreLongitude, threshold, steps) {
+  var t = Math.max(-1, Math.min(1, Number(threshold) || 0))
+  var count = Math.max(4, Math.floor(Number(steps) || 64))
+  var s = project(sun.latitude, sun.longitude, centreLatitude, centreLongitude)
+  var result = { points: [], hole: null, full: false, empty: false }
+  var circle = function (radius, reverse) {
+    var out = []
+    for (var i = 0; i <= count * 2; i++) {
+      var angle = (reverse ? -1 : 1) * i / (count * 2) * Math.PI * 2
+      out.push({ x: radius * Math.cos(angle), y: radius * Math.sin(angle) })
+    }
+    return out
+  }
+  var inPlane = Math.hypot(s.x, s.y)
+  var r = Math.sqrt(Math.max(0, 1 - t * t))
+
+  if (inPlane < 1e-6) {
+    // Sun straight in front or behind: the boundary is a circle around the
+    // centre, of radius sqrt(1 - t²).
+    if (s.z > 0) {
+      if (t <= 0) { result.empty = true; return result }
+      if (t >= 1) { result.full = true; return result }
+      result.points = circle(1, false)
+      result.hole = circle(r, true)
+      return result
+    }
+    if (t >= 0) { result.full = true; return result }
+    if (t <= -1) { result.empty = true; return result }
+    result.points = circle(r, false)
+    return result
+  }
+
+  // a: on the rim, orthogonal to the sun; b: orthogonal to both, leaning
+  // toward the viewer. The boundary is the small circle t·s + r·(a cosθ +
+  // b sinθ); its depth is t·s.z + r·b.z·sinθ, visible when sinθ >= m.
+  var a = { x: -s.y / inPlane, y: s.x / inPlane, z: 0 }
+  var b = { x: -s.z * s.x / inPlane, y: -s.z * s.y / inPlane, z: inPlane }
+  var m = r * b.z > 0 ? -t * s.z / (r * b.z) : (t * s.z <= 0 ? 1 : -1)
+  var point = function (theta) {
+    var c = Math.cos(theta), n = Math.sin(theta)
+    return { x: t * s.x + r * (a.x * c + b.x * n), y: t * s.y + r * (a.y * c + b.y * n) }
+  }
+
+  if (m >= 1) {
+    // No point of the boundary is visible: the disc is all one thing.
+    if (s.z < t) result.full = true
+    else result.empty = true
+    return result
+  }
+  if (m <= -1) {
+    // The whole boundary is visible: the cap it encloses is in front.
+    var ring = []
+    for (var k = 0; k <= count * 2; k++) ring.push(point(k / (count * 2) * Math.PI * 2))
+    if (s.z < 0) {
+      result.points = ring
+    } else {
+      result.points = circle(1, false)
+      result.hole = ring.reverse()
+    }
+    return result
+  }
+
+  // The visible arc of the boundary runs from θ0 to π - θ0, rim to rim,
+  // then the rim closes the polygon on the night side.
+  var theta0 = Math.asin(m)
+  for (var i = 0; i <= count; i++)
+    result.points.push(point(theta0 + (Math.PI - 2 * theta0) * i / count))
+  var first = result.points[0]
+  var last = result.points[result.points.length - 1]
+  var phiStart = Math.atan2(last.y, last.x)
+  var phiEnd = Math.atan2(first.y, first.x)
+  var phiNight = Math.atan2(-s.y, -s.x)
+  var twoPi = Math.PI * 2
+  var ccw = ((phiEnd - phiStart) % twoPi + twoPi) % twoPi
+  var toNight = ((phiNight - phiStart) % twoPi + twoPi) % twoPi
+  var sweep = toNight < ccw ? ccw : ccw - twoPi
+  var rimSteps = Math.max(8, Math.floor(count / 2))
+  for (var j = 1; j < rimSteps; j++) {
+    var phi = phiStart + sweep * j / rimSteps
+    result.points.push({ x: Math.cos(phi), y: Math.sin(phi) })
+  }
+  return result
+}
+
 // How many located stations a country view asks for: the setting, times
 // three for countries over about two million square kilometres, whose
 // stations are spread out (five hundred dots would look sparse there).
@@ -1115,6 +1205,7 @@ var backupSettingTypes = ({
     badgeColor: "string",
     invertWheel: "boolean",
     showDayNight: "boolean",
+    nightFade: "boolean",
     maxCountryStations: "number",
     maxSearchStations: "number",
     restoreLastStation: "boolean",

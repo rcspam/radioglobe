@@ -13,6 +13,8 @@ import "../RadioModel.js" as RadioModel
 KCM.SimpleKCM {
     id: page
 
+    ConfigWindowSize {}
+
     // qmllint disable unresolved-type
     // KPluginMetaData is a C++ type Plasma does not expose declaratively.
     readonly property string userAgent: {

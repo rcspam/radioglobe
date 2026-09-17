@@ -72,6 +72,10 @@
     <entry name="showDayNight" type="Bool">
       <default>true</default>
     </entry>
+    <!-- Twilight band instead of a hard terminator line. -->
+    <entry name="nightFade" type="Bool">
+      <default>true</default>
+    </entry>
     <!-- At startup, the last station played is back in the player, ready
          (restoreLastStation), and starts on its own (autoplayLastStation). -->
     <entry name="restoreLastStation" type="Bool">

@@ -17,6 +17,8 @@ import "../RadioModel.js" as RadioModel
 KCM.SimpleKCM {
     id: page
 
+    ConfigWindowSize {}
+
     property string cfg_favorites: "[]"
     property string cfg_history: "[]"
     property string cfg_homeCountry: ""
@@ -29,6 +31,7 @@ KCM.SimpleKCM {
     property string cfg_badgeColor: ""
     property bool cfg_invertWheel: false
     property bool cfg_showDayNight: true
+    property bool cfg_nightFade: true
     property int cfg_maxCountryStations: 500
     property int cfg_maxSearchStations: 500
     property bool cfg_restoreLastStation: true
