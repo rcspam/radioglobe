@@ -86,6 +86,14 @@ ColumnLayout {
         Layout.fillHeight: true
         QQC2.ScrollBar.vertical: PlasmaComponents3.ScrollBar {}
         clip: true
+
+        // What the ScrollView used to add: wheel and touchpad scrolling with
+        // Kirigami's stepping and momentum.
+        Kirigami.WheelHandler {
+            target: view
+            horizontalStepSize: Application.styleHints.wheelScrollLines * 20
+            verticalStepSize: Application.styleHints.wheelScrollLines * 20
+        }
         model: list.stations
         currentIndex: list.selectedIndex
         // A world batch is 3000 rows and the user flings through them:
