@@ -335,10 +335,11 @@ TestCase {
         });
 
         // The same property at the call level: at rest one closed path per
-        // dot (round), while moving one fillRect per dot (cheaper, unseen).
+        // dot, while moving one blit of the pre-rendered dot sprite per dot
+        // (round too, a fraction of the cost).
         let beginPaths = 0;
         let arcs = 0;
-        let rects = 0;
+        let blits = 0;
         const context = {
             beginPath: function () {
                 beginPaths += 1;
@@ -347,8 +348,8 @@ TestCase {
             arc: function () {
                 arcs += 1;
             },
-            fillRect: function () {
-                rects += 1;
+            drawImage: function () {
+                blits += 1;
             },
             fill: function () {},
             stroke: function () {}
@@ -356,13 +357,13 @@ TestCase {
         globe.paintSignals(context);
         compare(arcs, ring.length);
         compare(beginPaths, ring.length);
-        compare(rects, 0);
+        compare(blits, 0);
         globe.zoomIn();
         tryCompare(globe, "moving", true);
         arcs = 0;
         beginPaths = 0;
         globe.paintSignals(context);
-        compare(rects, ring.length);
+        compare(blits, ring.length);
         compare(arcs, 0);
         globe.stopZoomAnimation();
     }
@@ -510,7 +511,7 @@ TestCase {
         var context = {
             beginPath: function () {},
             moveTo: function () {},
-            fillRect: function () {},
+            drawImage: function () {},
             arc: function (x, y, radius) {
                 arcs.push({
                     x: x,
