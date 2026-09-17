@@ -17,6 +17,7 @@ KCM.SimpleKCM {
     property alias cfg_sendClicks: sendClicks.checked
     property alias cfg_approximateLocations: approximateLocations.checked
     property alias cfg_invertWheel: invertWheel.checked
+    property alias cfg_showDayNight: showDayNight.checked
     property string cfg_icon: "map-globe"
     // Empty means "theme colour"; the check boxes drive that.
     property string cfg_iconColor: ""
@@ -115,6 +116,10 @@ KCM.SimpleKCM {
             wrapMode: Text.Wrap
             Layout.fillWidth: true
             opacity: 0.7
+        }
+        QQC2.CheckBox {
+            id: showDayNight
+            text: i18n("Shade the night side of the globe")
         }
         QQC2.TextField {
             id: mpvPath

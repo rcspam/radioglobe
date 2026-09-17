@@ -28,6 +28,7 @@ KCM.SimpleKCM {
     property string cfg_iconColor: ""
     property string cfg_badgeColor: ""
     property bool cfg_invertWheel: false
+    property bool cfg_showDayNight: true
 
     property string exportStatus: ""
     property string importStatus: ""

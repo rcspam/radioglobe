@@ -222,26 +222,64 @@ Item {
                 Layout.minimumWidth: full.narrow ? 0 : Kirigami.Units.gridUnit * 10
                 spacing: 0
 
-                Globe {
-                    id: globe
-                    objectName: "globe"
+                Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    countries: root.countries
-                    stations: full.globeStations
-                    selectedStation: player.station
-                    activeCountryCode: root.currentCountry ? root.currentCountry.code : (player.station ? player.station.countryCode : "")
-                    backgroundColor: Kirigami.Theme.backgroundColor
-                    sphereColor: Qt.darker(Kirigami.Theme.backgroundColor, 1.25)
-                    landColor: Kirigami.Theme.alternateBackgroundColor
-                    gridColor: Kirigami.Theme.disabledTextColor
-                    outlineColor: Kirigami.Theme.textColor
-                    signalColor: Kirigami.Theme.textColor
-                    accentColor: Kirigami.Theme.highlightColor
-                    textColor: Kirigami.Theme.textColor
-                    fontFamily: Kirigami.Theme.defaultFont.family
-                    onStationActivated: station => root.playFrom(root.listStations, station)
-                    onCountryActivated: (code, name) => root.openCountry(code, name)
+
+                    Globe {
+                        id: globe
+                        objectName: "globe"
+                        anchors.fill: parent
+                        countries: root.countries
+                        stations: full.globeStations
+                        selectedStation: player.station
+                        activeCountryCode: root.currentCountry ? root.currentCountry.code : (player.station ? player.station.countryCode : "")
+                        backgroundColor: Kirigami.Theme.backgroundColor
+                        sphereColor: Qt.darker(Kirigami.Theme.backgroundColor, 1.25)
+                        landColor: Kirigami.Theme.alternateBackgroundColor
+                        gridColor: Kirigami.Theme.disabledTextColor
+                        outlineColor: Kirigami.Theme.textColor
+                        signalColor: Kirigami.Theme.textColor
+                        accentColor: Kirigami.Theme.highlightColor
+                        textColor: Kirigami.Theme.textColor
+                        fontFamily: Kirigami.Theme.defaultFont.family
+                        showDayNight: root.showDayNight
+                        // Darker than the sphere in both light and dark
+                        // themes, so the night side reads as a shadow.
+                        nightColor: Qt.darker(Kirigami.Theme.backgroundColor, 3)
+                        onStationActivated: station => root.playFrom(root.listStations, station)
+                        onCountryActivated: (code, name) => root.openCountry(code, name)
+                    }
+
+                    // Wheel-less zoom, over the globe's bottom-right corner.
+                    ColumnLayout {
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.margins: Kirigami.Units.smallSpacing
+                        spacing: 0
+
+                        PlasmaComponents3.ToolButton {
+                            objectName: "zoomInButton"
+                            icon.name: "zoom-in"
+                            enabled: globe.canZoomIn
+                            focusPolicy: Qt.NoFocus
+                            onClicked: globe.zoomIn()
+                            Accessible.name: i18n("Zoom in")
+                            PlasmaComponents3.ToolTip.text: i18n("Zoom in")
+                            PlasmaComponents3.ToolTip.visible: hovered
+                        }
+
+                        PlasmaComponents3.ToolButton {
+                            objectName: "zoomOutButton"
+                            icon.name: "zoom-out"
+                            enabled: globe.canZoomOut
+                            focusPolicy: Qt.NoFocus
+                            onClicked: globe.zoomOut()
+                            Accessible.name: i18n("Zoom out")
+                            PlasmaComponents3.ToolTip.text: i18n("Zoom out")
+                            PlasmaComponents3.ToolTip.visible: hovered
+                        }
+                    }
                 }
 
                 RowLayout {

@@ -363,3 +363,74 @@ test("zoomAnchoredCentre respects the latitude limits", () => {
     const next = model.zoomAnchoredCentre(400, 40, 800, 600, 1, 8, 70, 0);
     assert.ok(next.latitude <= 78);
 });
+
+test("subsolarPoint follows the seasons and the clock", () => {
+    const june = model.subsolarPoint(new Date("2026-06-21T12:00:00Z"));
+    assert.ok(june.latitude > 23.3 && june.latitude < 23.5, "summer solstice " + june.latitude);
+    assert.ok(Math.abs(june.longitude) < 2, "noon UTC near Greenwich " + june.longitude);
+
+    const december = model.subsolarPoint(new Date("2026-12-21T12:00:00Z"));
+    assert.ok(december.latitude < -23.3 && december.latitude > -23.5, "winter solstice " + december.latitude);
+
+    const march = model.subsolarPoint(new Date("2026-03-20T12:00:00Z"));
+    assert.ok(Math.abs(march.latitude) < 0.5, "equinox " + march.latitude);
+
+    const midnight = model.subsolarPoint(new Date("2026-03-20T00:00:00Z"));
+    assert.ok(Math.abs(midnight.longitude) > 175, "midnight UTC antipodal " + midnight.longitude);
+
+    // At 06:00 UTC it is solar noon 90 degrees east of Greenwich.
+    const sixUtc = model.subsolarPoint(new Date("2026-03-20T06:00:00Z"));
+    assert.ok(Math.abs(sixUtc.longitude - 90) < 2, "06:00 UTC " + sixUtc.longitude);
+});
+
+test("terminatorGeometry: the visible half of the terminator is orthogonal to the sun", () => {
+    const geometry = model.terminatorGeometry({ latitude: 10, longitude: 90 }, 20, -30, 32);
+    assert.equal(geometry.terminator.length, 33);
+    for (const p of geometry.terminator) {
+        assert.ok(Math.abs(p.x * p.x + p.y * p.y + p.z * p.z - 1) < 1e-9, "unit " + JSON.stringify(p));
+        assert.ok(Math.abs(p.x * geometry.sunX + p.y * geometry.sunY + p.z * geometry.sunZ) < 1e-9, "orthogonal " + JSON.stringify(p));
+        assert.ok(p.z >= -1e-9, "visible " + JSON.stringify(p));
+    }
+    // Both ends sit on the rim, opposite each other.
+    const first = geometry.terminator[0];
+    const last = geometry.terminator[32];
+    assert.ok(Math.abs(first.z) < 1e-9 && Math.abs(last.z) < 1e-9);
+    assert.ok(Math.abs(first.x + last.x) < 1e-9 && Math.abs(first.y + last.y) < 1e-9);
+});
+
+test("terminatorGeometry: the night polygon covers the side away from the sun", () => {
+    // Sun due east of the view centre: the western half of the disc is night.
+    const geometry = model.terminatorGeometry({ latitude: 0, longitude: 90 }, 0, 0, 32);
+    assert.ok(Math.abs(geometry.sunZ) < 1e-9);
+    assert.ok(geometry.night.length > geometry.terminator.length);
+    for (const p of geometry.night)
+        assert.ok(p.x <= 1e-9, "night point on the west " + JSON.stringify(p));
+    // The rim part of the polygon passes through the point opposite the sun.
+    assert.ok(geometry.night.some(p => Math.abs(p.x + 1) < 1e-9 && Math.abs(p.y) < 1e-9));
+    // Every polygon point sits on or inside the disc.
+    for (const p of geometry.night)
+        assert.ok(p.x * p.x + p.y * p.y <= 1 + 1e-9);
+});
+
+test("terminatorGeometry: sun in front lights the whole disc, sun behind darkens it", () => {
+    const lit = model.terminatorGeometry({ latitude: 0, longitude: 0 }, 0, 0, 32);
+    assert.equal(lit.terminator.length, 0);
+    assert.equal(lit.night.length, 0);
+    assert.ok(lit.sunZ > 0.99);
+
+    const dark = model.terminatorGeometry({ latitude: 0, longitude: 180 }, 0, 0, 32);
+    assert.equal(dark.terminator.length, 0);
+    assert.equal(dark.night.length, 0);
+    assert.ok(dark.sunZ < -0.99);
+});
+
+test("terminatorGeometry: a sun mostly in front leaves less than half the disc in night", () => {
+    const geometry = model.terminatorGeometry({ latitude: 0, longitude: 30 }, 0, 0, 64);
+    assert.ok(geometry.sunZ > 0.8);
+    // The terminator bulges away from the sun (west), so the night crescent
+    // is the thin strip between it and the western rim.
+    const middle = geometry.terminator[32];
+    assert.ok(middle.x < 0 && middle.x > -1, "bulge " + JSON.stringify(middle));
+    for (const p of geometry.night)
+        assert.ok(p.x <= 1e-9);
+});

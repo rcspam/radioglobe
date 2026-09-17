@@ -41,6 +41,7 @@ TestCase {
         page.cfg_homeCountry = "FR";
         page.cfg_maxWorldStations = 2500;
         page.cfg_invertWheel = true;
+        page.cfg_showDayNight = false;
         const backup = JSON.parse(page.backupText());
         compare(backup.radioglobe, 1);
         compare(backup.favorites.length, 1);
@@ -49,6 +50,7 @@ TestCase {
         compare(backup.settings.homeCountry, "FR");
         compare(backup.settings.maxWorldStations, 2500);
         compare(backup.settings.invertWheel, true);
+        compare(backup.settings.showDayNight, false);
         page.destroy();
     }
 

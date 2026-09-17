@@ -45,6 +45,7 @@ PlasmoidItem {
     // Plasmoid.configuration directly, which lets the tests fake it.
     readonly property bool pinned: Plasmoid.configuration.pinned
     readonly property bool approximateLocations: Plasmoid.configuration.approximateLocations
+    readonly property bool showDayNight: Plasmoid.configuration.showDayNight
 
     function setPinned(value) {
         Plasmoid.configuration.pinned = value;

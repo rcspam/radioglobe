@@ -53,6 +53,7 @@ TestCase {
         property string searchText: ""
         property var favorites: []
         property bool approximateLocations: false
+        property bool showDayNight: true
         property bool expanded: true
         property bool isOnDesktop: false
         property bool pinned: false
@@ -474,6 +475,31 @@ TestCase {
         verify(button !== null, "addStationButton not found");
         mouseClick(button);
         compare(root.calls.indexOf("configure") >= 0, true, JSON.stringify(root.calls));
+    }
+
+    function test_zoom_buttons_drive_the_globe() {
+        const globe = findChild(loader.item, "globe");
+        const zoomIn = findChild(loader.item, "zoomInButton");
+        const zoomOut = findChild(loader.item, "zoomOutButton");
+        verify(zoomIn !== null && zoomOut !== null, "zoom buttons not found");
+        globe.globeScale = 1;
+        mouseClick(zoomIn);
+        tryCompare(globe, "globeScale", 2);
+        mouseClick(zoomOut);
+        tryCompare(globe, "globeScale", 1);
+        // Disabled at the limits.
+        globe.globeScale = globe.maximumScale;
+        compare(zoomIn.enabled, false);
+        compare(zoomOut.enabled, true);
+        globe.globeScale = 1;
+    }
+
+    function test_day_night_shading_follows_the_setting() {
+        const globe = findChild(loader.item, "globe");
+        compare(globe.showDayNight, true);
+        root.showDayNight = false;
+        compare(globe.showDayNight, false);
+        root.showDayNight = true;
     }
 
     function test_retry_button_appears_offline_and_reaches_the_browser() {

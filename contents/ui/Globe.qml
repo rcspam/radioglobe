@@ -39,6 +39,13 @@ Item {
     property color textColor: "#f3f4f5"
     property string fontFamily: "monospace"
 
+    // Night side of the Earth, shaded from the Sun's current position. The
+    // sun is refreshed every minute while the globe is visible; tests set it.
+    property bool showDayNight: true
+    property color nightColor: "#000000"
+    property real nightOpacity: 0.45
+    property var sun: RadioModel.subsolarPoint(new Date())
+
     property var hoveredStation: null
     property real hoverX: 0
     property real hoverY: 0
@@ -165,12 +172,47 @@ Item {
         highlightY = position.y;
     }
 
+    // Button zoom: a short animation of the scale about the current centre.
+    // A second click before the first lands starts from the first's target,
+    // so clicks compound; any wheel, drag or focus cuts the animation short.
+    readonly property real zoomStep: 2
+    readonly property real zoomTarget: zoomAnimation.running ? zoomAnimation.to : globeScale
+    readonly property bool canZoomIn: zoomTarget < maximumScale - 0.001
+    readonly property bool canZoomOut: zoomTarget > minimumScale + 0.001
+
+    function stopZoomAnimation() {
+        zoomAnimation.stop();
+    }
+
+    function zoomBy(factor) {
+        interactionStarted();
+        stopKineticRotation(true);
+        suppressNextTap = false;
+        hoveredStation = null;
+        var target = RadioModel.clamp(zoomTarget * factor, minimumScale, maximumScale);
+        if (Math.abs(target - globeScale) < 0.001)
+            return;
+        zoomAnimation.stop();
+        zoomAnimation.from = globeScale;
+        zoomAnimation.to = target;
+        zoomAnimation.start();
+    }
+
+    function zoomIn() {
+        zoomBy(zoomStep);
+    }
+
+    function zoomOut() {
+        zoomBy(1 / zoomStep);
+    }
+
     function focusCoordinate(latitude, longitude) {
         var nextLatitude = Number(latitude);
         var nextLongitude = Number(longitude);
         if (!isFinite(nextLatitude) || !isFinite(nextLongitude))
             return;
         stopKineticRotation(true);
+        stopZoomAnimation();
         centreLatitude = RadioModel.clamp(nextLatitude, -78, 78);
         centreLongitude = RadioModel.wrapLongitude(nextLongitude);
     }
@@ -485,6 +527,52 @@ Item {
         }
     }
 
+    // A translucent veil over the night hemisphere and a thin line on the
+    // terminator, both under the station dots. The polygon comes from the
+    // model in unit disc coordinates; more segments at deeper zooms so the
+    // curve stays smooth when a small part of it spans the whole view.
+    function paintDayNight(ctx, centreX, centreY, globeRadius) {
+        if (!sun)
+            return;
+        var steps = Math.min(512, Math.round(64 * Math.sqrt(Math.max(1, globeScale))));
+        var geometry = RadioModel.terminatorGeometry(sun, centreLatitude, centreLongitude, steps);
+        ctx.fillStyle = withAlpha(nightColor, nightOpacity);
+        if (geometry.night.length === 0) {
+            if (geometry.sunZ < 0) {
+                ctx.beginPath();
+                ctx.arc(centreX, centreY, globeRadius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            return;
+        }
+        ctx.beginPath();
+        for (var i = 0; i < geometry.night.length; i++) {
+            var p = geometry.night[i];
+            if (i === 0)
+                ctx.moveTo(centreX + p.x * globeRadius, centreY - p.y * globeRadius);
+            else
+                ctx.lineTo(centreX + p.x * globeRadius, centreY - p.y * globeRadius);
+        }
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        for (var t = 0; t < geometry.terminator.length; t++) {
+            var q = geometry.terminator[t];
+            if (t === 0)
+                ctx.moveTo(centreX + q.x * globeRadius, centreY - q.y * globeRadius);
+            else
+                ctx.lineTo(centreX + q.x * globeRadius, centreY - q.y * globeRadius);
+        }
+        ctx.strokeStyle = withAlpha(accentColor, 0.35);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    function refreshSun() {
+        sun = RadioModel.subsolarPoint(new Date());
+    }
+
     function paintGlobe(ctx) {
         var centreX = globeCanvas.width / 2;
         var centreY = globeCanvas.height / 2;
@@ -510,6 +598,8 @@ Item {
         ctx.clip();
         paintGrid(ctx, centreX, centreY, globeRadius);
         paintCountries(ctx, centreX, centreY, globeRadius);
+        if (showDayNight)
+            paintDayNight(ctx, centreX, centreY, globeRadius);
         paintSignals(ctx);
         ctx.restore();
 
@@ -581,6 +671,14 @@ Item {
     onOutlineColorChanged: root.schedulePaint()
     onSignalColorChanged: root.schedulePaint()
     onAccentColorChanged: root.schedulePaint()
+    onShowDayNightChanged: {
+        if (showDayNight)
+            refreshSun();
+        root.schedulePaint();
+    }
+    onNightColorChanged: root.schedulePaint()
+    onNightOpacityChanged: root.schedulePaint()
+    onSunChanged: root.schedulePaint()
     onCentreLatitudeChanged: {
         updateHighlightPosition();
         root.schedulePaint();
@@ -606,8 +704,19 @@ Item {
         root.schedulePaint();
     }
     onVisibleChanged: {
-        if (!visible)
+        if (!visible) {
             stopKineticRotation(true);
+            stopZoomAnimation();
+        }
+    }
+
+    NumberAnimation {
+        id: zoomAnimation
+
+        target: root
+        property: "globeScale"
+        duration: 180
+        easing.type: Easing.OutCubic
     }
 
     Canvas {
@@ -639,6 +748,18 @@ Item {
         interval: 8
         onTriggered: if (root.paintDirty)
             root.schedulePaint()
+    }
+
+    // The terminator moves a quarter of a degree per minute.
+    Timer {
+        id: sunTimer
+
+        interval: 60000
+        repeat: true
+        running: root.visible && root.showDayNight
+        onRunningChanged: if (running)
+            root.refreshSun()
+        onTriggered: root.refreshSun()
     }
 
     Component.onCompleted: {
@@ -751,6 +872,7 @@ Item {
         onActiveChanged: {
             if (active) {
                 root.stopKineticRotation(true);
+                root.stopZoomAnimation();
                 wasActive = true;
                 launchCanceled = false;
                 launchPending = false;
@@ -804,6 +926,7 @@ Item {
         onWheel: function (event) {
             root.interactionStarted();
             root.stopKineticRotation(true);
+            root.stopZoomAnimation();
             root.suppressNextTap = false;
             root.hoveredStation = null;
             var factor = Math.exp(event.angleDelta.y / 360);

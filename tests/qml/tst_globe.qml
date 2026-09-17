@@ -27,6 +27,7 @@ TestCase {
     }
 
     function init() {
+        globe.stopZoomAnimation();
         globe.centreLatitude = 0;
         globe.centreLongitude = 0;
         globe.globeScale = 1;
@@ -38,6 +39,8 @@ TestCase {
         globe.gridColor = "#7d8791";
         globe.outlineColor = "#9099a3";
         globe.signalColor = "#d9dee3";
+        // The real Sun would shade half of the pixel tests below.
+        globe.showDayNight = false;
         selectionChanges.clear();
     }
 
@@ -109,6 +112,69 @@ TestCase {
         tryVerify(function () {
             return grabImage(globe).pixel(centreX, centreY).toString() !== Qt.rgba(0, 0, 0, 1).toString();
         });
+    }
+
+    // Everything black except the night shade: with the Sun due east of the
+    // view centre, the western half of the disc is shaded and the eastern
+    // half is not, and turning the option off removes the shade.
+    function test_nightSideIsShadedAwayFromTheSun() {
+        globe.backgroundColor = "#000000";
+        globe.sphereColor = "#000000";
+        globe.gridColor = "#000000";
+        globe.outlineColor = "#000000";
+        globe.signalColor = "#000000";
+        globe.nightColor = "#ffffff";
+        globe.nightOpacity = 1;
+        globe.showDayNight = true;
+        globe.sun = {
+            latitude: 0,
+            longitude: 90
+        };
+        const centreX = Math.round(globe.width / 2);
+        const centreY = Math.round(globe.height / 2);
+        const west = Math.round(centreX - globe.radius() / 2);
+        const east = Math.round(centreX + globe.radius() / 2);
+        tryVerify(function () {
+            return Qt.colorEqual(grabImage(globe).pixel(west, centreY), "#ffffff");
+        });
+        compare(grabImage(globe).pixel(east, centreY).toString(), Qt.rgba(0, 0, 0, 1).toString());
+
+        globe.showDayNight = false;
+        tryVerify(function () {
+            return Qt.colorEqual(grabImage(globe).pixel(west, centreY), "#000000");
+        });
+    }
+
+    // Stations are painted after the shade, so a night-side signal keeps its
+    // colour instead of being dimmed with the land under it.
+    function test_stationsStayOnTopOfTheNightShade() {
+        globe.backgroundColor = "#000000";
+        globe.sphereColor = "#000000";
+        globe.gridColor = "#000000";
+        globe.outlineColor = "#000000";
+        globe.signalColor = "#ffffff";
+        globe.nightColor = "#ff0000";
+        globe.nightOpacity = 1;
+        globe.showDayNight = true;
+        globe.sun = {
+            latitude: 0,
+            longitude: 180
+        };
+        globe.stations = [
+            {
+                uuid: "night",
+                latitude: 0,
+                longitude: 0
+            }
+        ];
+        const centreX = Math.round(globe.width / 2);
+        const centreY = Math.round(globe.height / 2);
+        // The dot is white at 87 % over the red veil: green channel high
+        // there, zero anywhere the veil is the last thing painted.
+        tryVerify(function () {
+            return grabImage(globe).pixel(centreX, centreY).g > 0.8;
+        });
+        compare(grabImage(globe).pixel(centreX, Math.round(centreY - globe.radius() / 2)).toString(), Qt.rgba(1, 0, 0, 1).toString());
     }
 
     // A depth bucket only picks the fill colour: every dot is still stroked as
@@ -203,6 +269,56 @@ TestCase {
         for (var i = 0; i < 60; i++)
             mouseWheel(globe, 400, 300, 0, 120);
         compare(globe.globeScale, 1024);
+    }
+
+    function test_zoomButtonsStepByTwoAndAnimate() {
+        globe.zoomIn();
+        verify(globe.globeScale < 2, "animated, not jumped: " + globe.globeScale);
+        tryCompare(globe, "globeScale", 2);
+        globe.zoomOut();
+        tryCompare(globe, "globeScale", 1);
+    }
+
+    // The centre stays where it is: a button zoom has no cursor to anchor.
+    function test_zoomButtonsKeepTheCentre() {
+        globe.centreLatitude = 40;
+        globe.centreLongitude = -3;
+        globe.zoomIn();
+        tryCompare(globe, "globeScale", 2);
+        compare(globe.centreLatitude, 40);
+        compare(globe.centreLongitude, -3);
+    }
+
+    function test_zoomButtonsStopAtTheLimits() {
+        globe.globeScale = globe.maximumScale;
+        verify(!globe.canZoomIn);
+        verify(globe.canZoomOut);
+        globe.zoomIn();
+        wait(250);
+        compare(globe.globeScale, globe.maximumScale);
+
+        globe.globeScale = globe.minimumScale;
+        verify(globe.canZoomIn);
+        verify(!globe.canZoomOut);
+        globe.zoomOut();
+        wait(250);
+        compare(globe.globeScale, globe.minimumScale);
+    }
+
+    // Two quick clicks compound: the second starts from the first's target.
+    function test_zoomButtonsQueueFromTheTarget() {
+        globe.zoomIn();
+        globe.zoomIn();
+        tryCompare(globe, "globeScale", 4);
+    }
+
+    function test_wheelInterruptsTheButtonZoom() {
+        globe.zoomIn();
+        mouseWheel(globe, 400, 300, 0, -120);
+        const afterWheel = globe.globeScale;
+        wait(250);
+        compare(globe.globeScale, afterWheel);
+        verify(afterWheel < 2, "the animation did not carry on to 2: " + afterWheel);
     }
 
     function test_wheelZoomKeepsThePointUnderTheCursor() {

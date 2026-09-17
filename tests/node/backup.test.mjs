@@ -19,6 +19,7 @@ test("buildBackup wraps favourites, history and the known settings only", () => 
         iconColor: "#226ce7",
         badgeColor: "#4fa710",
         invertWheel: false,
+        showDayNight: false,
         mpvPid: 4242,
         lastStation: "{}",
     });
@@ -36,6 +37,7 @@ test("buildBackup wraps favourites, history and the known settings only", () => 
             iconColor: "#226ce7",
             badgeColor: "#4fa710",
             invertWheel: false,
+            showDayNight: false,
         },
     });
 });

@@ -405,6 +405,81 @@ function zoomAnchoredCentre(cursorX, cursorY, width, height, oldScale, newScale,
   return current
 }
 
+// Where the Sun is overhead at that instant: declination from the NOAA
+// solar position formulas (true longitude of the Sun, obliquity, nutation),
+// longitude from UTC time corrected by the equation of time. Accurate to a
+// fraction of a degree, plenty for a shaded night side.
+function subsolarPoint(date) {
+  var now = date instanceof Date ? date : new Date()
+  var julianCenturies = (now.getTime() / 86400000 + 2440587.5 - 2451545) / 36525
+  var t = julianCenturies
+  var meanLongitude = (280.46646 + t * (36000.76983 + t * 0.0003032)) % 360
+  var meanAnomaly = (357.52911 + t * (35999.05029 - t * 0.0001537)) % 360
+  var eccentricity = 0.016708634 - t * (0.000042037 + 0.0000001267 * t)
+  var centre = Math.sin(meanAnomaly * radians) * (1.914602 - t * (0.004817 + 0.000014 * t))
+    + Math.sin(2 * meanAnomaly * radians) * (0.019993 - 0.000101 * t)
+    + Math.sin(3 * meanAnomaly * radians) * 0.000289
+  var trueLongitude = meanLongitude + centre
+  var omega = 125.04 - 1934.136 * t
+  var apparentLongitude = trueLongitude - 0.00569 - 0.00478 * Math.sin(omega * radians)
+  var meanObliquity = 23.439291 - t * (0.013004167 + t * (0.00000016667 - t * 0.000000502778))
+  var obliquity = meanObliquity + 0.00256 * Math.cos(omega * radians)
+  var declination = Math.asin(Math.sin(obliquity * radians) * Math.sin(apparentLongitude * radians)) * degrees
+
+  var y = Math.pow(Math.tan(obliquity / 2 * radians), 2)
+  var equationOfTimeMinutes = 4 * degrees * (
+    y * Math.sin(2 * meanLongitude * radians)
+    - 2 * eccentricity * Math.sin(meanAnomaly * radians)
+    + 4 * eccentricity * y * Math.sin(meanAnomaly * radians) * Math.cos(2 * meanLongitude * radians)
+    - 0.5 * y * y * Math.sin(4 * meanLongitude * radians)
+    - 1.25 * eccentricity * eccentricity * Math.sin(2 * meanAnomaly * radians))
+  var utcHours = now.getUTCHours() + now.getUTCMinutes() / 60 + now.getUTCSeconds() / 3600
+  // Solar noon is at 12:00 UTC on the Greenwich meridian, minus the equation
+  // of time; the Sun moves 15 degrees west per hour after that.
+  var longitude = wrapLongitude(-(utcHours - 12 + equationOfTimeMinutes / 60) * 15)
+  return { latitude: declination, longitude: longitude }
+}
+
+// The day/night boundary as seen from the current view, in unit disc
+// coordinates (x right, y up, z toward the viewer). `terminator` is the
+// visible half of the great circle orthogonal to the Sun, rim to rim;
+// `night` is that polyline closed by the rim arc on the side away from the
+// Sun, the polygon to shade. Both are empty when the Sun is straight in
+// front (all day) or straight behind (all night): sunZ tells which. The idea
+// comes from the Radio Atlas pull request "solar day/night terminator".
+function terminatorGeometry(sun, centreLatitude, centreLongitude, steps) {
+  var s = project(sun.latitude, sun.longitude, centreLatitude, centreLongitude)
+  var inPlaneLength = Math.hypot(s.x, s.y)
+  var count = Math.max(4, Math.floor(Number(steps) || 64))
+  var result = { sunX: s.x, sunY: s.y, sunZ: s.z, inPlaneLength: inPlaneLength, terminator: [], night: [] }
+  if (inPlaneLength < 1e-6) return result
+
+  // a: on the rim, orthogonal to the Sun. b: orthogonal to both, leaning
+  // toward the viewer (z = inPlaneLength >= 0). d: the Sun's direction in
+  // the disc plane.
+  var a = { x: -s.y / inPlaneLength, y: s.x / inPlaneLength, z: 0 }
+  var b = { x: -s.z * s.x / inPlaneLength, y: -s.z * s.y / inPlaneLength, z: inPlaneLength }
+  var d = { x: s.x / inPlaneLength, y: s.y / inPlaneLength }
+  for (var i = 0; i <= count; i++) {
+    var angle = i / count * Math.PI
+    var c = Math.cos(angle)
+    var n = Math.sin(angle)
+    result.terminator.push({ x: a.x * c + b.x * n, y: a.y * c + b.y * n, z: b.z * n })
+  }
+  result.night = result.terminator.slice()
+  // Rim arc from -a back to a through -d, the point farthest from the Sun.
+  var rimSteps = Math.max(8, Math.floor(count / 2))
+  for (var j = 1; j < rimSteps; j++) {
+    var phi = j / rimSteps * Math.PI
+    result.night.push({
+      x: -a.x * Math.cos(phi) - d.x * Math.sin(phi),
+      y: -a.y * Math.cos(phi) - d.y * Math.sin(phi),
+      z: 0
+    })
+  }
+  return result
+}
+
 function nearestVisibleStation(stations, centreLatitude, centreLongitude, excludedUuid,
                                width, height, scale) {
   var rows = Array.isArray(stations) ? stations : []
@@ -983,7 +1058,8 @@ var backupSettingTypes = ({
     icon: "string",
     iconColor: "string",
     badgeColor: "string",
-    invertWheel: "boolean"
+    invertWheel: "boolean",
+    showDayNight: "boolean"
 });
 
 function backupSettings(settings) {

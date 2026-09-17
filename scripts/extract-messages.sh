@@ -5,7 +5,10 @@ set -euo pipefail
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 pot="$root/po/template.pot"
 mkdir -p "$root/po"
-find "$root/contents" \( -name '*.qml' -o -name '*.js' \) -print | sort > "$root/po/.files"
+cd "$root"
+# Relative paths, so the source references in the po files do not depend on
+# where the checkout lives.
+find contents \( -name '*.qml' -o -name '*.js' \) -print | sort > "$root/po/.files"
 xgettext --from-code=UTF-8 --language=JavaScript \
   --package-name="RadioGlobe" --msgid-bugs-address="https://github.com/rcspam/radioglobe/issues" \
   --add-comments=TRANSLATORS --sort-output --no-wrap \

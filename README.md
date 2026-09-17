@@ -8,7 +8,8 @@ A KDE Plasma 6 widget for exploring live radio stations on a rotatable globe and
 
 ## Features
 
-- A rotatable, zoomable globe (Canvas 2D) with one point per live radio station. Drag to spin, scroll to zoom, click a point to play, click a country to browse its stations
+- A rotatable, zoomable globe (Canvas 2D) with one point per live radio station. Drag to spin, scroll or use the + / - buttons to zoom, click a point to play, click a country to browse its stations
+- The night side of the Earth is shaded from the Sun's real position, refreshed every minute (can be turned off in the settings)
 - Stations come from the [Radio Browser](https://www.radio-browser.info/) community API: world view (up to a configurable cap, default 3000 stations), per-country lists of up to 300 stations, and free-text search across name, country and tag
 - A home country (taken from your locale, or set in the widget's configuration): all of its geolocated stations are always loaded and kept on the globe, however popular they are. An option also shows its stations without coordinates, placed at random inside the country's borders (the tooltip says "approximate location")
 - Playback through an external mpv process controlled over native MPRIS, so a broken stream can never freeze or crash the widget, and playback survives a `plasmashell` restart. mpv buffers a couple of seconds before playing and reconnects on its own; a stream the server drops is reopened once silently before an error shows
@@ -95,7 +96,7 @@ The icon itself is a setting too (General page): a few presets such as the globe
 | `M` | Mute |
 | Escape | Clear the search, then leave the current country, then close the popup |
 
-In the player bar, clicking the stop button stops playback; holding it down quits mpv entirely, like "Stop and quit mpv" in the right-click menu. Double-clicking the station name frames it on the globe, zoomed in to city level. Favourites with a location always have a dot on the globe, even outside the world list (stations you added by hand included). On the globe, the mouse wheel zooms on the point under the cursor.
+In the player bar, clicking the stop button stops playback; holding it down quits mpv entirely, like "Stop and quit mpv" in the right-click menu. Double-clicking the station name frames it on the globe, zoomed in to city level. Favourites with a location always have a dot on the globe, even outside the world list (stations you added by hand included). On the globe, the mouse wheel zooms on the point under the cursor; the + / - buttons in its corner zoom about the centre.
 
 Next to the search field, the pin button ("Keep open") stops the popup from closing when it loses focus, so you can keep browsing stations while you work in another window. It is remembered across sessions, and it does not show up when the widget sits on the desktop, where there is no popup to keep open.
 
