@@ -437,6 +437,48 @@ TestCase {
         compare(tabs.signalArguments[0][0], 0);
     }
 
+    function countRows(item) {
+        let rows = item.objectName === "stationRow" ? 1 : 0;
+        for (let i = 0; i < item.children.length; i++)
+            rows += countRows(item.children[i]);
+        return rows;
+    }
+
+    // A world batch is 3000 rows: only the visible ones (plus the cache
+    // buffer) may ever be built, whatever the size the list is created at.
+    // Plasma preloads the popup at 0x0, and a ScrollView around the ListView
+    // once made that build, then destroy, all 3000 rows: 5 seconds of GUI
+    // thread at every plasmashell start.
+    function test_big_list_builds_visible_rows_only() {
+        const rows = [];
+        for (let i = 0; i < 3000; i++)
+            rows.push({
+                uuid: "big" + i,
+                name: "Station " + i,
+                countryCode: "FR",
+                codec: "MP3",
+                bitrate: 128
+            });
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/StationList.qml"));
+        verify(component.status === Component.Ready, component.errorString());
+        const sized = component.createObject(this, {
+            width: 300,
+            height: 300,
+            stations: rows
+        });
+        wait(50);
+        verify(countRows(sized) < 60, "sized list built " + countRows(sized) + " rows");
+        sized.destroy();
+        const unsized = component.createObject(this, {
+            width: 0,
+            height: 0,
+            stations: rows
+        });
+        wait(50);
+        verify(countRows(unsized) < 60, "unsized list built " + countRows(unsized) + " rows");
+        unsized.destroy();
+    }
+
     function test_components_compile() {
         for (const file of ["SearchBar.qml", "FullRepresentation.qml", "CompactRepresentation.qml"]) {
             const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/" + file));
