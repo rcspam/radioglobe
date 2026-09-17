@@ -92,6 +92,15 @@ PlasmoidItem {
             return i18n("Playback failed");
         return i18n("Stopped");
     }
+    // The same texts with the transport buttons under them; the plain texts
+    // above stay as the fallback the shell reads when it ignores the item.
+    toolTipItem: CompactToolTip {
+        player: player
+        onPlayPauseRequested: player.togglePause()
+        onNextRequested: root.next()
+        onPreviousRequested: root.previous()
+        onStopRequested: player.stop()
+    }
     // A launcher, not a notifier: staying passive would hide the icon in the
     // system tray whenever nothing is playing, which is exactly when the user
     // needs it to pick a station.

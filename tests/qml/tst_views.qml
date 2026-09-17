@@ -516,6 +516,51 @@ TestCase {
         list.stations = before;
     }
 
+    // The panel tooltip: station, title, and the transport buttons.
+    function test_compact_tooltip_shows_the_station_and_drives_the_player() {
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/CompactToolTip.qml"));
+        verify(component.status === Component.Ready, component.errorString());
+        const calls = [];
+        const tip = component.createObject(this, {
+            player: ({
+                    state: "playing",
+                    station: {
+                        uuid: "t",
+                        name: "Tooltip FM"
+                    },
+                    track: "Now: a song",
+                    volume: 0.5,
+                    muted: false,
+                    errorKind: ""
+                })
+        });
+        tip.playPauseRequested.connect(() => calls.push("playPause"));
+        tip.nextRequested.connect(() => calls.push("next"));
+        tip.previousRequested.connect(() => calls.push("previous"));
+        tip.stopRequested.connect(() => calls.push("stop"));
+        compare(findChild(tip, "tipMain").text, "Tooltip FM");
+        compare(findChild(tip, "tipSub").text, "Now: a song");
+        compare(findChild(tip, "tipPlayPause").icon.name, "media-playback-pause");
+        mouseClick(findChild(tip, "tipPlayPause"));
+        mouseClick(findChild(tip, "tipNext"));
+        mouseClick(findChild(tip, "tipPrevious"));
+        mouseClick(findChild(tip, "tipStop"));
+        compare(calls, ["playPause", "next", "previous", "stop"]);
+        tip.player = ({
+                state: "idle",
+                station: null,
+                track: "",
+                volume: 0.5,
+                muted: false,
+                errorKind: ""
+            });
+        compare(findChild(tip, "tipMain").text, "RadioGlobe");
+        compare(findChild(tip, "tipSub").text, "No station playing");
+        compare(findChild(tip, "tipPlayPause").icon.name, "media-playback-start");
+        compare(findChild(tip, "tipPlayPause").enabled, false);
+        tip.destroy();
+    }
+
     function countRows(item) {
         let rows = item.objectName === "stationRow" ? 1 : 0;
         for (let i = 0; i < item.children.length; i++)

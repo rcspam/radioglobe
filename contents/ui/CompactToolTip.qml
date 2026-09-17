@@ -1,0 +1,95 @@
+import QtQuick
+import QtQuick.Layouts
+import org.kde.plasma.components as PlasmaComponents3
+import org.kde.kirigami as Kirigami
+
+// The panel icon's tooltip: the station and its title, plus the transport
+// buttons. Plasma shows it through PlasmoidItem.toolTipItem; the icon makes
+// the hosting tooltip area interactive so the buttons can be clicked.
+Item {
+    id: tip
+
+    property var player: null
+
+    signal playPauseRequested
+    signal nextRequested
+    signal previousRequested
+    signal stopRequested
+
+    readonly property bool hasStation: player && player.station ? true : false
+    readonly property string mainText: hasStation ? String(player.station.name) : i18n("RadioGlobe")
+    readonly property string subText: {
+        if (!hasStation)
+            return i18n("No station playing");
+        if (player.state === "playing")
+            return player.track || i18n("Playing");
+        if (player.state === "paused")
+            return i18n("Paused");
+        if (player.state === "error")
+            return i18n("Playback failed");
+        return i18n("Stopped");
+    }
+
+    implicitWidth: Math.max(column.implicitWidth, Kirigami.Units.gridUnit * 16)
+    implicitHeight: column.implicitHeight
+    width: implicitWidth
+    height: implicitHeight
+
+    ColumnLayout {
+        id: column
+        anchors.fill: parent
+        anchors.margins: Kirigami.Units.smallSpacing
+        spacing: Kirigami.Units.smallSpacing
+
+        PlasmaComponents3.Label {
+            objectName: "tipMain"
+            Layout.fillWidth: true
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+            text: tip.mainText
+            textFormat: Text.PlainText
+            font.bold: true
+            elide: Text.ElideRight
+        }
+        PlasmaComponents3.Label {
+            objectName: "tipSub"
+            Layout.fillWidth: true
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+            text: tip.subText
+            textFormat: Text.PlainText
+            elide: Text.ElideRight
+            opacity: 0.75
+        }
+        RowLayout {
+            spacing: 0
+
+            PlasmaComponents3.ToolButton {
+                objectName: "tipPrevious"
+                icon.name: "media-skip-backward"
+                enabled: tip.hasStation
+                onClicked: tip.previousRequested()
+                Accessible.name: i18n("Previous")
+            }
+            PlasmaComponents3.ToolButton {
+                objectName: "tipPlayPause"
+                icon.name: tip.player && tip.player.state === "playing" ? "media-playback-pause" : "media-playback-start"
+                enabled: tip.hasStation
+                onClicked: tip.playPauseRequested()
+                Accessible.name: i18n("Play or pause")
+            }
+            PlasmaComponents3.ToolButton {
+                objectName: "tipNext"
+                icon.name: "media-skip-forward"
+                enabled: tip.hasStation
+                onClicked: tip.nextRequested()
+                Accessible.name: i18n("Next")
+            }
+            PlasmaComponents3.ToolButton {
+                objectName: "tipStop"
+                icon.name: "media-playback-stop"
+                enabled: tip.player && (tip.player.state === "playing" || tip.player.state === "paused" || tip.player.state === "loading") ? true : false
+                onClicked: tip.stopRequested()
+                Accessible.name: i18n("Stop")
+            }
+        }
+    }
+}

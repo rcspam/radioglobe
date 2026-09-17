@@ -27,6 +27,24 @@ Item {
     // True in a vertical panel (main.qml binds it to the form factor).
     property bool vertical: false
 
+    // The shell hosts this icon inside its ToolTipArea, which shows our
+    // toolTipItem but is not interactive by default (it closes as soon as
+    // the pointer leaves the icon). Walk up to it and turn that on, so the
+    // tooltip's buttons can be clicked. Anything up the chain with the two
+    // ToolTipArea properties counts; nothing found means a plain tooltip.
+    function makeToolTipAreaInteractive() {
+        let item = compact.parent;
+        for (let depth = 0; item && depth < 8; depth++) {
+            if ("interactive" in item && "mainItem" in item) {
+                item.interactive = true;
+                return;
+            }
+            item = item.parent;
+        }
+    }
+    onParentChanged: compact.makeToolTipAreaInteractive()
+    Component.onCompleted: compact.makeToolTipAreaInteractive()
+
     Layout.minimumWidth: Kirigami.Units.iconSizes.small
     Layout.minimumHeight: Kirigami.Units.iconSizes.small
     // The panel fixes one side; the other follows so the icon is a square of
