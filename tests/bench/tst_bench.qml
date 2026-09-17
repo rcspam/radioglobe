@@ -50,12 +50,18 @@ TestCase {
         return rows;
     }
 
+    // A real pointer drag through the DragHandler, so whatever the globe
+    // does while it moves (no antialiasing) is part of the measure.
     function drag(frames) {
         var before = globe.paintCount;
-        for (var i = 0; i < frames; i++) {
-            globe.centreLongitude = globe.centreLongitude + 0.5;
+        mousePress(globe, 200, 240);
+        for (var i = 1; i <= frames; i++) {
+            mouseMove(globe, 200 + i * 2, 240);
             wait(16);
         }
+        mouseRelease(globe, 200 + frames * 2, 240);
+        wait(50);
+        globe.stopKineticRotation(true);
         wait(200);
         return globe.paintCount - before;
     }
