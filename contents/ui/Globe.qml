@@ -239,6 +239,15 @@ Item {
         return output;
     }
 
+    // Douglas-Peucker tolerances, in degrees, of the three detail levels a
+    // country is prepared at. At scale 1 a degree is under 4 px, so the
+    // coarsest level (40 % of the points) draws the same picture.
+    property var detailTolerances: [0.35, 0.1, 0]
+
+    function detailLevel() {
+        return globeScale < 2.5 ? 0 : (globeScale < 10 ? 1 : 2);
+    }
+
     function prepareCountryGeometry() {
         var output = [];
         var rows = Array.isArray(countries) ? countries : [];
@@ -250,21 +259,26 @@ Item {
             var polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
             if (!Array.isArray(polygons))
                 continue;
-            var rings = [];
-            for (var p = 0; p < polygons.length; p++) {
-                var ring = polygons[p] && polygons[p][0];
-                var prepared = prepareCoordinates(ring, false);
-                if (prepared.length >= 9)
-                    rings.push({
-                        world: prepared,
-                        projected: new Array(prepared.length)
-                    });
+            var levels = [];
+            for (var level = 0; level < detailTolerances.length; level++) {
+                var rings = [];
+                for (var p = 0; p < polygons.length; p++) {
+                    var ring = polygons[p] && polygons[p][0];
+                    var prepared = prepareCoordinates(RadioModel.simplifyRing(ring, detailTolerances[level]), false);
+                    if (prepared.length >= 9)
+                        rings.push({
+                            world: prepared,
+                            projected: new Array(prepared.length)
+                        });
+                }
+                levels.push(rings);
             }
-            if (rings.length === 0)
+            if (levels[levels.length - 1].length === 0)
                 continue;
             output.push({
                 code: String(feature.properties && feature.properties.code || "").toUpperCase(),
-                rings: rings
+                levels: levels,
+                rings: levels[levels.length - 1]
             });
         }
         return output;
@@ -274,13 +288,13 @@ Item {
         var output = [];
         for (var latitude = -60; latitude <= 60; latitude += 30) {
             var parallel = [];
-            for (var longitude = -180; longitude <= 180; longitude += 3)
+            for (var longitude = -180; longitude <= 180; longitude += 6)
                 parallel.push([latitude, longitude]);
             output.push(prepareCoordinates(parallel, true));
         }
         for (var meridian = -150; meridian <= 180; meridian += 30) {
             var line = [];
-            for (var lat = -90; lat <= 90; lat += 3)
+            for (var lat = -90; lat <= 90; lat += 6)
                 line.push([lat, meridian]);
             output.push(prepareCoordinates(line, true));
         }
@@ -360,6 +374,7 @@ Item {
         var activeCode = activeCountryCode.toUpperCase();
         for (var i = 0; i < rows.length; i++) {
             var country = rows[i];
+            country.rings = country.levels[detailLevel()];
             var active = country.code === activeCode;
             ctx.fillStyle = active ? withAlpha(accentColor, 0.38) : withAlpha(landColor, 0.9);
             ctx.strokeStyle = active ? withAlpha(accentColor, 0.95) : withAlpha(outlineColor, 0.34);

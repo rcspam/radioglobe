@@ -36,6 +36,7 @@ TestCase {
         globe.highlightedStation = null;
         globe.backgroundColor = "#090a0c";
         globe.sphereColor = "#11151a";
+        globe.landColor = "#283039";
         globe.gridColor = "#7d8791";
         globe.outlineColor = "#9099a3";
         globe.signalColor = "#d9dee3";
@@ -175,6 +176,64 @@ TestCase {
             return grabImage(globe).pixel(centreX, centreY).g > 0.8;
         });
         compare(grabImage(globe).pixel(centreX, Math.round(centreY - globe.radius() / 2)).toString(), Qt.rgba(1, 0, 0, 1).toString());
+    }
+
+    function loadCountries() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", Qt.resolvedUrl("../../contents/data/countries.json"), false);
+        xhr.send();
+        return JSON.parse(xhr.responseText).features;
+    }
+
+    // Three detail levels per country, the coarsest picked at scale 1.
+    function test_countriesCarryThreeDetailLevels() {
+        globe.countries = loadCountries();
+        const counts = [0, 0, 0];
+        for (const country of globe.preparedCountries)
+            for (let level = 0; level < 3; level++)
+                for (const ring of country.levels[level])
+                    counts[level] += ring.world.length / 3;
+        verify(counts[0] < counts[1] && counts[1] < counts[2], "levels " + counts.join(" "));
+        verify(counts[0] < counts[2] / 2, "coarsest level keeps less than half: " + counts.join(" "));
+        globe.globeScale = 1;
+        compare(globe.detailLevel(), 0);
+        globe.globeScale = 4;
+        compare(globe.detailLevel(), 1);
+        globe.globeScale = 16;
+        compare(globe.detailLevel(), 2);
+        globe.countries = [];
+    }
+
+    // Away from the borders the simplified land looks exactly like the full
+    // one: centre of a large country and open sea.
+    function test_simplifiedCountriesMatchTheFullOnesAwayFromBorders() {
+        globe.landColor = "#ff0000";
+        globe.sphereColor = "#000000";
+        globe.backgroundColor = "#000000";
+        globe.gridColor = "#000000";
+        globe.outlineColor = "#000000";
+        globe.centreLatitude = 20;
+        globe.centreLongitude = 20;
+        globe.countries = loadCountries();
+        const samples = [
+            [400, 300], // centre of the view, in the Sahara
+            [400 + globe.radius() * 0.55, 300 + globe.radius() * 0.25], // Indian Ocean
+            [400 - globe.radius() * 0.6, 300 - globe.radius() * 0.1] // Atlantic
+        ];
+        function pixels() {
+            const image = grabImage(globe);
+            return samples.map(s => image.pixel(Math.round(s[0]), Math.round(s[1])).toString());
+        }
+        wait(100);
+        const simplified = pixels();
+        verify(grabImage(globe).pixel(400, 300).r > 0.8, "Sahara is land: " + simplified[0]);
+        verify(simplified[1] === Qt.rgba(0, 0, 0, 1).toString(), "Indian Ocean is sea: " + simplified[1]);
+        globe.detailTolerances = [0, 0, 0];
+        globe.countries = loadCountries();
+        wait(100);
+        compare(pixels(), simplified);
+        globe.detailTolerances = [0.35, 0.1, 0];
+        globe.countries = [];
     }
 
     // A depth bucket only picks the fill colour: every dot is still stroked as
