@@ -20,6 +20,8 @@ KCM.SimpleKCM {
     property alias cfg_approximateLocations: approximateLocations.checked
     property alias cfg_invertWheel: invertWheel.checked
     property alias cfg_showDayNight: showDayNight.checked
+    property alias cfg_restoreLastStation: restoreLastStation.checked
+    property alias cfg_autoplayLastStation: autoplayLastStation.checked
     property string cfg_icon: "map-globe"
     // Empty means "theme colour"; the check boxes drive that.
     property string cfg_iconColor: ""
@@ -144,6 +146,18 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: showDayNight
             text: i18n("Shade the night side of the globe")
+        }
+        QQC2.CheckBox {
+            id: restoreLastStation
+            objectName: "restoreLastStation"
+            Kirigami.FormData.label: i18n("At startup:")
+            text: i18n("Show the last station played in the player")
+        }
+        QQC2.CheckBox {
+            id: autoplayLastStation
+            objectName: "autoplayLastStation"
+            text: i18n("Start playing it")
+            enabled: restoreLastStation.checked
         }
         QQC2.TextField {
             id: mpvPath

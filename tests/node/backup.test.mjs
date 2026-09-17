@@ -22,6 +22,8 @@ test("buildBackup wraps favourites, history and the known settings only", () => 
         showDayNight: false,
         maxCountryStations: 500,
         maxSearchStations: 500,
+        restoreLastStation: true,
+        autoplayLastStation: false,
         mpvPid: 4242,
         lastStation: "{}",
     });
@@ -42,6 +44,8 @@ test("buildBackup wraps favourites, history and the known settings only", () => 
             showDayNight: false,
             maxCountryStations: 500,
             maxSearchStations: 500,
+            restoreLastStation: true,
+            autoplayLastStation: false,
         },
     });
 });

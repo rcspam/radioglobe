@@ -418,8 +418,34 @@ PlasmoidItem {
     }
     onMissingModulesChanged: root.detectDistro()
 
+    // The last station played, parsed from the configuration, or null.
+    function lastStation() {
+        try {
+            const last = JSON.parse(Plasmoid.configuration.lastStation || "null");
+            return last && last.url ? last : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    // Autoplay waits for the MPRIS model to report an mpv that outlived
+    // plasmashell: if one is playing, the restored station is left alone.
+    Timer {
+        id: autoplayTimer
+        interval: 2500
+        onTriggered: player.startIfIdle()
+    }
+
     Component.onCompleted: {
         root.detectDistro();
+        if (Plasmoid.configuration.restoreLastStation) {
+            const last = root.lastStation();
+            if (last) {
+                player.adoptStation(last);
+                if (Plasmoid.configuration.autoplayLastStation)
+                    autoplayTimer.start();
+            }
+        }
         // First launch: give the popup its intended size before it ever opens
         // (see popupWidth in main.xml). Later resizes by the user win: Plasma
         // rewrites these two keys every time the popup closes.
@@ -461,11 +487,9 @@ PlasmoidItem {
         function onAttachedChanged() {
             if (!player.attached || player.station)
                 return;
-            try {
-                const last = JSON.parse(Plasmoid.configuration.lastStation || "null");
-                if (last && last.url)
-                    player.adoptStation(last);
-            } catch (error) {}
+            const last = root.lastStation();
+            if (last)
+                player.adoptStation(last);
         }
     }
 

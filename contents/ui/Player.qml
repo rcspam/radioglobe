@@ -107,6 +107,13 @@ Item {
         }
     }
 
+    // Autoplay at startup: the restored station, unless an mpv that outlived
+    // plasmashell is already playing something.
+    function startIfIdle() {
+        if (root._state === "idle" && root._station && !root._player)
+            root.play(root._station);
+    }
+
     function retry() {
         if (root._station)
             root.play(root._station);
@@ -120,8 +127,12 @@ Item {
     }
 
     function resume() {
-        if (!root._player)
+        if (!root._player) {
+            // The station restored at startup, with no mpv yet: Play starts it.
+            if (root._station)
+                root.play(root._station);
             return;
+        }
         if (root._state === "paused") {
             root._player.Play();
             root._setState("playing");

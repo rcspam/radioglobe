@@ -212,6 +212,35 @@ TestCase {
         compare(execLog.length, 0);
     }
 
+    // The last station restored at startup sits in the player, idle, with no
+    // mpv around: Play launches it.
+    function test_restored_station_starts_on_play() {
+        player.adoptStation(fip);
+        compare(player.state, "idle");
+        compare(player.station.uuid, fip.uuid);
+        player.togglePause();
+        compare(player.state, "starting");
+        compare(execLog[execLog.length - 1], "command -v 'mpv'");
+    }
+
+    // And so does startIfIdle(), the autoplay at startup.
+    function test_restored_station_autoplays() {
+        player.adoptStation(fip);
+        player.startIfIdle();
+        compare(player.state, "starting");
+    }
+
+    // Autoplay with an mpv that outlived plasmashell already playing: no-op.
+    function test_autoplay_leaves_a_playing_mpv_alone() {
+        const c = startAndAttach(1);
+        c.setTrack("fip-midfi.mp3");
+        compare(player.state, "playing");
+        const before = c.calls.length;
+        player.startIfIdle();
+        compare(c.calls.length, before);
+        compare(player.state, "playing");
+    }
+
     function test_launch_attach_and_fix_status_on_load() {
         const c = startAndAttach(1);
         c.setTrack("fip-midfi.mp3");

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-17 21:07+0200\n"
+"POT-Creation-Date: 2026-09-17 21:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "%1 (approximate, inside the country)"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:81
+#: contents/ui/config/configBackup.qml:83
 msgid "%1 favourite imported. Apply to keep it."
 msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] ""
@@ -58,7 +58,7 @@ msgstr ""
 msgid "%1 · click another country to browse"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:151
+#: contents/ui/config/configGeneral.qml:165
 msgid "Absolute path, or leave empty to use mpv from PATH"
 msgstr ""
 
@@ -70,8 +70,8 @@ msgstr ""
 msgid "Add a station"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:217
-#: contents/ui/FullRepresentation.qml:218
+#: contents/ui/FullRepresentation.qml:235
+#: contents/ui/FullRepresentation.qml:236
 msgid "Add a station…"
 msgstr ""
 
@@ -87,11 +87,11 @@ msgstr ""
 msgid "Address search unavailable (OpenStreetMap did not answer)."
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:133
+#: contents/ui/config/configBackup.qml:135
 msgid "All files (*)"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:130
+#: contents/ui/config/configGeneral.qml:132
 msgid "All geolocated stations of this country are always loaded on the globe and kept first."
 msgstr ""
 
@@ -103,15 +103,19 @@ msgstr ""
 msgid "Also publish on Radio Browser (public)"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:136
+#: contents/ui/config/configGeneral.qml:138
 msgid "Also show its stations without coordinates, at an approximate spot inside the country"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:121
+#: contents/ui/config/configGeneral.qml:153
+msgid "At startup:"
+msgstr ""
+
+#: contents/ui/config/configGeneral.qml:123
 msgid "Auto (%1 from your locale)"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:168
+#: contents/ui/config/configGeneral.qml:182
 msgid "Available"
 msgstr ""
 
@@ -123,7 +127,7 @@ msgstr ""
 msgid "Cancel editing"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:173
+#: contents/ui/config/configGeneral.qml:187
 msgid "Check again"
 msgstr ""
 
@@ -131,11 +135,11 @@ msgstr ""
 msgid "Checking Radio Browser…"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:38
+#: contents/ui/config/configGeneral.qml:40
 msgid "Checking…"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:202
+#: contents/ui/config/configGeneral.qml:216
 msgid "Choose…"
 msgstr ""
 
@@ -163,19 +167,19 @@ msgstr ""
 msgid "Copy stream URL"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:185
+#: contents/ui/FullRepresentation.qml:203
 msgid "Copy the install command"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:39
+#: contents/ui/config/configGeneral.qml:41
 msgid "Could not check (the command did not return). Try again."
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:111
+#: contents/ui/config/configBackup.qml:113
 msgid "Could not read %1."
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:96
+#: contents/ui/config/configBackup.qml:98
 msgid "Could not write %1."
 msgstr ""
 
@@ -187,8 +191,8 @@ msgstr ""
 msgid "Country code:"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:213
-#: contents/ui/config/configGeneral.qml:231
+#: contents/ui/config/configGeneral.qml:227
+#: contents/ui/config/configGeneral.qml:245
 msgid "Custom"
 msgstr ""
 
@@ -216,11 +220,11 @@ msgstr ""
 msgid "Enter both latitude and longitude, or leave both empty."
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:120
+#: contents/ui/config/configBackup.qml:122
 msgid "Export RadioGlobe settings"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:148
+#: contents/ui/config/configBackup.qml:150
 msgid "Export:"
 msgstr ""
 
@@ -228,7 +232,7 @@ msgstr ""
 msgid "Favorites"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:154
+#: contents/ui/config/configBackup.qml:156
 msgid "Favourites, history, home country, panel icon and the other options. Not the volume or the station being played."
 msgstr ""
 
@@ -236,8 +240,8 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:75
-#: contents/ui/config/configGeneral.qml:78
+#: contents/ui/config/configGeneral.qml:77
+#: contents/ui/config/configGeneral.qml:80
 msgid "Found: %1"
 msgstr ""
 
@@ -245,7 +249,7 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:120
+#: contents/ui/config/configGeneral.qml:122
 msgid "Home country:"
 msgstr ""
 
@@ -257,15 +261,15 @@ msgstr ""
 msgid "Homepage:"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:208
+#: contents/ui/config/configGeneral.qml:222
 msgid "Icon colour:"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:131
+#: contents/ui/config/configBackup.qml:133
 msgid "Import RadioGlobe settings"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:169
+#: contents/ui/config/configBackup.qml:171
 msgid "Import:"
 msgstr ""
 
@@ -273,17 +277,17 @@ msgstr ""
 msgid "Install the QtLocation QML module (qml6-module-qtlocation on Debian and Ubuntu) to pick the location on a map."
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:245
+#: contents/ui/config/configGeneral.qml:259
 msgid "Invert the mouse wheel direction for the volume"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:123
-#: contents/ui/config/configBackup.qml:133
+#: contents/ui/config/configBackup.qml:125
+#: contents/ui/config/configBackup.qml:135
 msgid "JSON files (*.json)"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:231
-#: contents/ui/FullRepresentation.qml:232
+#: contents/ui/FullRepresentation.qml:249
+#: contents/ui/FullRepresentation.qml:250
 msgid "Keep open"
 msgstr ""
 
@@ -303,7 +307,7 @@ msgstr ""
 msgid "Live"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:170
+#: contents/ui/config/configBackup.qml:172
 msgid "Load from a file…"
 msgstr ""
 
@@ -311,11 +315,11 @@ msgstr ""
 msgid "Loading…"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:98
+#: contents/ui/config/configGeneral.qml:100
 msgid "Located stations per country:"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:112
+#: contents/ui/config/configGeneral.qml:114
 msgid "Located stations per search:"
 msgstr ""
 
@@ -335,17 +339,17 @@ msgstr ""
 msgid "Map data © OpenStreetMap contributors"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:88
+#: contents/ui/config/configGeneral.qml:90
 msgid "Maximum stations on the globe:"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:125
+#: contents/ui/FullRepresentation.qml:143
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "%2"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:127
+#: contents/ui/FullRepresentation.qml:145
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "Debian / Ubuntu: sudo apt install %2\n"
@@ -381,15 +385,15 @@ msgstr ""
 msgid "No stations"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:168
+#: contents/ui/config/configGeneral.qml:182
 msgid "Not available: the QtQuick.LocalStorage module is missing (package “qml6-module-qtquick-localstorage” on Debian and Ubuntu). Stations are fetched again at every start."
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:78
+#: contents/ui/config/configGeneral.qml:80
 msgid "Not found. Install the “mpv-mpris” package (media keys and the Media Player widget need it)."
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:75
+#: contents/ui/config/configGeneral.qml:77
 msgid "Not found. Install the “mpv” package."
 msgstr ""
 
@@ -397,11 +401,11 @@ msgstr ""
 msgid "Nothing played yet"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:167
+#: contents/ui/config/configGeneral.qml:181
 msgid "Offline cache:"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:104
+#: contents/ui/config/configGeneral.qml:106
 msgid "On top of the 300 most listened. Three times that for the largest countries (Russia, Canada, the United States, China, Brazil, Australia, India…)."
 msgstr ""
 
@@ -413,7 +417,7 @@ msgstr ""
 msgid "Optional"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:183
+#: contents/ui/config/configGeneral.qml:197
 msgid "Panel icon:"
 msgstr ""
 
@@ -425,7 +429,7 @@ msgstr ""
 msgid "Pick a signal on the globe or a station in the list"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:140
+#: contents/ui/config/configBackup.qml:142
 msgid "Plasma forgets a widget's settings when the widget is removed from the panel. Save them to a file to restore them later or on another computer."
 msgstr ""
 
@@ -441,7 +445,7 @@ msgstr ""
 msgid "Playing"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:226
+#: contents/ui/config/configGeneral.qml:240
 msgid "Playing badge colour:"
 msgstr ""
 
@@ -453,7 +457,7 @@ msgstr ""
 msgid "Published on Radio Browser. Added to your favourites."
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:139
+#: contents/ui/config/configGeneral.qml:141
 msgid "Radio Browser has no location for most stations. This places them at random inside their borders (the tooltip says “approximate location”), so the globe fills up but the dots do not mean much."
 msgstr ""
 
@@ -473,7 +477,7 @@ msgstr ""
 msgid "Radio Browser unreachable. Kept locally only."
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:179
+#: contents/ui/config/configGeneral.qml:193
 msgid "Radio Browser:"
 msgstr ""
 
@@ -489,7 +493,7 @@ msgstr ""
 msgid "Random station"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:108
+#: contents/ui/config/configBackup.qml:110
 msgid "Reading…"
 msgstr ""
 
@@ -513,15 +517,15 @@ msgstr ""
 msgid "Rename"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:175
+#: contents/ui/config/configBackup.qml:177
 msgid "Replaces the current favourites and history. Nothing is changed until you apply."
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:180
+#: contents/ui/config/configGeneral.qml:194
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:332 contents/ui/PlayerBar.qml:76
+#: contents/ui/FullRepresentation.qml:350 contents/ui/PlayerBar.qml:76
 msgid "Retry"
 msgstr ""
 
@@ -529,11 +533,11 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:149
+#: contents/ui/config/configBackup.qml:151
 msgid "Save to a file…"
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:100
+#: contents/ui/config/configBackup.qml:102
 msgid "Saved to %1"
 msgstr ""
 
@@ -541,7 +545,7 @@ msgstr ""
 msgid "Saved. The change is local to this widget: Radio Browser cannot be edited."
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:88
+#: contents/ui/config/configBackup.qml:90
 msgid "Saving…"
 msgstr ""
 
@@ -561,8 +565,16 @@ msgstr ""
 msgid "Searching…"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:146
+#: contents/ui/config/configGeneral.qml:148
 msgid "Shade the night side of the globe"
+msgstr ""
+
+#: contents/ui/config/configGeneral.qml:154
+msgid "Show the last station played in the player"
+msgstr ""
+
+#: contents/ui/config/configGeneral.qml:159
+msgid "Start playing it"
 msgstr ""
 
 #: contents/ui/PlayerBar.qml:40
@@ -601,11 +613,11 @@ msgstr ""
 msgid "This Plasma version does not provide the MPRIS module (org.kde.plasma.private.mpris) RadioGlobe needs to control mpv."
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:74
+#: contents/ui/config/configBackup.qml:76
 msgid "This file is not a RadioGlobe backup."
 msgstr ""
 
-#: contents/ui/config/configBackup.qml:74
+#: contents/ui/config/configBackup.qml:76
 msgid "This file is not valid JSON."
 msgstr ""
 
@@ -625,13 +637,13 @@ msgstr ""
 msgid "World"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:295
-#: contents/ui/FullRepresentation.qml:296
+#: contents/ui/FullRepresentation.qml:313
+#: contents/ui/FullRepresentation.qml:314
 msgid "Zoom in"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:306
-#: contents/ui/FullRepresentation.qml:307
+#: contents/ui/FullRepresentation.qml:324
+#: contents/ui/FullRepresentation.qml:325
 msgid "Zoom out"
 msgstr ""
 
@@ -639,7 +651,7 @@ msgstr ""
 msgid "approximate location"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:150
+#: contents/ui/config/configGeneral.qml:164
 msgid "mpv executable:"
 msgstr ""
 
@@ -651,11 +663,11 @@ msgstr ""
 msgid "mpv started but did not appear on MPRIS. Install the “mpv-mpris” package."
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:161
+#: contents/ui/config/configGeneral.qml:175
 msgid "mpv-mpris:"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:155
+#: contents/ui/config/configGeneral.qml:169
 msgid "mpv:"
 msgstr ""
 

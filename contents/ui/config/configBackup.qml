@@ -31,6 +31,8 @@ KCM.SimpleKCM {
     property bool cfg_showDayNight: true
     property int cfg_maxCountryStations: 500
     property int cfg_maxSearchStations: 500
+    property bool cfg_restoreLastStation: true
+    property bool cfg_autoplayLastStation: false
 
     property string exportStatus: ""
     property string importStatus: ""

@@ -1116,7 +1116,9 @@ var backupSettingTypes = ({
     invertWheel: "boolean",
     showDayNight: "boolean",
     maxCountryStations: "number",
-    maxSearchStations: "number"
+    maxSearchStations: "number",
+    restoreLastStation: "boolean",
+    autoplayLastStation: "boolean"
 });
 
 function backupSettings(settings) {
