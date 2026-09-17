@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-17 20:43+0200\n"
+"POT-Creation-Date: 2026-09-17 21:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
+#: contents/ui/StationProperties.qml:54
+msgid "%1 (approximate, inside the country)"
+msgstr ""
+
 #: contents/ui/config/configBackup.qml:81
 msgid "%1 favourite imported. Apply to keep it."
 msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] ""
 msgstr[1] ""
+
+#: contents/ui/StationProperties.qml:41
+msgid "%1 kbps"
+msgstr ""
 
 #: contents/ui/FullRepresentation.qml:85
 msgid "%1 match in %2"
@@ -62,9 +70,13 @@ msgstr ""
 msgid "Add a station"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:197
-#: contents/ui/FullRepresentation.qml:198
+#: contents/ui/FullRepresentation.qml:217
+#: contents/ui/FullRepresentation.qml:218
 msgid "Add a station…"
+msgstr ""
+
+#: contents/ui/StationMenu.qml:31
+msgid "Add to favorites"
 msgstr ""
 
 #: contents/ui/config/configAddStation.qml:92
@@ -131,15 +143,27 @@ msgstr ""
 msgid "Click the map to place the station, scroll to zoom, drag to pan."
 msgstr ""
 
+#: contents/ui/StationProperties.qml:51
+msgid "Clicks on Radio Browser"
+msgstr ""
+
+#: contents/ui/StationProperties.qml:81
+msgid "Close"
+msgstr ""
+
 #: contents/ui/config/configAddStation.qml:309
 msgid "Comma separated, e.g. jazz,news"
 msgstr ""
 
-#: contents/ui/PlayerBar.qml:40
+#: contents/ui/PlayerBar.qml:42
 msgid "Connecting…"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:165
+#: contents/ui/StationMenu.qml:38
+msgid "Copy stream URL"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml:185
 msgid "Copy the install command"
 msgstr ""
 
@@ -155,6 +179,10 @@ msgstr ""
 msgid "Could not write %1."
 msgstr ""
 
+#: contents/ui/StationProperties.qml:45
+msgid "Country"
+msgstr ""
+
 #: contents/ui/config/configAddStation.qml:296
 msgid "Country code:"
 msgstr ""
@@ -164,8 +192,12 @@ msgstr ""
 msgid "Custom"
 msgstr ""
 
-#: contents/ui/PlayerBar.qml:122 contents/ui/PlayerBar.qml:123
+#: contents/ui/PlayerBar.qml:130 contents/ui/PlayerBar.qml:131
 msgid "Edit this station…"
+msgstr ""
+
+#: contents/ui/StationProperties.qml:60
+msgid "Edited locally: this is your version of the station."
 msgstr ""
 
 #: contents/ui/config/configAddStation.qml:432
@@ -192,12 +224,16 @@ msgstr ""
 msgid "Export:"
 msgstr ""
 
-#: contents/ui/StationList.qml:72
+#: contents/ui/StationList.qml:74
 msgid "Favorites"
 msgstr ""
 
 #: contents/ui/config/configBackup.qml:154
 msgid "Favourites, history, home country, panel icon and the other options. Not the volume or the station being played."
+msgstr ""
+
+#: contents/ui/StationProperties.qml:44
+msgid "Format"
 msgstr ""
 
 #: contents/ui/config/configGeneral.qml:75
@@ -211,6 +247,10 @@ msgstr ""
 
 #: contents/ui/config/configGeneral.qml:120
 msgid "Home country:"
+msgstr ""
+
+#: contents/ui/StationProperties.qml:49
+msgid "Homepage"
 msgstr ""
 
 #: contents/ui/config/configAddStation.qml:290
@@ -242,8 +282,8 @@ msgstr ""
 msgid "JSON files (*.json)"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:211
-#: contents/ui/FullRepresentation.qml:212
+#: contents/ui/FullRepresentation.qml:231
+#: contents/ui/FullRepresentation.qml:232
 msgid "Keep open"
 msgstr ""
 
@@ -251,11 +291,15 @@ msgstr ""
 msgid "Landed near · %1"
 msgstr ""
 
+#: contents/ui/StationProperties.qml:47
+msgid "Language"
+msgstr ""
+
 #: contents/ui/config/configAddStation.qml:318
 msgid "Latitude"
 msgstr ""
 
-#: contents/ui/PlayerBar.qml:42
+#: contents/ui/PlayerBar.qml:44
 msgid "Live"
 msgstr ""
 
@@ -263,7 +307,7 @@ msgstr ""
 msgid "Load from a file…"
 msgstr ""
 
-#: contents/ui/StationList.qml:301
+#: contents/ui/StationList.qml:309
 msgid "Loading…"
 msgstr ""
 
@@ -273,6 +317,10 @@ msgstr ""
 
 #: contents/ui/config/configGeneral.qml:112
 msgid "Located stations per search:"
+msgstr ""
+
+#: contents/ui/StationProperties.qml:54 contents/ui/StationProperties.qml:56
+msgid "Location"
 msgstr ""
 
 #: contents/ui/config/configAddStation.qml:313
@@ -305,11 +353,15 @@ msgid ""
 "Fedora: sudo dnf install %4"
 msgstr ""
 
+#: contents/ui/StationProperties.qml:37
+msgid "Name"
+msgstr ""
+
 #: contents/ui/config/configAddStation.qml:278
 msgid "Name:"
 msgstr ""
 
-#: contents/ui/StationList.qml:301
+#: contents/ui/StationList.qml:309
 msgid "No favorites yet"
 msgstr ""
 
@@ -321,11 +373,11 @@ msgstr ""
 msgid "No station playing"
 msgstr ""
 
-#: contents/ui/PlayerBar.qml:30
+#: contents/ui/PlayerBar.qml:32
 msgid "No station selected"
 msgstr ""
 
-#: contents/ui/StationList.qml:301
+#: contents/ui/StationList.qml:309
 msgid "No stations"
 msgstr ""
 
@@ -341,7 +393,7 @@ msgstr ""
 msgid "Not found. Install the “mpv” package."
 msgstr ""
 
-#: contents/ui/StationList.qml:301
+#: contents/ui/StationList.qml:309
 msgid "Nothing played yet"
 msgstr ""
 
@@ -353,6 +405,10 @@ msgstr ""
 msgid "On top of the 300 most listened. Three times that for the largest countries (Russia, Canada, the United States, China, Brazil, Australia, India…)."
 msgstr ""
 
+#: contents/ui/StationMenu.qml:45
+msgid "Open homepage"
+msgstr ""
+
 #: contents/ui/config/configAddStation.qml:291
 msgid "Optional"
 msgstr ""
@@ -361,11 +417,11 @@ msgstr ""
 msgid "Panel icon:"
 msgstr ""
 
-#: contents/ui/main.qml:90 contents/ui/PlayerBar.qml:44
+#: contents/ui/main.qml:90 contents/ui/PlayerBar.qml:46
 msgid "Paused"
 msgstr ""
 
-#: contents/ui/PlayerBar.qml:33
+#: contents/ui/PlayerBar.qml:35
 msgid "Pick a signal on the globe or a station in the list"
 msgstr ""
 
@@ -373,7 +429,11 @@ msgstr ""
 msgid "Plasma forgets a widget's settings when the widget is removed from the panel. Save them to a file to restore them later or on another computer."
 msgstr ""
 
-#: contents/ui/main.qml:92 contents/ui/PlayerBar.qml:46
+#: contents/ui/StationMenu.qml:25
+msgid "Play"
+msgstr ""
+
+#: contents/ui/main.qml:92 contents/ui/PlayerBar.qml:48
 msgid "Playback failed"
 msgstr ""
 
@@ -385,12 +445,20 @@ msgstr ""
 msgid "Playing badge colour:"
 msgstr ""
 
+#: contents/ui/StationMenu.qml:53
+msgid "Properties…"
+msgstr ""
+
 #: contents/ui/config/configAddStation.qml:102
 msgid "Published on Radio Browser. Added to your favourites."
 msgstr ""
 
 #: contents/ui/config/configGeneral.qml:139
 msgid "Radio Browser has no location for most stations. This places them at random inside their borders (the tooltip says “approximate location”), so the globe fills up but the dots do not mean much."
+msgstr ""
+
+#: contents/ui/StationProperties.qml:58
+msgid "Radio Browser id"
 msgstr ""
 
 #: contents/ui/config/configAddStation.qml:104
@@ -425,15 +493,23 @@ msgstr ""
 msgid "Reading…"
 msgstr ""
 
-#: contents/ui/StationList.qml:75
+#: contents/ui/StationList.qml:77
 msgid "Recent"
 msgstr ""
 
-#: contents/ui/StationList.qml:227 contents/ui/StationList.qml:230
+#: contents/ui/StationProperties.qml:46
+msgid "Region"
+msgstr ""
+
+#: contents/ui/StationMenu.qml:31
+msgid "Remove from favorites"
+msgstr ""
+
+#: contents/ui/StationList.qml:235 contents/ui/StationList.qml:238
 msgid "Remove from recent"
 msgstr ""
 
-#: contents/ui/StationList.qml:249 contents/ui/StationList.qml:252
+#: contents/ui/StationList.qml:257 contents/ui/StationList.qml:260
 msgid "Rename"
 msgstr ""
 
@@ -445,7 +521,7 @@ msgstr ""
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:312 contents/ui/PlayerBar.qml:74
+#: contents/ui/FullRepresentation.qml:332 contents/ui/PlayerBar.qml:76
 msgid "Retry"
 msgstr ""
 
@@ -489,11 +565,11 @@ msgstr ""
 msgid "Shade the night side of the globe"
 msgstr ""
 
-#: contents/ui/PlayerBar.qml:38
+#: contents/ui/PlayerBar.qml:40
 msgid "Starting mpv…"
 msgstr ""
 
-#: contents/ui/PlayerBar.qml:153
+#: contents/ui/PlayerBar.qml:161
 msgid "Stop (hold to quit mpv)"
 msgstr ""
 
@@ -501,19 +577,27 @@ msgstr ""
 msgid "Stop and quit mpv"
 msgstr ""
 
-#: contents/ui/main.qml:93 contents/ui/PlayerBar.qml:48
+#: contents/ui/main.qml:93 contents/ui/PlayerBar.qml:50
 msgid "Stopped"
+msgstr ""
+
+#: contents/ui/StationProperties.qml:38
+msgid "Stream"
 msgstr ""
 
 #: contents/ui/config/configAddStation.qml:284
 msgid "Stream URL:"
 msgstr ""
 
+#: contents/ui/StationProperties.qml:48
+msgid "Tags"
+msgstr ""
+
 #: contents/ui/config/configAddStation.qml:308
 msgid "Tags:"
 msgstr ""
 
-#: contents/ui/PlayerBar.qml:60
+#: contents/ui/PlayerBar.qml:62
 msgid "This Plasma version does not provide the MPRIS module (org.kde.plasma.private.mpris) RadioGlobe needs to control mpv."
 msgstr ""
 
@@ -525,11 +609,11 @@ msgstr ""
 msgid "This file is not valid JSON."
 msgstr ""
 
-#: contents/ui/PlayerBar.qml:62
+#: contents/ui/PlayerBar.qml:64
 msgid "This station could not be played. It may be offline; retry or pick another one."
 msgstr ""
 
-#: contents/ui/StationList.qml:275 contents/ui/StationList.qml:279
+#: contents/ui/StationList.qml:283 contents/ui/StationList.qml:287
 msgid "Toggle favorite (F)"
 msgstr ""
 
@@ -537,17 +621,17 @@ msgstr ""
 msgid "Tune a random station (R)"
 msgstr ""
 
-#: contents/ui/StationList.qml:65
+#: contents/ui/StationList.qml:67
 msgid "World"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:275
-#: contents/ui/FullRepresentation.qml:276
+#: contents/ui/FullRepresentation.qml:295
+#: contents/ui/FullRepresentation.qml:296
 msgid "Zoom in"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:286
-#: contents/ui/FullRepresentation.qml:287
+#: contents/ui/FullRepresentation.qml:306
+#: contents/ui/FullRepresentation.qml:307
 msgid "Zoom out"
 msgstr ""
 
@@ -559,11 +643,11 @@ msgstr ""
 msgid "mpv executable:"
 msgstr ""
 
-#: contents/ui/PlayerBar.qml:56
+#: contents/ui/PlayerBar.qml:58
 msgid "mpv is not installed. Install the “mpv” and “mpv-mpris” packages, then try again."
 msgstr ""
 
-#: contents/ui/PlayerBar.qml:58
+#: contents/ui/PlayerBar.qml:60
 msgid "mpv started but did not appear on MPRIS. Install the “mpv-mpris” package."
 msgstr ""
 
@@ -573,4 +657,8 @@ msgstr ""
 
 #: contents/ui/config/configGeneral.qml:155
 msgid "mpv:"
+msgstr ""
+
+#: contents/ui/StationProperties.qml:56
+msgid "unknown"
 msgstr ""

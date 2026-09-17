@@ -20,6 +20,8 @@ ColumnLayout {
     signal favoriteRequested
     // Double click on the station name: show it on the globe.
     signal locateRequested
+    // Right click on it: the owner opens the station menu.
+    signal menuRequested(var station)
     // Edit button: fix the station's details (its location above all)
     // locally, in the configuration dialog.
     signal editRequested
@@ -109,9 +111,15 @@ ColumnLayout {
 
             MouseArea {
                 anchors.fill: parent
-                acceptedButtons: Qt.LeftButton
-                onDoubleClicked: if (bar.player && bar.player.station)
-                    bar.locateRequested()
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onDoubleClicked: mouse => {
+                    if (mouse.button === Qt.LeftButton && bar.player && bar.player.station)
+                        bar.locateRequested();
+                }
+                onClicked: mouse => {
+                    if (mouse.button === Qt.RightButton && bar.player && bar.player.station)
+                        bar.menuRequested(bar.player.station);
+                }
             }
         }
         PlasmaComponents3.ToolButton {

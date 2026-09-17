@@ -364,6 +364,55 @@ TestCase {
         root.loadingCountry = false;
     }
 
+    // The station menu: opened by the list, its entries reach root, the
+    // clipboard, or the properties panel.
+    function test_station_menu_and_properties() {
+        const list = findChild(loader.item, "stationList");
+        const menu = findChild(loader.item, "stationMenu");
+        verify(menu !== null, "stationMenu not found");
+        const station = {
+            uuid: "prop",
+            name: "Radio Props",
+            url: "https://s/props.mp3",
+            homepage: "https://props.example",
+            countryCode: "FR",
+            country: "France",
+            state: "Lyon",
+            language: "french",
+            tags: "jazz,soul",
+            codec: "AAC",
+            bitrate: 96,
+            hls: false,
+            clicks: 42,
+            latitude: 45.75,
+            longitude: 4.85
+        };
+        list.menuRequested(station);
+        tryCompare(menu, "visible", true);
+        compare(menu.station.uuid, "prop");
+        function item(name) {
+            for (let i = 0; i < menu.count; i++)
+                if (menu.itemAt(i).objectName === name)
+                    return menu.itemAt(i);
+            return null;
+        }
+        item("menuCopyUrl").triggered();
+        compare(findChild(loader.item, "copyHelper").text, "https://s/props.mp3");
+        item("menuPlay").triggered();
+        compare(root.calls.indexOf("play:prop") >= 0, true, JSON.stringify(root.calls));
+        item("menuFavorite").triggered();
+        compare(root.calls.indexOf("fav:prop") >= 0, true, JSON.stringify(root.calls));
+        item("menuProperties").triggered();
+        const properties = findChild(loader.item, "stationProperties");
+        verify(properties !== null, "stationProperties not found");
+        tryCompare(properties, "visible", true);
+        const text = findChild(properties, "propertiesText").text;
+        for (const expected of ["Radio Props", "https://s/props.mp3", "AAC", "96 kbps", "France", "Lyon", "french", "jazz,soul", "https://props.example", "42", "45.75", "prop"])
+            verify(text.indexOf(expected) >= 0, "properties miss " + expected + ": " + text);
+        properties.close();
+        tryCompare(properties, "visible", false);
+    }
+
     function test_edit_button_sends_the_current_station_to_root() {
         const playerBar = findChild(loader.item, "playerBar");
         player.station = {

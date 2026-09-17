@@ -189,6 +189,43 @@ TestCase {
             b: true
         })
 
+    SignalSpy {
+        id: barMenus
+        target: bar
+        signalName: "menuRequested"
+    }
+
+    // A right click on the station name asks for the station menu.
+    function test_player_bar_right_click_asks_for_the_menu() {
+        barMenus.clear();
+        bar.player = ({
+                state: "idle",
+                station: null,
+                track: "",
+                volume: 0.5,
+                muted: false,
+                errorKind: ""
+            });
+        const text = findChild(bar, "stationText");
+        mouseClick(text, 10, 10, Qt.RightButton);
+        compare(barMenus.count, 0, "no station, no menu");
+        bar.player = ({
+                state: "playing",
+                station: {
+                    uuid: "x",
+                    name: "X"
+                },
+                track: "",
+                volume: 0.5,
+                muted: false,
+                errorKind: ""
+            });
+        mouseClick(text, 10, 10, Qt.RightButton);
+        compare(barMenus.count, 1);
+        compare(barMenus.signalArguments[0][0].uuid, "x");
+        bar.player = fakePlayer;
+    }
+
     // Below the player bar, so the two never overlap for mouse tests.
     Ui.StationList {
         id: list
@@ -226,6 +263,33 @@ TestCase {
         id: renames
         target: list
         signalName: "renamed"
+    }
+
+    SignalSpy {
+        id: menus
+        target: list
+        signalName: "menuRequested"
+    }
+
+    // A right click on a row asks for the station menu, and does not play.
+    function test_row_right_click_asks_for_the_menu() {
+        activations.clear();
+        menus.clear();
+        list.stations = [
+            {
+                uuid: "m",
+                name: "Menu me",
+                countryCode: "FR"
+            }
+        ];
+        const view = findChild(list, "stationView");
+        wait(50);
+        const first = view.itemAtIndex(0);
+        verify(first !== null, "row 0 not created");
+        mouseClick(first, 20, 10, Qt.RightButton);
+        compare(menus.count, 1);
+        compare(menus.signalArguments[0][0].uuid, "m");
+        compare(activations.count, 0);
     }
 
     // The trash only exists on the Recent tab, the pencil only on Favorites.

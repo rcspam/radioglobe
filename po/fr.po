@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-17 20:43+0200\n"
+"POT-Creation-Date: 2026-09-17 21:07+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -17,11 +17,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: contents/ui/StationProperties.qml:54
+msgid "%1 (approximate, inside the country)"
+msgstr "%1 (approximative, à l'intérieur du pays)"
+
 #: contents/ui/config/configBackup.qml:81
 msgid "%1 favourite imported. Apply to keep it."
 msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] "%1 favori importé. Appliquez pour le garder."
 msgstr[1] "%1 favoris importés. Appliquez pour les garder."
+
+#: contents/ui/StationProperties.qml:41
+msgid "%1 kbps"
+msgstr "%1 kbps"
 
 #: contents/ui/FullRepresentation.qml:85
 msgid "%1 match in %2"
@@ -61,10 +69,14 @@ msgstr "Ajouter"
 msgid "Add a station"
 msgstr "Ajouter une radio"
 
-#: contents/ui/FullRepresentation.qml:197
-#: contents/ui/FullRepresentation.qml:198
+#: contents/ui/FullRepresentation.qml:217
+#: contents/ui/FullRepresentation.qml:218
 msgid "Add a station…"
 msgstr "Ajouter une radio…"
+
+#: contents/ui/StationMenu.qml:31
+msgid "Add to favorites"
+msgstr "Ajouter aux favoris"
 
 #: contents/ui/config/configAddStation.qml:92
 msgid "Added to your favourites."
@@ -130,15 +142,27 @@ msgstr "Choisir…"
 msgid "Click the map to place the station, scroll to zoom, drag to pan."
 msgstr "Cliquez sur la carte pour placer la radio, molette pour zoomer, glisser pour déplacer."
 
+#: contents/ui/StationProperties.qml:51
+msgid "Clicks on Radio Browser"
+msgstr "Écoutes sur Radio Browser"
+
+#: contents/ui/StationProperties.qml:81
+msgid "Close"
+msgstr "Fermer"
+
 #: contents/ui/config/configAddStation.qml:309
 msgid "Comma separated, e.g. jazz,news"
 msgstr "Séparés par des virgules, ex. jazz,news"
 
-#: contents/ui/PlayerBar.qml:40
+#: contents/ui/PlayerBar.qml:42
 msgid "Connecting…"
 msgstr "Connexion…"
 
-#: contents/ui/FullRepresentation.qml:165
+#: contents/ui/StationMenu.qml:38
+msgid "Copy stream URL"
+msgstr "Copier l'URL du flux"
+
+#: contents/ui/FullRepresentation.qml:185
 msgid "Copy the install command"
 msgstr "Copier la commande d'installation"
 
@@ -154,6 +178,10 @@ msgstr "Impossible de lire %1."
 msgid "Could not write %1."
 msgstr "Impossible d'écrire %1."
 
+#: contents/ui/StationProperties.qml:45
+msgid "Country"
+msgstr "Pays"
+
 #: contents/ui/config/configAddStation.qml:296
 msgid "Country code:"
 msgstr "Code pays :"
@@ -163,9 +191,13 @@ msgstr "Code pays :"
 msgid "Custom"
 msgstr "Personnalisée"
 
-#: contents/ui/PlayerBar.qml:122 contents/ui/PlayerBar.qml:123
+#: contents/ui/PlayerBar.qml:130 contents/ui/PlayerBar.qml:131
 msgid "Edit this station…"
 msgstr "Modifier cette radio…"
+
+#: contents/ui/StationProperties.qml:60
+msgid "Edited locally: this is your version of the station."
+msgstr "Modifiée localement : c'est votre version de la station."
 
 #: contents/ui/config/configAddStation.qml:432
 msgid "Editing “%1”. Radio Browser has no way to change an existing station, so what you save here stays in this widget: the station goes to your favourites and the globe shows your version."
@@ -191,13 +223,17 @@ msgstr "Exporter les réglages de RadioGlobe"
 msgid "Export:"
 msgstr "Exporter :"
 
-#: contents/ui/StationList.qml:72
+#: contents/ui/StationList.qml:74
 msgid "Favorites"
 msgstr "Favoris"
 
 #: contents/ui/config/configBackup.qml:154
 msgid "Favourites, history, home country, panel icon and the other options. Not the volume or the station being played."
 msgstr "Favoris, historique, pays d'origine, icône du panneau et les autres options. Ni le volume ni la station en cours."
+
+#: contents/ui/StationProperties.qml:44
+msgid "Format"
+msgstr "Format"
 
 #: contents/ui/config/configGeneral.qml:75
 #: contents/ui/config/configGeneral.qml:78
@@ -211,6 +247,10 @@ msgstr "Général"
 #: contents/ui/config/configGeneral.qml:120
 msgid "Home country:"
 msgstr "Pays favori :"
+
+#: contents/ui/StationProperties.qml:49
+msgid "Homepage"
+msgstr "Site web"
 
 #: contents/ui/config/configAddStation.qml:290
 msgid "Homepage:"
@@ -241,8 +281,8 @@ msgstr "Inverser le sens de la molette pour le volume"
 msgid "JSON files (*.json)"
 msgstr "Fichiers JSON (*.json)"
 
-#: contents/ui/FullRepresentation.qml:211
-#: contents/ui/FullRepresentation.qml:212
+#: contents/ui/FullRepresentation.qml:231
+#: contents/ui/FullRepresentation.qml:232
 msgid "Keep open"
 msgstr "Garder ouvert"
 
@@ -250,11 +290,15 @@ msgstr "Garder ouvert"
 msgid "Landed near · %1"
 msgstr "À proximité de · %1"
 
+#: contents/ui/StationProperties.qml:47
+msgid "Language"
+msgstr "Langue"
+
 #: contents/ui/config/configAddStation.qml:318
 msgid "Latitude"
 msgstr "Latitude"
 
-#: contents/ui/PlayerBar.qml:42
+#: contents/ui/PlayerBar.qml:44
 msgid "Live"
 msgstr "En direct"
 
@@ -262,7 +306,7 @@ msgstr "En direct"
 msgid "Load from a file…"
 msgstr "Charger depuis un fichier…"
 
-#: contents/ui/StationList.qml:301
+#: contents/ui/StationList.qml:309
 msgid "Loading…"
 msgstr "Chargement…"
 
@@ -273,6 +317,10 @@ msgstr "Stations localisées par pays :"
 #: contents/ui/config/configGeneral.qml:112
 msgid "Located stations per search:"
 msgstr "Stations localisées par recherche :"
+
+#: contents/ui/StationProperties.qml:54 contents/ui/StationProperties.qml:56
+msgid "Location"
+msgstr "Position"
 
 #: contents/ui/config/configAddStation.qml:313
 msgid "Location:"
@@ -310,11 +358,15 @@ msgstr ""
 "Arch Linux : sudo pacman -S %3\n"
 "Fedora : sudo dnf install %4"
 
+#: contents/ui/StationProperties.qml:37
+msgid "Name"
+msgstr "Nom"
+
 #: contents/ui/config/configAddStation.qml:278
 msgid "Name:"
 msgstr "Nom :"
 
-#: contents/ui/StationList.qml:301
+#: contents/ui/StationList.qml:309
 msgid "No favorites yet"
 msgstr "Aucun favori pour l’instant"
 
@@ -326,11 +378,11 @@ msgstr "Aucun lieu trouvé pour « %1 »."
 msgid "No station playing"
 msgstr "Aucune station en lecture"
 
-#: contents/ui/PlayerBar.qml:30
+#: contents/ui/PlayerBar.qml:32
 msgid "No station selected"
 msgstr "Aucune station sélectionnée"
 
-#: contents/ui/StationList.qml:301
+#: contents/ui/StationList.qml:309
 msgid "No stations"
 msgstr "Aucune station"
 
@@ -346,7 +398,7 @@ msgstr "Introuvable. Installer le paquet « mpv-mpris » (nécessaire pour les t
 msgid "Not found. Install the “mpv” package."
 msgstr "Introuvable. Installer le paquet « mpv »."
 
-#: contents/ui/StationList.qml:301
+#: contents/ui/StationList.qml:309
 msgid "Nothing played yet"
 msgstr "Rien n’a encore été écouté"
 
@@ -358,6 +410,10 @@ msgstr "Cache hors ligne :"
 msgid "On top of the 300 most listened. Three times that for the largest countries (Russia, Canada, the United States, China, Brazil, Australia, India…)."
 msgstr "En plus des 300 plus écoutées. Le triple pour les plus grands pays (Russie, Canada, États-Unis, Chine, Brésil, Australie, Inde…)."
 
+#: contents/ui/StationMenu.qml:45
+msgid "Open homepage"
+msgstr "Ouvrir le site web"
+
 #: contents/ui/config/configAddStation.qml:291
 msgid "Optional"
 msgstr "Facultatif"
@@ -366,11 +422,11 @@ msgstr "Facultatif"
 msgid "Panel icon:"
 msgstr "Icône du panneau :"
 
-#: contents/ui/main.qml:90 contents/ui/PlayerBar.qml:44
+#: contents/ui/main.qml:90 contents/ui/PlayerBar.qml:46
 msgid "Paused"
 msgstr "En pause"
 
-#: contents/ui/PlayerBar.qml:33
+#: contents/ui/PlayerBar.qml:35
 msgid "Pick a signal on the globe or a station in the list"
 msgstr "Choisissez un signal sur le globe ou une station dans la liste"
 
@@ -378,7 +434,11 @@ msgstr "Choisissez un signal sur le globe ou une station dans la liste"
 msgid "Plasma forgets a widget's settings when the widget is removed from the panel. Save them to a file to restore them later or on another computer."
 msgstr "Plasma oublie les réglages d'un composant graphique quand on le retire du panneau. Enregistrez-les dans un fichier pour les restaurer plus tard ou sur un autre ordinateur."
 
-#: contents/ui/main.qml:92 contents/ui/PlayerBar.qml:46
+#: contents/ui/StationMenu.qml:25
+msgid "Play"
+msgstr "Lire"
+
+#: contents/ui/main.qml:92 contents/ui/PlayerBar.qml:48
 msgid "Playback failed"
 msgstr "Échec de la lecture"
 
@@ -390,6 +450,10 @@ msgstr "Lecture en cours"
 msgid "Playing badge colour:"
 msgstr "Couleur du point de lecture :"
 
+#: contents/ui/StationMenu.qml:53
+msgid "Properties…"
+msgstr "Propriétés…"
+
 #: contents/ui/config/configAddStation.qml:102
 msgid "Published on Radio Browser. Added to your favourites."
 msgstr "Publiée sur Radio Browser. Ajoutée à vos favoris."
@@ -397,6 +461,10 @@ msgstr "Publiée sur Radio Browser. Ajoutée à vos favoris."
 #: contents/ui/config/configGeneral.qml:139
 msgid "Radio Browser has no location for most stations. This places them at random inside their borders (the tooltip says “approximate location”), so the globe fills up but the dots do not mean much."
 msgstr "Radio Browser n'a pas de position pour la plupart des stations. Cette option les place au hasard à l'intérieur des frontières (l'infobulle indique « position approximative ») : le globe se remplit, mais les points ne veulent pas dire grand-chose."
+
+#: contents/ui/StationProperties.qml:58
+msgid "Radio Browser id"
+msgstr "Identifiant Radio Browser"
 
 #: contents/ui/config/configAddStation.qml:104
 msgid "Radio Browser refused the station: %1. Kept locally only."
@@ -430,15 +498,23 @@ msgstr "Station aléatoire"
 msgid "Reading…"
 msgstr "Lecture…"
 
-#: contents/ui/StationList.qml:75
+#: contents/ui/StationList.qml:77
 msgid "Recent"
 msgstr "Récents"
 
-#: contents/ui/StationList.qml:227 contents/ui/StationList.qml:230
+#: contents/ui/StationProperties.qml:46
+msgid "Region"
+msgstr "Région"
+
+#: contents/ui/StationMenu.qml:31
+msgid "Remove from favorites"
+msgstr "Retirer des favoris"
+
+#: contents/ui/StationList.qml:235 contents/ui/StationList.qml:238
 msgid "Remove from recent"
 msgstr "Retirer des récents"
 
-#: contents/ui/StationList.qml:249 contents/ui/StationList.qml:252
+#: contents/ui/StationList.qml:257 contents/ui/StationList.qml:260
 msgid "Rename"
 msgstr "Renommer"
 
@@ -450,7 +526,7 @@ msgstr "Remplace les favoris et l'historique actuels. Rien ne change avant d'app
 msgid "Report played stations to the click counter"
 msgstr "Signaler les stations écoutées au compteur de clics"
 
-#: contents/ui/FullRepresentation.qml:312 contents/ui/PlayerBar.qml:74
+#: contents/ui/FullRepresentation.qml:332 contents/ui/PlayerBar.qml:76
 msgid "Retry"
 msgstr "Réessayer"
 
@@ -494,11 +570,11 @@ msgstr "Recherche…"
 msgid "Shade the night side of the globe"
 msgstr "Assombrir le côté nuit du globe"
 
-#: contents/ui/PlayerBar.qml:38
+#: contents/ui/PlayerBar.qml:40
 msgid "Starting mpv…"
 msgstr "Démarrage de mpv…"
 
-#: contents/ui/PlayerBar.qml:153
+#: contents/ui/PlayerBar.qml:161
 msgid "Stop (hold to quit mpv)"
 msgstr "Arrêter (maintenir pour quitter mpv)"
 
@@ -506,19 +582,27 @@ msgstr "Arrêter (maintenir pour quitter mpv)"
 msgid "Stop and quit mpv"
 msgstr "Arrêter et quitter mpv"
 
-#: contents/ui/main.qml:93 contents/ui/PlayerBar.qml:48
+#: contents/ui/main.qml:93 contents/ui/PlayerBar.qml:50
 msgid "Stopped"
 msgstr "Arrêté"
+
+#: contents/ui/StationProperties.qml:38
+msgid "Stream"
+msgstr "Flux"
 
 #: contents/ui/config/configAddStation.qml:284
 msgid "Stream URL:"
 msgstr "URL du flux :"
 
+#: contents/ui/StationProperties.qml:48
+msgid "Tags"
+msgstr "Tags"
+
 #: contents/ui/config/configAddStation.qml:308
 msgid "Tags:"
 msgstr "Tags :"
 
-#: contents/ui/PlayerBar.qml:60
+#: contents/ui/PlayerBar.qml:62
 msgid "This Plasma version does not provide the MPRIS module (org.kde.plasma.private.mpris) RadioGlobe needs to control mpv."
 msgstr "Cette version de Plasma ne fournit pas le module MPRIS (org.kde.plasma.private.mpris) dont RadioGlobe a besoin pour contrôler mpv."
 
@@ -530,11 +614,11 @@ msgstr "Ce fichier n'est pas une sauvegarde RadioGlobe."
 msgid "This file is not valid JSON."
 msgstr "Ce fichier n'est pas du JSON valide."
 
-#: contents/ui/PlayerBar.qml:62
+#: contents/ui/PlayerBar.qml:64
 msgid "This station could not be played. It may be offline; retry or pick another one."
 msgstr "Cette station n’a pas pu être lue. Elle est peut-être hors ligne : réessayez ou choisissez-en une autre."
 
-#: contents/ui/StationList.qml:275 contents/ui/StationList.qml:279
+#: contents/ui/StationList.qml:283 contents/ui/StationList.qml:287
 msgid "Toggle favorite (F)"
 msgstr "Basculer le favori (F)"
 
@@ -542,17 +626,17 @@ msgstr "Basculer le favori (F)"
 msgid "Tune a random station (R)"
 msgstr "Écouter une station aléatoire (R)"
 
-#: contents/ui/StationList.qml:65
+#: contents/ui/StationList.qml:67
 msgid "World"
 msgstr "Monde"
 
-#: contents/ui/FullRepresentation.qml:275
-#: contents/ui/FullRepresentation.qml:276
+#: contents/ui/FullRepresentation.qml:295
+#: contents/ui/FullRepresentation.qml:296
 msgid "Zoom in"
 msgstr "Zoom avant"
 
-#: contents/ui/FullRepresentation.qml:286
-#: contents/ui/FullRepresentation.qml:287
+#: contents/ui/FullRepresentation.qml:306
+#: contents/ui/FullRepresentation.qml:307
 msgid "Zoom out"
 msgstr "Zoom arrière"
 
@@ -564,11 +648,11 @@ msgstr "position approximative"
 msgid "mpv executable:"
 msgstr "Exécutable mpv :"
 
-#: contents/ui/PlayerBar.qml:56
+#: contents/ui/PlayerBar.qml:58
 msgid "mpv is not installed. Install the “mpv” and “mpv-mpris” packages, then try again."
 msgstr "mpv n’est pas installé. Installer les paquets « mpv » et « mpv-mpris », puis réessayer."
 
-#: contents/ui/PlayerBar.qml:58
+#: contents/ui/PlayerBar.qml:60
 msgid "mpv started but did not appear on MPRIS. Install the “mpv-mpris” package."
 msgstr "mpv a démarré mais n’apparaît pas sur MPRIS. Installer le paquet « mpv-mpris »."
 
@@ -579,3 +663,7 @@ msgstr "mpv-mpris :"
 #: contents/ui/config/configGeneral.qml:155
 msgid "mpv:"
 msgstr "mpv :"
+
+#: contents/ui/StationProperties.qml:56
+msgid "unknown"
+msgstr "inconnue"

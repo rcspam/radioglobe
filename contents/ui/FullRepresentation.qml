@@ -148,6 +148,26 @@ Item {
         }
     }
 
+    // One menu and one properties panel for every station of the popup.
+    StationMenu {
+        id: stationMenu
+        objectName: "stationMenu"
+        onPlayRequested: station => root.playFrom(root.listStations, station)
+        onFavoriteRequested: station => root.toggleFavorite(station)
+        onCopyRequested: text => copyHelper.copyText(text)
+        onPropertiesRequested: station => stationProperties.open(station)
+    }
+
+    StationProperties {
+        id: stationProperties
+        objectName: "stationProperties"
+    }
+
+    function openStationMenu(station) {
+        if (station)
+            stationMenu.open(station, root.isFavorite(station.uuid));
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Kirigami.Units.smallSpacing
@@ -333,6 +353,7 @@ Item {
                     favoriteCheck: uuid => root.isFavorite(uuid)
                     currentTab: root.currentTab
                     loading: root.loadingCountry
+                    onMenuRequested: station => full.openStationMenu(station)
                     onTabSelected: index => {
                         if (index === 0) {
                             // Picking World means "show me the world again":
@@ -369,6 +390,7 @@ Item {
                     onMuteRequested: full.mediaPlayer.toggleMute()
                     onFavoriteRequested: if (full.mediaPlayer.station)
                         root.toggleFavorite(full.mediaPlayer.station)
+                    onMenuRequested: station => full.openStationMenu(station)
                     onLocateRequested: full.locateCurrentStation()
                     onEditRequested: if (full.mediaPlayer.station)
                         root.openStationEditor(full.mediaPlayer.station)

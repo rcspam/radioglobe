@@ -31,6 +31,8 @@ ColumnLayout {
     signal removed(var station)
     // Pencil on the Favorites tab; name already trimmed by the field.
     signal renamed(var station, string name)
+    // Right click on a row: the owner opens the station menu.
+    signal menuRequested(var station)
 
     function moveSelection(delta) {
         const count = Array.isArray(list.stations) ? list.stations.length : 0;
@@ -142,7 +144,13 @@ ColumnLayout {
                 id: rowArea
                 anchors.fill: parent
                 hoverEnabled: true
-                onClicked: list.activated(row.modelData)
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onClicked: mouse => {
+                    if (mouse.button === Qt.RightButton)
+                        list.menuRequested(row.modelData);
+                    else
+                        list.activated(row.modelData);
+                }
             }
 
             PlasmaComponents3.Label {
