@@ -55,7 +55,6 @@ TestCase {
         property var favorites: []
         property bool approximateLocations: false
         property bool showDayNight: true
-        property bool nightFade: true
         property bool expanded: true
         property bool isOnDesktop: false
         property bool pinned: false
@@ -658,10 +657,6 @@ TestCase {
         root.showDayNight = false;
         compare(globe.showDayNight, false);
         root.showDayNight = true;
-        compare(globe.nightFade, true);
-        root.nightFade = false;
-        compare(globe.nightFade, false);
-        root.nightFade = true;
     }
 
     function test_retry_button_appears_offline_and_reaches_the_browser() {

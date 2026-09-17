@@ -435,51 +435,6 @@ test("terminatorGeometry: a sun mostly in front leaves less than half the disc i
         assert.ok(p.x <= 1e-9);
 });
 
-// nightRegion: the part of the visible disc where p·sun < threshold, as a
-// polygon in unit disc coordinates (with a hole when the day cap sits whole
-// inside the disc), or a full / empty flag.
-test("nightRegion at threshold 0 is the terminator's night polygon", () => {
-    const region = model.nightRegion({ latitude: 0, longitude: 90 }, 0, 0, 0, 32);
-    assert.equal(region.full, false);
-    assert.equal(region.empty, false);
-    assert.equal(region.hole, null);
-    for (const p of region.points)
-        assert.ok(p.x <= 1e-9, JSON.stringify(p));
-    assert.ok(region.points.some(p => Math.abs(p.x + 1) < 1e-9 && Math.abs(p.y) < 1e-9), "reaches the rim opposite the sun");
-});
-
-test("nightRegion moves its boundary with the threshold", () => {
-    // Sun due east: p·sun is the x coordinate, the boundary is the line x = t.
-    const wider = model.nightRegion({ latitude: 0, longitude: 90 }, 0, 0, 0.5, 32);
-    const maxX = Math.max(...wider.points.map(p => p.x));
-    assert.ok(Math.abs(maxX - 0.5) < 1e-6, "boundary at x = 0.5: " + maxX);
-    const narrower = model.nightRegion({ latitude: 0, longitude: 90 }, 0, 0, -0.5, 32);
-    assert.ok(Math.abs(Math.max(...narrower.points.map(p => p.x)) + 0.5) < 1e-6);
-    for (const p of wider.points.concat(narrower.points))
-        assert.ok(p.x * p.x + p.y * p.y <= 1 + 1e-9);
-});
-
-test("nightRegion with the sun in front: nothing, or a ring around the day cap", () => {
-    assert.equal(model.nightRegion({ latitude: 0, longitude: 0 }, 0, 0, -0.2, 32).empty, true);
-    const ring = model.nightRegion({ latitude: 0, longitude: 0 }, 0, 0, 0.5, 32);
-    assert.equal(ring.empty, false);
-    assert.ok(ring.hole !== null, "the day cap is a hole");
-    // The hole is the circle of radius sqrt(1 - 0.25) around the centre.
-    for (const p of ring.hole)
-        assert.ok(Math.abs(Math.hypot(p.x, p.y) - Math.sqrt(0.75)) < 1e-6, JSON.stringify(p));
-    for (const p of ring.points)
-        assert.ok(Math.abs(Math.hypot(p.x, p.y) - 1) < 1e-6, "outer boundary is the rim");
-});
-
-test("nightRegion with the sun behind: everything, or a cap around the night pole", () => {
-    assert.equal(model.nightRegion({ latitude: 0, longitude: 180 }, 0, 0, 0.2, 32).full, true);
-    const cap = model.nightRegion({ latitude: 0, longitude: 180 }, 0, 0, -0.5, 32);
-    assert.equal(cap.full, false);
-    assert.equal(cap.hole, null);
-    for (const p of cap.points)
-        assert.ok(Math.abs(Math.hypot(p.x, p.y) - Math.sqrt(0.75)) < 1e-6, JSON.stringify(p));
-});
-
 test("simplifyRing drops the points that stay within the tolerance", () => {
     // A straight run of ten points, one of them bent away by a full degree.
     const ring = [];

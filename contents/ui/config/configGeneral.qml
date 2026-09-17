@@ -22,7 +22,6 @@ KCM.SimpleKCM {
     property alias cfg_approximateLocations: approximateLocations.checked
     property alias cfg_invertWheel: invertWheel.checked
     property alias cfg_showDayNight: showDayNight.checked
-    property alias cfg_nightFade: nightFade.checked
     property alias cfg_restoreLastStation: restoreLastStation.checked
     property alias cfg_autoplayLastStation: autoplayLastStation.checked
     property string cfg_icon: "map-globe"
@@ -149,11 +148,6 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: showDayNight
             text: i18n("Shade the night side of the globe")
-        }
-        QQC2.CheckBox {
-            id: nightFade
-            text: i18n("Soft day/night boundary (twilight)")
-            enabled: showDayNight.checked
         }
         QQC2.CheckBox {
             id: restoreLastStation

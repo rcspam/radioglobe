@@ -290,7 +290,6 @@ Item {
                         textColor: Kirigami.Theme.textColor
                         fontFamily: Kirigami.Theme.defaultFont.family
                         showDayNight: root.showDayNight
-                        nightFade: root.nightFade
                         // Darker than the sphere in both light and dark
                         // themes, so the night side reads as a shadow.
                         nightColor: Qt.darker(Kirigami.Theme.backgroundColor, 3)

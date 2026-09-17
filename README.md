@@ -9,7 +9,7 @@ A KDE Plasma 6 widget for exploring live radio stations on a rotatable globe and
 ## Features
 
 - A rotatable, zoomable globe (Canvas 2D) with one point per live radio station. Drag to spin, scroll or use the + / - buttons to zoom, click a point to play, click a country to browse its stations
-- The night side of the Earth is shaded from the Sun's real position, with a twilight band, refreshed every minute (both can be turned off in the settings)
+- The night side of the Earth is shaded from the Sun's real position, refreshed every minute (can be turned off in the settings)
 - Stations come from the [Radio Browser](https://www.radio-browser.info/) community API: world view (up to a configurable cap, default 3000 stations), per-country lists (the 300 most listened plus the located ones, 500 by default and three times that for the largest countries, so the globe fills up), and free-text search across name, country and tag, which also fetches the located matches; both counts are settings on the General page
 - While a search is active, or a country is open, the globe shows those stations only, so typing a tag such as "jazz" maps where they are; with a country open the search stays inside it; the World tab brings the world back
 - A home country (taken from your locale, or set in the widget's configuration): all of its geolocated stations are always loaded and kept on the globe, however popular they are. An option also shows its stations without coordinates, placed at random inside the country's borders (the tooltip says "approximate location")
