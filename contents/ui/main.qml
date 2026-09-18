@@ -422,6 +422,10 @@ PlasmoidItem {
         }
     }
 
+    // Plasma's own tooltip delay; 0 or less means the user turned tooltips
+    // off in the workspace settings, and the icon must not open ours either.
+    property bool plasmaToolTipsEnabled: true
+
     // Local time where the current station broadcasts, for the player's
     // second line. The zone table is read once at startup, below.
     LocalClock {
@@ -506,6 +510,10 @@ PlasmoidItem {
             if (root.isOnDesktop || root.expanded)
                 radioBrowser.expandWorld();
         });
+        exec.run("kreadconfig6 --file plasmarc --group PlasmaToolTips --key Delay --default 700", (exitCode, stdout) => {
+            if (exitCode === 0 && /^\s*-?\d+\s*$/.test(stdout))
+                root.plasmaToolTipsEnabled = parseInt(stdout, 10) > 0;
+        });
         // Same route for the system's zone table (tzdata ships it everywhere).
         // Without it the player simply shows no local time.
         exec.run("cat /usr/share/zoneinfo/zone1970.tab", (exitCode, stdout) => {
@@ -535,6 +543,7 @@ PlasmoidItem {
         vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
         invertWheel: Plasmoid.configuration.invertWheel
         toolTipDelay: Plasmoid.configuration.toolTipDelay
+        plasmaToolTipsEnabled: root.plasmaToolTipsEnabled
         iconName: Plasmoid.configuration.icon
         iconColor: Plasmoid.configuration.iconColor
         badgeColor: Plasmoid.configuration.badgeColor

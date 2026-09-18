@@ -93,6 +93,13 @@ TestCase {
         mouseMove(icon, 16, 16);
         wait(120);
         compare(fakeToolTipArea.shown, 1);
+        // Tooltips turned off in Plasma: never.
+        mouseMove(fakeToolTipArea, 55, 55);
+        icon.toolTipDelay = 60;
+        icon.plasmaToolTipsEnabled = false;
+        mouseMove(icon, 16, 16);
+        wait(120);
+        compare(fakeToolTipArea.shown, 1);
         mouseMove(fakeToolTipArea, 55, 55);
         icon.destroy();
     }

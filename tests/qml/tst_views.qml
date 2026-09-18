@@ -168,6 +168,20 @@ TestCase {
         marquee.text = "short";
     }
 
+    function test_marquee_label_goes_back_to_the_start_when_it_stops() {
+        marquee.pauseMs = 10;
+        marquee.pixelsPerSecond = 2000;
+        marquee.text = "A station name far too long for sixty pixels of width";
+        tryVerify(() => marquee.textX < -5, 1000);
+        marquee.visible = false;
+        compare(marquee.scrolling, false);
+        compare(marquee.textX, 0);
+        marquee.visible = true;
+        marquee.pauseMs = 2000;
+        marquee.pixelsPerSecond = 30;
+        marquee.text = "short";
+    }
+
     function test_player_bar_lines_scroll_when_narrow() {
         const name = findChild(bar, "nameLabel");
         const status = findChild(bar, "statusLabel");

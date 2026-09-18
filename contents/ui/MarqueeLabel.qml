@@ -48,6 +48,9 @@ Item {
         id: animation
         running: root.overflowing && root.visible && root._windowShown
         loops: Animation.Infinite
+        // Hidden mid-glide (popup closed), the text would reappear shifted.
+        onRunningChanged: if (!running)
+            label.x = 0
         PauseAnimation {
             duration: root.pauseMs
         }

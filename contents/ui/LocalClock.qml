@@ -74,6 +74,9 @@ Item {
         running: root._offset !== null && root.fixedNowMs < 0
         repeat: true
         interval: 60000 - (Date.now() % 60000) + 50
+        // Restarted for a new zone, it would keep the phase of an old minute.
+        onRunningChanged: if (running)
+            interval = 60000 - (Date.now() % 60000) + 50
         onTriggered: {
             root._tick();
             interval = 60000 - (Date.now() % 60000) + 50;

@@ -21,6 +21,9 @@ Item {
     // has its own delay (700 ms, plasmarc) and no property for it, but a
     // public showToolTip(): the icon calls it itself, sooner.
     property int toolTipDelay: 300
+    // False when the user turned Plasma tooltips off (plasmarc Delay <= 0):
+    // showToolTip() does not check that itself, hoverEnterEvent does.
+    property bool plasmaToolTipsEnabled: true
     property string iconName: "map-globe"
     // "#rrggbb" or empty for the theme colour.
     property string iconColor: ""
@@ -99,7 +102,7 @@ Item {
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
         // At 700 ms or more Plasma opens the tooltip itself.
-        onEntered: if (compact.toolTipDelay < 700)
+        onEntered: if (compact.plasmaToolTipsEnabled && compact.toolTipDelay < 700)
             toolTipTimer.restart()
         onExited: toolTipTimer.stop()
         onClicked: mouse => {
