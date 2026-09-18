@@ -40,9 +40,13 @@ Item {
     readonly property real _overflow: Math.max(0, label.implicitWidth - root.width)
     readonly property int _glideMs: Math.max(1, Math.round(root._overflow / root.pixelsPerSecond * 1000))
 
+    // The popup and the panel tooltip keep their items alive while hidden;
+    // no point animating text nobody sees.
+    readonly property bool _windowShown: root.Window.visibility !== Window.Hidden
+
     SequentialAnimation {
         id: animation
-        running: root.overflowing && root.visible
+        running: root.overflowing && root.visible && root._windowShown
         loops: Animation.Infinite
         PauseAnimation {
             duration: root.pauseMs

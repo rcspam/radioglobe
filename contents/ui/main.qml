@@ -97,6 +97,8 @@ PlasmoidItem {
     // above stay as the fallback the shell reads when it ignores the item.
     toolTipItem: CompactToolTip {
         player: player
+        localTime: root.stationLocalTime
+        localTimeDescription: root.stationLocalTimeDescription
         onPlayPauseRequested: player.togglePause()
         onNextRequested: root.next()
         onPreviousRequested: root.previous()

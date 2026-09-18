@@ -645,6 +645,50 @@ TestCase {
         tip.destroy();
     }
 
+    function test_compact_tooltip_clock_and_scrolling() {
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/CompactToolTip.qml"));
+        verify(component.status === Component.Ready, component.errorString());
+        const tip = component.createObject(this, {
+            localTime: "14:32",
+            player: ({
+                    state: "playing",
+                    station: {
+                        uuid: "t",
+                        name: "Tooltip FM"
+                    },
+                    track: "Now: a song",
+                    volume: 0.5,
+                    muted: false,
+                    errorKind: ""
+                })
+        });
+        const clock = findChild(tip, "tipClock");
+        verify(clock !== null, "tipClock not found");
+        compare(clock.visible, true);
+        compare(clock.text, "14:32");
+        wait(50);
+        compare(findChild(tip, "tipMain").overflowing, false);
+        compare(findChild(tip, "tipSub").overflowing, false);
+        // Longer than the tooltip's maximum width: both lines scroll.
+        tip.player = ({
+                state: "playing",
+                station: {
+                    uuid: "t",
+                    name: "A station whose name runs well past the twenty grid units the tooltip allows itself"
+                },
+                track: "And a title that is just as long, so that the second line has to slide too",
+                volume: 0.5,
+                muted: false,
+                errorKind: ""
+            });
+        wait(50);
+        compare(findChild(tip, "tipMain").overflowing, true);
+        compare(findChild(tip, "tipSub").overflowing, true);
+        tip.localTime = "";
+        compare(clock.visible, false);
+        tip.destroy();
+    }
+
     function countRows(item) {
         let rows = item.objectName === "stationRow" ? 1 : 0;
         for (let i = 0; i < item.children.length; i++)

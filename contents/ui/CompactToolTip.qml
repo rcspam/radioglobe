@@ -10,6 +10,9 @@ Item {
     id: tip
 
     property var player: null
+    // Local time where the station broadcasts, after its name (LocalClock.qml).
+    property string localTime: ""
+    property string localTimeDescription: ""
 
     signal playPauseRequested
     signal nextRequested
@@ -41,22 +44,38 @@ Item {
         anchors.margins: Kirigami.Units.smallSpacing
         spacing: Kirigami.Units.smallSpacing
 
-        PlasmaComponents3.Label {
-            objectName: "tipMain"
+        // Same lines as the player bar: they slide when the text is wider
+        // than the tooltip lets itself grow.
+        RowLayout {
             Layout.fillWidth: true
             Layout.maximumWidth: Kirigami.Units.gridUnit * 20
-            text: tip.mainText
-            textFormat: Text.PlainText
-            font.bold: true
-            elide: Text.ElideRight
+            spacing: Kirigami.Units.smallSpacing
+
+            MarqueeLabel {
+                objectName: "tipMain"
+                Layout.fillWidth: true
+                text: tip.mainText
+                font.bold: true
+            }
+            PlasmaComponents3.Label {
+                objectName: "tipClock"
+                visible: tip.hasStation && tip.localTime !== ""
+                text: tip.localTime
+                textFormat: Text.PlainText
+                opacity: 0.75
+                PlasmaComponents3.ToolTip.text: tip.localTimeDescription
+                PlasmaComponents3.ToolTip.visible: clockHover.hovered && tip.localTimeDescription !== ""
+                PlasmaComponents3.ToolTip.delay: Kirigami.Units.toolTipDelay
+                HoverHandler {
+                    id: clockHover
+                }
+            }
         }
-        PlasmaComponents3.Label {
+        MarqueeLabel {
             objectName: "tipSub"
             Layout.fillWidth: true
             Layout.maximumWidth: Kirigami.Units.gridUnit * 20
             text: tip.subText
-            textFormat: Text.PlainText
-            elide: Text.ElideRight
             opacity: 0.75
         }
         RowLayout {
