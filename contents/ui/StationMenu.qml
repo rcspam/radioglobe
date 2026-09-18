@@ -13,6 +13,7 @@ PlasmaComponents3.Menu {
     signal favoriteRequested(var station)
     signal copyRequested(string text)
     signal propertiesRequested(var station)
+    signal voteRequested(var station)
 
     function open(target, isFavorite) {
         menu.station = target;
@@ -46,6 +47,13 @@ PlasmaComponents3.Menu {
         icon.name: "internet-web-browser"
         enabled: menu.station && menu.station.homepage ? true : false
         onTriggered: Qt.openUrlExternally(menu.station.homepage)
+    }
+    PlasmaComponents3.MenuItem {
+        objectName: "menuVote"
+        text: i18n("Vote for this station on Radio Browser")
+        icon.name: "thumbs-up-symbolic"
+        enabled: menu.station && menu.station.uuid && !menu.station.localOnly ? true : false
+        onTriggered: menu.voteRequested(menu.station)
     }
     PlasmaComponents3.MenuSeparator {}
     PlasmaComponents3.MenuItem {

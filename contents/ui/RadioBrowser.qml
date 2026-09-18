@@ -285,6 +285,16 @@ Item {
         root.request(base + "/json/url/" + encodeURIComponent(String(uuid)), function () {});
     }
 
+    // /json/vote answers {ok: true|false, message}; ok is false when this IP
+    // voted for that station within ten minutes. callback(ok).
+    function vote(uuid, callback) {
+        if (!uuid)
+            return;
+        root._call("/json/vote/" + encodeURIComponent(String(uuid)), null, null, body => body && typeof body === "object" && "ok" in body, body => {
+            callback(body ? body.ok === true || String(body.ok) === "true" : false);
+        });
+    }
+
     // The home country is fetched whole (up to 1000 stations; only the
     // geolocated ones unless approximate locations are on) on top of the
     // world batch, and _absorb keeps it first when it cuts the world down to

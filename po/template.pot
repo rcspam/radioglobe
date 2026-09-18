@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-18 19:43+0200\n"
+"POT-Creation-Date: 2026-09-18 20:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: contents/ui/StationProperties.qml:54
+#: contents/ui/StationProperties.qml:56
 msgid "%1 (approximate, inside the country)"
 msgstr ""
 
@@ -28,17 +28,19 @@ msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] ""
 msgstr[1] ""
 
+#: contents/ui/SearchBar.qml:140 contents/ui/SearchBar.qml:145
+#: contents/ui/SearchBar.qml:150 contents/ui/SearchBar.qml:155
 #: contents/ui/StationProperties.qml:41
 msgid "%1 kbps"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:85
+#: contents/ui/FullRepresentation.qml:91
 msgid "%1 match in %2"
 msgid_plural "%1 matches in %2"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/FullRepresentation.qml:89
+#: contents/ui/FullRepresentation.qml:95
 msgid "%1 match on the globe"
 msgid_plural "%1 matches on the globe"
 msgstr[0] ""
@@ -48,7 +50,7 @@ msgstr[1] ""
 msgid "%1 ms"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:90
+#: contents/ui/FullRepresentation.qml:96
 msgid "%1 signal"
 msgid_plural "%1 signals"
 msgstr[0] ""
@@ -58,9 +60,15 @@ msgstr[1] ""
 msgid "%1 · approximate location"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:87
+#: contents/ui/FullRepresentation.qml:93
 msgid "%1 · click another country to browse"
 msgstr ""
+
+#: contents/ui/FullRepresentation.qml:87
+msgid "%2 · %1 station after filters"
+msgid_plural "%2 · %1 stations after filters"
+msgstr[0] ""
+msgstr[1] ""
 
 #: contents/ui/config/configGeneral.qml:303
 msgid "Absolute path, or leave empty to use mpv from PATH"
@@ -74,12 +82,12 @@ msgstr ""
 msgid "Add a station"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:235
-#: contents/ui/FullRepresentation.qml:236
+#: contents/ui/FullRepresentation.qml:245
+#: contents/ui/FullRepresentation.qml:246
 msgid "Add a station…"
 msgstr ""
 
-#: contents/ui/StationMenu.qml:31
+#: contents/ui/StationMenu.qml:32
 msgid "Add to favorites"
 msgstr ""
 
@@ -111,6 +119,14 @@ msgstr ""
 msgid "Also show its stations without coordinates, at an approximate spot inside the country"
 msgstr ""
 
+#: contents/ui/SearchBar.qml:135
+msgid "Any bitrate"
+msgstr ""
+
+#: contents/ui/SearchBar.qml:115
+msgid "Any codec"
+msgstr ""
+
 #: contents/ui/config/configGeneral.qml:213
 msgid "Appearance"
 msgstr ""
@@ -129,6 +145,10 @@ msgstr ""
 
 #: contents/config/config.qml:28
 msgid "Backup"
+msgstr ""
+
+#: contents/ui/SearchBar.qml:105
+msgid "Bitrate"
 msgstr ""
 
 #: contents/ui/config/configAddStation.qml:436
@@ -159,8 +179,12 @@ msgstr ""
 msgid "Clicks on Radio Browser"
 msgstr ""
 
-#: contents/ui/StationProperties.qml:81
+#: contents/ui/StationProperties.qml:83
 msgid "Close"
+msgstr ""
+
+#: contents/ui/SearchBar.qml:109
+msgid "Codec"
 msgstr ""
 
 #: contents/ui/config/configAddStation.qml:311
@@ -171,11 +195,11 @@ msgstr ""
 msgid "Connecting…"
 msgstr ""
 
-#: contents/ui/StationMenu.qml:38
+#: contents/ui/StationMenu.qml:39
 msgid "Copy stream URL"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:203
+#: contents/ui/FullRepresentation.qml:210
 msgid "Copy the install command"
 msgstr ""
 
@@ -212,7 +236,7 @@ msgstr ""
 msgid "Edit this station…"
 msgstr ""
 
-#: contents/ui/StationProperties.qml:60
+#: contents/ui/StationProperties.qml:62
 msgid "Edited locally: this is your version of the station."
 msgstr ""
 
@@ -306,8 +330,8 @@ msgstr ""
 msgid "JSON files (*.json)"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:249
-#: contents/ui/FullRepresentation.qml:250
+#: contents/ui/FullRepresentation.qml:259
+#: contents/ui/FullRepresentation.qml:260
 msgid "Keep open"
 msgstr ""
 
@@ -343,7 +367,7 @@ msgstr ""
 msgid "Located stations per search:"
 msgstr ""
 
-#: contents/ui/StationProperties.qml:54 contents/ui/StationProperties.qml:56
+#: contents/ui/StationProperties.qml:56 contents/ui/StationProperties.qml:58
 msgid "Location"
 msgstr ""
 
@@ -363,13 +387,17 @@ msgstr ""
 msgid "Maximum stations on the globe:"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:143
+#: contents/ui/SearchBar.qml:129
+msgid "Minimum bitrate"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml:149
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "%2"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:145
+#: contents/ui/FullRepresentation.qml:151
 msgid ""
 "Missing QML modules: %1. Install them and restart Plasma:\n"
 "Debian / Ubuntu: sudo apt install %2\n"
@@ -385,7 +413,7 @@ msgstr ""
 msgid "Mute"
 msgstr ""
 
-#: contents/ui/StationProperties.qml:37
+#: contents/ui/SearchBar.qml:100 contents/ui/StationProperties.qml:37
 msgid "Name"
 msgstr ""
 
@@ -413,7 +441,7 @@ msgstr ""
 msgid "No place found for “%1”."
 msgstr ""
 
-#: contents/ui/CompactToolTip.qml:30 contents/ui/main.qml:87
+#: contents/ui/CompactToolTip.qml:30 contents/ui/main.qml:98
 msgid "No station playing"
 msgstr ""
 
@@ -449,7 +477,7 @@ msgstr ""
 msgid "On top of the 300 most listened. Three times that for the largest countries (Russia, Canada, the United States, China, Brazil, Australia, India…)."
 msgstr ""
 
-#: contents/ui/StationMenu.qml:45
+#: contents/ui/StationMenu.qml:46
 msgid "Open homepage"
 msgstr ""
 
@@ -461,7 +489,7 @@ msgstr ""
 msgid "Panel icon:"
 msgstr ""
 
-#: contents/ui/CompactToolTip.qml:34 contents/ui/main.qml:91
+#: contents/ui/CompactToolTip.qml:34 contents/ui/main.qml:102
 #: contents/ui/PlayerBar.qml:53
 msgid "Paused"
 msgstr ""
@@ -474,7 +502,7 @@ msgstr ""
 msgid "Plasma forgets a widget's settings when the widget is removed from the panel. Save them to a file to restore them later or on another computer."
 msgstr ""
 
-#: contents/ui/StationMenu.qml:25
+#: contents/ui/StationMenu.qml:26
 msgid "Play"
 msgstr ""
 
@@ -486,12 +514,12 @@ msgstr ""
 msgid "Playback"
 msgstr ""
 
-#: contents/ui/CompactToolTip.qml:36 contents/ui/main.qml:93
+#: contents/ui/CompactToolTip.qml:36 contents/ui/main.qml:104
 #: contents/ui/PlayerBar.qml:55
 msgid "Playback failed"
 msgstr ""
 
-#: contents/ui/CompactToolTip.qml:32 contents/ui/main.qml:89
+#: contents/ui/CompactToolTip.qml:32 contents/ui/main.qml:100
 msgid "Playing"
 msgstr ""
 
@@ -499,11 +527,15 @@ msgstr ""
 msgid "Playing badge colour:"
 msgstr ""
 
+#: contents/ui/SearchBar.qml:90
+msgid "Popularity"
+msgstr ""
+
 #: contents/ui/CompactToolTip.qml:97
 msgid "Previous"
 msgstr ""
 
-#: contents/ui/StationMenu.qml:53
+#: contents/ui/StationMenu.qml:61
 msgid "Properties…"
 msgstr ""
 
@@ -515,7 +547,7 @@ msgstr ""
 msgid "Radio Browser has no location for most stations. This places them at random inside their borders (the tooltip says “approximate location”), so the globe fills up but the dots do not mean much."
 msgstr ""
 
-#: contents/ui/StationProperties.qml:58
+#: contents/ui/StationProperties.qml:60
 msgid "Radio Browser id"
 msgstr ""
 
@@ -523,7 +555,7 @@ msgstr ""
 msgid "Radio Browser refused the station: %1. Kept locally only."
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:83
+#: contents/ui/FullRepresentation.qml:85
 msgid "Radio Browser unreachable, showing cached data"
 msgstr ""
 
@@ -535,15 +567,15 @@ msgstr ""
 msgid "Radio Browser:"
 msgstr ""
 
-#: contents/ui/CompactToolTip.qml:27 contents/ui/main.qml:84
+#: contents/ui/CompactToolTip.qml:27 contents/ui/main.qml:95
 msgid "RadioGlobe"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:41
+#: contents/ui/SearchBar.qml:161
 msgid "Random"
 msgstr ""
 
-#: contents/ui/main.qml:120
+#: contents/ui/main.qml:131
 msgid "Random station"
 msgstr ""
 
@@ -559,7 +591,7 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: contents/ui/StationMenu.qml:31
+#: contents/ui/StationMenu.qml:32
 msgid "Remove from favorites"
 msgstr ""
 
@@ -579,7 +611,7 @@ msgstr ""
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:350 contents/ui/PlayerBar.qml:83
+#: contents/ui/FullRepresentation.qml:360 contents/ui/PlayerBar.qml:83
 msgid "Retry"
 msgstr ""
 
@@ -619,7 +651,7 @@ msgstr ""
 msgid "Search an address or a place, then press Enter"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:27
+#: contents/ui/SearchBar.qml:34
 msgid "Search stations, countries, tags…"
 msgstr ""
 
@@ -633,6 +665,14 @@ msgstr ""
 
 #: contents/ui/config/configGeneral.qml:168
 msgid "Show the last station played in the player"
+msgstr ""
+
+#: contents/ui/SearchBar.qml:53 contents/ui/SearchBar.qml:54
+msgid "Sort and filter the list"
+msgstr ""
+
+#: contents/ui/SearchBar.qml:84
+msgid "Sort by"
 msgstr ""
 
 #: contents/ui/config/configGeneral.qml:173
@@ -651,11 +691,11 @@ msgstr ""
 msgid "Stop (hold to quit mpv)"
 msgstr ""
 
-#: contents/ui/main.qml:125
+#: contents/ui/main.qml:136
 msgid "Stop and quit mpv"
 msgstr ""
 
-#: contents/ui/CompactToolTip.qml:37 contents/ui/main.qml:94
+#: contents/ui/CompactToolTip.qml:37 contents/ui/main.qml:105
 #: contents/ui/PlayerBar.qml:57
 msgid "Stopped"
 msgstr ""
@@ -708,21 +748,41 @@ msgstr ""
 msgid "Toggle favorite (F)"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:44
+#: contents/ui/SearchBar.qml:164
 msgid "Tune a random station (R)"
+msgstr ""
+
+#: contents/ui/main.qml:279
+msgid "Vote counted for %1"
+msgstr ""
+
+#: contents/ui/StationMenu.qml:53
+msgid "Vote for this station on Radio Browser"
+msgstr ""
+
+#: contents/ui/main.qml:279
+msgid "Vote refused: already voted for %1 recently"
+msgstr ""
+
+#: contents/ui/SearchBar.qml:95
+msgid "Votes"
+msgstr ""
+
+#: contents/ui/StationProperties.qml:53
+msgid "Votes on Radio Browser"
 msgstr ""
 
 #: contents/ui/StationList.qml:67
 msgid "World"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:313
-#: contents/ui/FullRepresentation.qml:314
+#: contents/ui/FullRepresentation.qml:323
+#: contents/ui/FullRepresentation.qml:324
 msgid "Zoom in"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:324
-#: contents/ui/FullRepresentation.qml:325
+#: contents/ui/FullRepresentation.qml:334
+#: contents/ui/FullRepresentation.qml:335
 msgid "Zoom out"
 msgstr ""
 
@@ -750,6 +810,6 @@ msgstr ""
 msgid "mpv:"
 msgstr ""
 
-#: contents/ui/StationProperties.qml:56
+#: contents/ui/StationProperties.qml:58
 msgid "unknown"
 msgstr ""

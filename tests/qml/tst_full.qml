@@ -47,6 +47,14 @@ TestCase {
             }
         ]
         property var listStations: root.worldStations
+        property var listFilters: ({
+                sort: "popularity",
+                codec: "",
+                minBitrate: 0
+            })
+        readonly property var shownStations: root.listStations
+        property bool filtersActive: false
+        property string notice: ""
         property string listSource: "world"
         property int currentTab: 0
         property var currentCountry: null
@@ -114,6 +122,14 @@ TestCase {
 
         function openStationEditor(station) {
             root.calls.push("edit:" + station.uuid);
+        }
+
+        function setListFilter(key, value) {
+            root.calls.push("filter:" + key + "=" + value);
+        }
+
+        function voteFor(station) {
+            root.calls.push("vote:" + station.uuid);
         }
     }
 
@@ -420,6 +436,7 @@ TestCase {
             bitrate: 96,
             hls: false,
             clicks: 42,
+            votes: 7,
             latitude: 45.75,
             longitude: 4.85
         };
@@ -438,12 +455,14 @@ TestCase {
         compare(root.calls.indexOf("play:prop") >= 0, true, JSON.stringify(root.calls));
         item("menuFavorite").triggered();
         compare(root.calls.indexOf("fav:prop") >= 0, true, JSON.stringify(root.calls));
+        item("menuVote").triggered();
+        compare(root.calls.indexOf("vote:prop") >= 0, true, JSON.stringify(root.calls));
         item("menuProperties").triggered();
         const properties = findChild(loader.item, "stationProperties");
         verify(properties !== null, "stationProperties not found");
         tryCompare(properties, "visible", true);
         const text = findChild(properties, "propertiesText").text;
-        for (const expected of ["Radio Props", "https://s/props.mp3", "AAC", "96 kbps", "France", "Lyon", "french", "jazz,soul", "https://props.example", "42", "45.75", "prop"])
+        for (const expected of ["Radio Props", "https://s/props.mp3", "AAC", "96 kbps", "France", "Lyon", "french", "jazz,soul", "https://props.example", "42", "Votes on Radio Browser", "45.75", "prop"])
             verify(text.indexOf(expected) >= 0, "properties miss " + expected + ": " + text);
         properties.close();
         tryCompare(properties, "visible", false);
@@ -562,6 +581,57 @@ TestCase {
         keyClick(Qt.Key_Escape);
         compare(field.text, "");
         compare(root.calls.filter(call => call === "clearCountry").length, clearCountryCallsBefore, JSON.stringify(root.calls));
+    }
+
+    function test_filter_menu_reaches_root_and_the_status_line_says_so() {
+        const searchBar = findChild(loader.item, "searchBar");
+        const menu = findChild(searchBar, "filterMenu");
+        verify(menu !== null, "filterMenu not found");
+        function item(name) {
+            for (let i = 0; i < menu.count; i++)
+                if (menu.itemAt(i).objectName === name)
+                    return menu.itemAt(i);
+            return null;
+        }
+        verify(item("sort-popularity").checked, "default sort is popularity");
+        verify(item("codec-any").checked);
+        verify(item("minBitrate-any").checked);
+        item("sort-votes").triggered();
+        item("codec-aac").triggered();
+        item("minBitrate-128").triggered();
+        for (const expected of ["filter:sort=votes", "filter:codec=aac", "filter:minBitrate=128"])
+            compare(root.calls.indexOf(expected) >= 0, true, JSON.stringify(root.calls));
+        // The owner applied them: the menu and the button follow.
+        root.listFilters = ({
+                sort: "votes",
+                codec: "aac",
+                minBitrate: 128
+            });
+        root.filtersActive = true;
+        root.listStations = [root.worldStations[0]];
+        verify(item("sort-votes").checked);
+        verify(!item("sort-popularity").checked);
+        verify(item("codec-aac").checked);
+        verify(item("minBitrate-128").checked);
+        compare(findChild(searchBar, "filterButton").highlighted, true);
+        compare(loader.item.statusLine, "2 signals · 1 station after filters");
+        // The filtered list is what the globe maps.
+        compare(loader.item.globeStations.length, 1);
+        root.filtersActive = false;
+        root.listStations = root.worldStations;
+        root.listFilters = ({
+                sort: "popularity",
+                codec: "",
+                minBitrate: 0
+            });
+        compare(loader.item.statusLine, "2 signals");
+    }
+
+    function test_notice_takes_over_the_status_line() {
+        root.notice = "Vote counted for Radio A";
+        compare(loader.item.statusLine, "Vote counted for Radio A");
+        root.notice = "";
+        compare(loader.item.statusLine, "2 signals");
     }
 
     function test_status_line_follows_context() {

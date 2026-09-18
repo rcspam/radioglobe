@@ -21,6 +21,7 @@ const raw = {
     geo_lat: 48.85,
     geo_long: 2.35,
     clickcount: "42",
+    votes: "7",
     hls: 0,
 };
 
@@ -35,6 +36,7 @@ test("normalizeStation maps and cleans Radio Browser fields", () => {
     assert.equal(s.latitude, 48.85);
     assert.equal(s.longitude, 2.35);
     assert.equal(s.clicks, 42);
+    assert.equal(s.votes, 7);
     assert.equal(s.hls, false);
     assert.equal(s.estimatedLocation, undefined);
     // Precomputed for the list delegate, identical to stationMeta().

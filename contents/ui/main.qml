@@ -20,8 +20,19 @@ PlasmoidItem {
     property var favorites: root._parseList(Plasmoid.configuration.favorites)
     property var history: root._parseList(Plasmoid.configuration.history)
 
-    // What the right-hand list shows and where it comes from.
+    // What the right-hand list shows and where it comes from. listStations
+    // is the loaded list; shownStations is what the user sees and plays
+    // from, after the filter menu's sort and filters.
     property var listStations: []
+    readonly property var listFilters: ({
+            sort: Plasmoid.configuration.listSort,
+            codec: Plasmoid.configuration.codecFilter,
+            minBitrate: Plasmoid.configuration.minBitrate
+        })
+    readonly property var shownStations: RadioModel.applyFilters(root.listStations, root.listFilters)
+    readonly property bool filtersActive: RadioModel.filtersActive(root.listFilters)
+    // A short message for the status line (vote result), cleared after a while.
+    property string notice: ""
     property string listSource: "world"
     property int currentTab: 0
     property var currentCountry: null
@@ -249,6 +260,35 @@ PlasmoidItem {
     function clearSearch() {
         root.searchText = "";
         root._refreshList();
+    }
+
+    function setListFilter(key, value) {
+        if (key === "sort")
+            Plasmoid.configuration.listSort = String(value);
+        else if (key === "codec")
+            Plasmoid.configuration.codecFilter = String(value);
+        else if (key === "minBitrate")
+            Plasmoid.configuration.minBitrate = Number(value) || 0;
+    }
+
+    // Radio Browser's vote: one per station and IP every ten minutes.
+    function voteFor(station) {
+        if (!station || !station.uuid)
+            return;
+        radioBrowser.vote(station.uuid, ok => {
+            root.showNotice(ok ? i18n("Vote counted for %1", station.name) : i18n("Vote refused: already voted for %1 recently", station.name));
+        });
+    }
+
+    function showNotice(text) {
+        root.notice = text;
+        noticeTimer.restart();
+    }
+
+    Timer {
+        id: noticeTimer
+        interval: 5000
+        onTriggered: root.notice = ""
     }
 
     function stopAll() {

@@ -49,6 +49,8 @@ QQC2.Popup {
         add(i18n("Homepage"), s.homepage);
         if (Number(s.clicks) > 0)
             add(i18n("Clicks on Radio Browser"), Number(s.clicks));
+        if (Number(s.votes) > 0)
+            add(i18n("Votes on Radio Browser"), Number(s.votes));
         if (s.latitude !== null && s.latitude !== undefined && s.longitude !== null && s.longitude !== undefined) {
             const where = Number(s.latitude).toFixed(4) + ", " + Number(s.longitude).toFixed(4);
             add(i18n("Location"), s.estimatedLocation ? i18n("%1 (approximate, inside the country)", where) : where);

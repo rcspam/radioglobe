@@ -117,6 +117,39 @@ TestCase {
 
     // QtQuick.LocalStorage is not installed on a stock Kubuntu: without a cache
     // the world still loads from the network, nothing is written anywhere.
+    function test_vote_reports_ok_and_refusals() {
+        const results = [];
+        rb.vote("abc", ok => results.push(ok));
+        answer("/json/servers", 200, [
+            {
+                name: "de1.api.radio-browser.info"
+            }
+        ]);
+        const url = answer("/json/vote/abc", 200, {
+            ok: true,
+            message: "voted for station successfully"
+        });
+        compare(url, "https://de1.api.radio-browser.info/json/vote/abc");
+        compare(results, [true]);
+        rb.vote("abc", ok => results.push(ok));
+        answer("/json/vote/abc", 200, {
+            ok: false,
+            message: "you are voting for the same station too often"
+        });
+        compare(results, [true, false]);
+        // Radio Browser sends "ok" as a string in some versions.
+        rb.vote("abc", ok => results.push(ok));
+        answer("/json/vote/abc", 200, {
+            ok: "true",
+            message: "voted"
+        });
+        compare(results, [true, false, true]);
+        // Nothing to vote for: no request.
+        const before = pending.length;
+        rb.vote("", ok => results.push(ok));
+        compare(pending.length, before);
+    }
+
     function test_works_without_a_cache() {
         rb.cache = null;
         rb.start();

@@ -793,6 +793,7 @@ function normalizeStation(raw) {
         latitude: latitude,
         longitude: longitude,
         clicks: Number(raw.clickcount) || 0,
+        votes: Number(raw.votes) || 0,
         hls: Number(raw.hls) === 1
     };
     // The list delegate would otherwise call stationMeta() on every row of
@@ -861,6 +862,7 @@ function stationFromForm(fields, uuid) {
         latitude: coordinates.latitude,
         longitude: coordinates.longitude,
         clicks: 0,
+        votes: 0,
         hls: false
     };
     station.meta = stationMeta(station);
@@ -1267,4 +1269,54 @@ function sortWorld(stations, homeCountry) {
     var output = [];
     for (var n = 0; n < decorated.length; n++) output.push(decorated[n].station);
     return output;
+}
+
+// The list's sort and filters (the filter menu next to the search field),
+// applied locally to whatever list is loaded. `options`: sort "popularity"
+// (the input order, which is the server's click ranking or the user's own
+// order for favourites), "votes", "name" or "bitrate"; codec "" / "mp3" /
+// "aac" (AAC+ included); minBitrate in kbps, 0 for none. A station whose
+// bitrate is unknown (0) is dropped as soon as a minimum is set. Ties keep
+// the input order; the input array is left untouched.
+function applyFilters(stations, options) {
+    var rows = Array.isArray(stations) ? stations : [];
+    var opts = options || {};
+    var codec = String(opts.codec || "").toLowerCase();
+    var minBitrate = Number(opts.minBitrate) || 0;
+    var sort = String(opts.sort || "popularity");
+    var kept = [];
+    for (var i = 0; i < rows.length; i++) {
+        var station = rows[i];
+        if (!station) continue;
+        if (codec !== "" && codecFamily(station.codec) !== codec) continue;
+        if (minBitrate > 0 && (Number(station.bitrate) || 0) < minBitrate) continue;
+        kept.push({ station: station, index: i });
+    }
+    if (sort === "votes" || sort === "name" || sort === "bitrate") {
+        kept.sort(function (a, b) {
+            var result = 0;
+            if (sort === "votes") result = (Number(b.station.votes) || 0) - (Number(a.station.votes) || 0);
+            else if (sort === "bitrate") result = (Number(b.station.bitrate) || 0) - (Number(a.station.bitrate) || 0);
+            else result = String(a.station.name || "").localeCompare(String(b.station.name || ""), undefined, { sensitivity: "base" });
+            return result !== 0 ? result : a.index - b.index;
+        });
+    }
+    var output = [];
+    for (var n = 0; n < kept.length; n++) output.push(kept[n].station);
+    return output;
+}
+
+// "mp3", "aac" (AAC, AAC+, AAC+ v2...) or "" for anything else.
+function codecFamily(codec) {
+    var text = String(codec || "").toUpperCase();
+    if (text.indexOf("MP3") >= 0) return "mp3";
+    if (text.indexOf("AAC") >= 0) return "aac";
+    return "";
+}
+
+function filtersActive(options) {
+    if (!options) return false;
+    return String(options.sort || "popularity") !== "popularity"
+        || String(options.codec || "") !== ""
+        || (Number(options.minBitrate) || 0) > 0;
 }

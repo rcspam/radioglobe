@@ -95,6 +95,17 @@
     <entry name="marqueeMode" type="String">
       <default>loop</default>
     </entry>
+    <!-- The list's filter menu: sort "popularity" / "votes" / "name" /
+         "bitrate", codec "" / "mp3" / "aac", minimum bitrate in kbps. -->
+    <entry name="listSort" type="String">
+      <default>popularity</default>
+    </entry>
+    <entry name="codecFilter" type="String">
+      <default></default>
+    </entry>
+    <entry name="minBitrate" type="Int">
+      <default>0</default>
+    </entry>
     <!-- Not settings: the popup size libplasma saves on every close and reads
          first when the popup opens. Declared so main.qml can seed them at the
          first launch, when a widget dropped from the explorer otherwise opens

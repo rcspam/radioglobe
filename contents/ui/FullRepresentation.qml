@@ -33,7 +33,7 @@ Item {
             random: () => root.playRandom(),
             favorite: () => {
                 const index = stationList.selectedIndex;
-                const target = index >= 0 ? root.listStations[index] : full.mediaPlayer.station;
+                const target = index >= 0 ? root.shownStations[index] : full.mediaPlayer.station;
                 if (target)
                     root.toggleFavorite(target);
             },
@@ -79,14 +79,20 @@ Item {
 
     readonly property bool narrow: width < Kirigami.Units.gridUnit * 32
     readonly property string statusLine: {
+        if (root.notice)
+            return root.notice;
         if (radioBrowser.lastError === "offline")
             return i18n("Radio Browser unreachable, showing cached data");
+        const line = full.contextLine;
+        return root.filtersActive ? i18np("%2 · %1 station after filters", "%2 · %1 stations after filters", root.shownStations.length, line) : line;
+    }
+    readonly property string contextLine: {
         if (full.searching && root.currentCountry)
-            return i18np("%1 match in %2", "%1 matches in %2", root.listStations.length, root.currentCountry.name);
+            return i18np("%1 match in %2", "%1 matches in %2", root.shownStations.length, root.currentCountry.name);
         if (root.currentCountry)
             return i18n("%1 · click another country to browse", root.currentCountry.name);
         if (full.searching)
-            return i18np("%1 match on the globe", "%1 matches on the globe", root.listStations.length);
+            return i18np("%1 match on the globe", "%1 matches on the globe", root.shownStations.length);
         return i18np("%1 signal", "%1 signals", root.worldStations.length);
     }
 
@@ -129,8 +135,8 @@ Item {
     // they get a dot. The playing station is always there, so locating it
     // always lands on a dot.
     readonly property bool searching: root.listSource === "search"
-    readonly property bool filtered: full.searching || root.listSource === "country"
-    readonly property var globeStations: RadioModel.withLocalStations(full.filtered ? root.listStations : root.worldStations, full.filtered ? [] : root.favorites, full.mediaPlayer.station, root.approximateLocations)
+    readonly property bool filtered: full.searching || root.listSource === "country" || root.filtersActive
+    readonly property var globeStations: RadioModel.withLocalStations(full.filtered ? root.shownStations : root.worldStations, full.filtered ? [] : root.favorites, full.mediaPlayer.station, root.approximateLocations)
 
     // The packages to install for the modules main.qml found missing: the
     // command for this distribution when known, else one line per family.
@@ -170,10 +176,11 @@ Item {
     StationMenu {
         id: stationMenu
         objectName: "stationMenu"
-        onPlayRequested: station => root.playFrom(root.listStations, station)
+        onPlayRequested: station => root.playFrom(root.shownStations, station)
         onFavoriteRequested: station => root.toggleFavorite(station)
         onCopyRequested: text => copyHelper.copyText(text)
         onPropertiesRequested: station => stationProperties.open(station)
+        onVoteRequested: station => root.voteFor(station)
     }
 
     StationProperties {
@@ -223,6 +230,9 @@ Item {
                 }
                 onCleared: root.clearSearch()
                 onRandomRequested: root.playRandom()
+                filters: root.listFilters
+                filtersActive: root.filtersActive
+                onFilterRequested: (key, value) => root.setListFilter(key, value)
             }
 
             // The form lives in the configuration dialog ("Add a station"
@@ -293,7 +303,7 @@ Item {
                         // Darker than the sphere in both light and dark
                         // themes, so the night side reads as a shadow.
                         nightColor: Qt.darker(Kirigami.Theme.backgroundColor, 3)
-                        onStationActivated: station => root.playFrom(root.listStations, station)
+                        onStationActivated: station => root.playFrom(root.shownStations, station)
                         onCountryActivated: (code, name) => root.openCountry(code, name)
                     }
 
@@ -366,7 +376,7 @@ Item {
                     objectName: "stationList"
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    stations: root.listStations
+                    stations: root.shownStations
                     currentUuid: player.station ? player.station.uuid : ""
                     favoriteCheck: uuid => root.isFavorite(uuid)
                     currentTab: root.currentTab
@@ -387,7 +397,7 @@ Item {
                         }
                         root.currentTab = index;
                     }
-                    onActivated: station => root.playFrom(root.listStations, station)
+                    onActivated: station => root.playFrom(root.shownStations, station)
                     onFavoriteToggled: station => root.toggleFavorite(station)
                     onRemoved: station => root.removeFromHistory(station)
                     onRenamed: (station, name) => root.renameFavorite(station, name)
