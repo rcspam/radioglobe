@@ -434,6 +434,7 @@ PlasmoidItem {
         station: player.station
         exec: root.exec.run
     }
+    readonly property string marqueeMode: Plasmoid.configuration.marqueeMode
     readonly property string stationLocalTime: localClock.text
     readonly property string stationLocalTimeDescription: localClock.description
 

@@ -348,9 +348,13 @@ Item {
         const container = root._player;
         if (!container)
             return;
-        container.trackChanged.disconnect(root._onTrackChanged);
-        container.playbackStatusChanged.disconnect(root._onStatusChanged);
-        container.volumeChanged.disconnect(root._onVolumeChanged);
+        // At plasmashell's exit the container is already half destroyed and
+        // its signals are gone; there is nothing left to disconnect from.
+        try {
+            container.trackChanged.disconnect(root._onTrackChanged);
+            container.playbackStatusChanged.disconnect(root._onStatusChanged);
+            container.volumeChanged.disconnect(root._onVolumeChanged);
+        } catch (error) {}
         root._player = null;
     }
 
