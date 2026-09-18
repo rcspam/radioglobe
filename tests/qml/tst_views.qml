@@ -108,6 +108,49 @@ TestCase {
         compare(bar.errorText, "");
     }
 
+    function test_player_bar_appends_the_station_local_time() {
+        fakePlayer = ({
+                state: "playing",
+                station: {
+                    uuid: "a",
+                    name: "FIP",
+                    url: "https://s/a.mp3"
+                },
+                track: "",
+                volume: 0.5,
+                muted: false,
+                errorKind: ""
+            });
+        bar.player = fakePlayer;
+        bar.localTime = "14:32";
+        compare(bar.secondaryText, "Live · 14:32");
+        fakePlayer.track = "Song - Artist";
+        bar.player = ({
+                state: "playing",
+                station: fakePlayer.station,
+                track: "Song - Artist",
+                volume: 0.5,
+                muted: false,
+                errorKind: ""
+            });
+        compare(bar.secondaryText, "Song - Artist · 14:32");
+        bar.localTime = "";
+        compare(bar.secondaryText, "Song - Artist");
+        // No station: the hint stays alone whatever the clock says.
+        bar.localTime = "14:32";
+        bar.player = ({
+                state: "idle",
+                station: null,
+                track: "",
+                volume: 0.5,
+                muted: false,
+                errorKind: ""
+            });
+        compare(bar.secondaryText, "Pick a signal on the globe or a station in the list");
+        bar.localTime = "";
+        bar.player = fakePlayer;
+    }
+
     function test_player_bar_error_messages() {
         bar.player = ({
                 state: "error",

@@ -8,6 +8,11 @@ ColumnLayout {
 
     property var player: null
     property bool favorite: false
+    // Local time where the station broadcasts ("14:32"), "" when unknown; it
+    // follows the status or track on the second line. See LocalClock.qml.
+    property string localTime: ""
+    // "Europe/Paris, UTC+2", shown as the tooltip of the station text.
+    property string localTimeDescription: ""
 
     signal playPauseRequested
     signal stopRequested
@@ -33,6 +38,12 @@ ColumnLayout {
     readonly property string secondaryText: {
         if (!bar.player || !bar.player.station)
             return i18n("Pick a signal on the globe or a station in the list");
+        const status = bar.statusText;
+        return bar.localTime !== "" ? status + " · " + bar.localTime : status;
+    }
+    readonly property string statusText: {
+        if (!bar.player || !bar.player.station)
+            return "";
         if (bar.player.track)
             return bar.player.track;
         switch (bar.state) {
@@ -112,6 +123,10 @@ ColumnLayout {
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
+                hoverEnabled: bar.localTimeDescription !== ""
+                PlasmaComponents3.ToolTip.text: bar.localTimeDescription
+                PlasmaComponents3.ToolTip.visible: containsMouse && bar.localTimeDescription !== ""
+                PlasmaComponents3.ToolTip.delay: Kirigami.Units.toolTipDelay
                 onDoubleClicked: mouse => {
                     if (mouse.button === Qt.LeftButton && bar.player && bar.player.station)
                         bar.locateRequested();

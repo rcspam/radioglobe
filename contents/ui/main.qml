@@ -3,6 +3,7 @@ import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
 import org.kde.kirigami as Kirigami
 import "RadioModel.js" as RadioModel
+import "TimeZones.js" as TimeZones
 
 PlasmoidItem {
     id: root
@@ -417,6 +418,16 @@ PlasmoidItem {
         }
     }
 
+    // Local time where the current station broadcasts, for the player's
+    // second line. The zone table is read once at startup, below.
+    LocalClock {
+        id: localClock
+        station: player.station
+        exec: root.exec.run
+    }
+    readonly property string stationLocalTime: localClock.text
+    readonly property string stationLocalTimeDescription: localClock.description
+
     // Runs once Exec is loaded and something is missing; the order in which
     // Component.onCompleted handlers fire is undefined, hence the two triggers.
     property bool _distroAsked: false
@@ -490,6 +501,15 @@ PlasmoidItem {
             radioBrowser.start();
             if (root.isOnDesktop || root.expanded)
                 radioBrowser.expandWorld();
+        });
+        // Same route for the system's zone table (tzdata ships it everywhere).
+        // Without it the player simply shows no local time.
+        exec.run("cat /usr/share/zoneinfo/zone1970.tab", (exitCode, stdout) => {
+            if (exitCode !== 0 || !stdout) {
+                console.warn("[RadioGlobe] cannot read zone1970.tab (exit " + exitCode + "), no station local time");
+                return;
+            }
+            localClock.zones = TimeZones.parseZoneTable(stdout);
         });
     }
 

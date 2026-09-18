@@ -397,6 +397,8 @@ Item {
                     objectName: "playerBar"
                     Layout.fillWidth: true
                     player: full.mediaPlayer
+                    localTime: root.stationLocalTime
+                    localTimeDescription: root.stationLocalTimeDescription
                     favorite: full.mediaPlayer.station ? root.isFavorite(full.mediaPlayer.station.uuid) : false
                     onPlayPauseRequested: full.mediaPlayer.togglePause()
                     onStopRequested: full.mediaPlayer.stop()
