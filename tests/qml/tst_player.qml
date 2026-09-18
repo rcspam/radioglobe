@@ -262,9 +262,14 @@ TestCase {
     // Fresh container: no title at OpenUri time, so the first one that shows up
     // is necessarily the new stream's, even without a trackChanged signal.
     function test_probe_accepts_load_without_track_change() {
+        // The probe (30 ms) must win against the load timeout: with the suite's
+        // 60 ms both can be due in the same stalled event loop turn, in either
+        // order, so this test alone gives the timeout real room.
+        player.loadTimeoutMs = 500;
         const c = startAndAttach(2);
         c.track = "fip-midfi.mp3";
         tryCompare(player, "state", "playing", 1000);
+        player.loadTimeoutMs = 60;
     }
 
     function test_probe_ignores_the_previous_station_title() {

@@ -17,6 +17,10 @@ Item {
         })
     property bool playing: typeof player !== "undefined" && player.state === "playing"
     property bool invertWheel: false
+    // Milliseconds of hover before the tooltip opens. Plasma's ToolTipArea
+    // has its own delay (700 ms, plasmarc) and no property for it, but a
+    // public showToolTip(): the icon calls it itself, sooner.
+    property int toolTipDelay: 300
     property string iconName: "map-globe"
     // "#rrggbb" or empty for the theme colour.
     property string iconColor: ""
@@ -32,14 +36,27 @@ Item {
     // the pointer leaves the icon). Walk up to it and turn that on, so the
     // tooltip's buttons can be clicked. Anything up the chain with the two
     // ToolTipArea properties counts; nothing found means a plain tooltip.
+    property var _toolTipArea: null
     function makeToolTipAreaInteractive() {
         let item = compact.parent;
         for (let depth = 0; item && depth < 8; depth++) {
             if ("interactive" in item && "mainItem" in item) {
                 item.interactive = true;
+                compact._toolTipArea = item;
                 return;
             }
             item = item.parent;
+        }
+        compact._toolTipArea = null;
+    }
+
+    Timer {
+        id: toolTipTimer
+        interval: compact.toolTipDelay
+        onTriggered: {
+            const area = compact._toolTipArea;
+            if (area && typeof area.showToolTip === "function")
+                area.showToolTip();
         }
     }
     onParentChanged: compact.makeToolTipAreaInteractive()
@@ -81,6 +98,10 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        // At 700 ms or more Plasma opens the tooltip itself.
+        onEntered: if (compact.toolTipDelay < 700)
+            toolTipTimer.restart()
+        onExited: toolTipTimer.stop()
         onClicked: mouse => {
             if (mouse.button === Qt.MiddleButton)
                 compact.actions.random();

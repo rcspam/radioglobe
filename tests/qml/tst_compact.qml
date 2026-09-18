@@ -37,6 +37,10 @@ TestCase {
         objectName: "org.kde.desktop-CompactApplet"
         property bool interactive: false
         property var mainItem: null
+        property int shown: 0
+        function showToolTip() {
+            shown++;
+        }
         // Away from the icon under test, out of the way of its wheel events.
         x: 120
         y: 120
@@ -57,6 +61,39 @@ TestCase {
             height: 32
         });
         tryCompare(fakeToolTipArea, "interactive", true);
+        icon.destroy();
+    }
+
+    // Plasma opens the tooltip after its own 700 ms; the icon asks the area
+    // to show it after the configured delay instead.
+    function test_icon_opens_the_tooltip_after_its_own_delay() {
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/CompactRepresentation.qml"));
+        verify(component.status === Component.Ready, component.errorString());
+        const icon = component.createObject(fakeCompactParent, {
+            width: 32,
+            height: 32,
+            toolTipDelay: 60
+        });
+        fakeToolTipArea.shown = 0;
+        tryCompare(fakeToolTipArea, "interactive", true);
+        // Leaving before the delay: nothing.
+        mouseMove(icon, 16, 16);
+        mouseMove(fakeToolTipArea, 55, 55);
+        wait(120);
+        compare(fakeToolTipArea.shown, 0);
+        // Staying: one call, once.
+        mouseMove(icon, 16, 16);
+        compare(fakeToolTipArea.shown, 0);
+        tryCompare(fakeToolTipArea, "shown", 1);
+        wait(120);
+        compare(fakeToolTipArea.shown, 1);
+        // At Plasma's own delay the icon stays out of it.
+        mouseMove(fakeToolTipArea, 55, 55);
+        icon.toolTipDelay = 700;
+        mouseMove(icon, 16, 16);
+        wait(120);
+        compare(fakeToolTipArea.shown, 1);
+        mouseMove(fakeToolTipArea, 55, 55);
         icon.destroy();
     }
 

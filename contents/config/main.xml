@@ -69,6 +69,11 @@
     <entry name="invertWheel" type="Bool">
       <default>false</default>
     </entry>
+    <!-- Milliseconds before the icon's tooltip opens; Plasma's own delay
+         (700 by default) still applies above it, so 700 means "Plasma's". -->
+    <entry name="toolTipDelay" type="Int">
+      <default>300</default>
+    </entry>
     <entry name="showDayNight" type="Bool">
       <default>true</default>
     </entry>

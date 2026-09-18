@@ -21,6 +21,7 @@ KCM.SimpleKCM {
     property alias cfg_sendClicks: sendClicks.checked
     property alias cfg_approximateLocations: approximateLocations.checked
     property alias cfg_invertWheel: invertWheel.checked
+    property alias cfg_toolTipDelay: toolTipDelay.value
     property alias cfg_showDayNight: showDayNight.checked
     property alias cfg_restoreLastStation: restoreLastStation.checked
     property alias cfg_autoplayLastStation: autoplayLastStation.checked
@@ -188,6 +189,17 @@ KCM.SimpleKCM {
             id: invertWheel
             Kirigami.FormData.label: i18n("Mouse wheel on the icon:")
             text: i18n("Invert the direction for the volume")
+        }
+        QQC2.SpinBox {
+            id: toolTipDelay
+            objectName: "toolTipDelay"
+            Kirigami.FormData.label: i18n("Icon tooltip appears after:")
+            from: 0
+            // Plasma opens it on its own at its usual 700 ms anyway.
+            to: 700
+            stepSize: 50
+            textFromValue: (value, locale) => i18n("%1 ms", value)
+            valueFromText: (text, locale) => parseInt(text, 10) || 0
         }
         QQC2.CheckBox {
             id: sendClicks

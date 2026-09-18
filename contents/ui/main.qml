@@ -534,6 +534,7 @@ PlasmoidItem {
     compactRepresentation: CompactRepresentation {
         vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
         invertWheel: Plasmoid.configuration.invertWheel
+        toolTipDelay: Plasmoid.configuration.toolTipDelay
         iconName: Plasmoid.configuration.icon
         iconColor: Plasmoid.configuration.iconColor
         badgeColor: Plasmoid.configuration.badgeColor
