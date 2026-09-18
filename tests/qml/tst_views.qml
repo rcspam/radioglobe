@@ -622,6 +622,8 @@ TestCase {
         tip.nextRequested.connect(() => calls.push("next"));
         tip.previousRequested.connect(() => calls.push("previous"));
         tip.stopRequested.connect(() => calls.push("stop"));
+        tip.muteRequested.connect(() => calls.push("mute"));
+        tip.volumeRequested.connect(value => calls.push("volume " + value.toFixed(2)));
         compare(findChild(tip, "tipMain").text, "Tooltip FM");
         compare(findChild(tip, "tipSub").text, "Now: a song");
         compare(findChild(tip, "tipPlayPause").icon.name, "media-playback-pause");
@@ -629,7 +631,33 @@ TestCase {
         mouseClick(findChild(tip, "tipNext"));
         mouseClick(findChild(tip, "tipPrevious"));
         mouseClick(findChild(tip, "tipStop"));
-        compare(calls, ["playPause", "next", "previous", "stop"]);
+        mouseClick(findChild(tip, "tipMute"));
+        compare(calls, ["playPause", "next", "previous", "stop", "mute"]);
+        const slider = findChild(tip, "tipVolume");
+        compare(slider.value, 0.5);
+        compare(findChild(tip, "tipPercent").text, "50%");
+        compare(findChild(tip, "tipMute").icon.name, "audio-volume-high");
+        // Dragging the handle asks the owner for the new volume.
+        wait(50);
+        mousePress(slider, slider.width / 2, slider.height / 2);
+        mouseMove(slider, slider.width * 0.9, slider.height / 2);
+        mouseRelease(slider, slider.width * 0.9, slider.height / 2);
+        // Press then move: one or two reports, all volumes, the last near 0.9.
+        verify(calls.length >= 6 && calls.slice(5).every(c => c.indexOf("volume 0.") === 0), JSON.stringify(calls));
+        verify(parseFloat(calls[calls.length - 1].slice(7)) > 0.6, JSON.stringify(calls));
+        tip.player = ({
+                state: "playing",
+                station: {
+                    uuid: "t",
+                    name: "Tooltip FM"
+                },
+                track: "",
+                volume: 1,
+                muted: true,
+                errorKind: ""
+            });
+        compare(findChild(tip, "tipPercent").text, "100%");
+        compare(findChild(tip, "tipMute").icon.name, "audio-volume-muted");
         tip.player = ({
                 state: "idle",
                 station: null,

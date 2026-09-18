@@ -18,6 +18,8 @@ Item {
     signal nextRequested
     signal previousRequested
     signal stopRequested
+    signal volumeRequested(real value)
+    signal muteRequested
 
     readonly property bool hasStation: player && player.station ? true : false
     readonly property string mainText: hasStation ? String(player.station.name) : i18n("RadioGlobe")
@@ -78,7 +80,9 @@ Item {
             text: tip.subText
             opacity: 0.75
         }
+        // Transport, then mute, volume and its percentage, as in PlayerBar.
         RowLayout {
+            Layout.fillWidth: true
             spacing: 0
 
             PlasmaComponents3.ToolButton {
@@ -108,6 +112,37 @@ Item {
                 enabled: tip.player && (tip.player.state === "playing" || tip.player.state === "paused" || tip.player.state === "loading") ? true : false
                 onClicked: tip.stopRequested()
                 Accessible.name: i18n("Stop")
+            }
+            PlasmaComponents3.ToolButton {
+                objectName: "tipMute"
+                icon.name: tip.player && tip.player.muted ? "audio-volume-muted" : "audio-volume-high"
+                onClicked: tip.muteRequested()
+                Accessible.name: i18n("Mute")
+            }
+            PlasmaComponents3.Slider {
+                objectName: "tipVolume"
+                Layout.fillWidth: true
+                Layout.minimumWidth: Kirigami.Units.gridUnit * 4
+                Layout.preferredWidth: Kirigami.Units.gridUnit * 8
+                from: 0
+                to: 1
+                stepSize: 0.01
+                value: tip.player ? Number(tip.player.volume) || 0 : 0
+                onMoved: tip.volumeRequested(value)
+            }
+            TextMetrics {
+                id: percentMetrics
+                font: percentLabel.font
+                text: "100%"
+            }
+            PlasmaComponents3.Label {
+                id: percentLabel
+                objectName: "tipPercent"
+                Layout.preferredWidth: percentMetrics.width
+                Layout.minimumWidth: percentMetrics.width
+                horizontalAlignment: Text.AlignRight
+                text: tip.player ? Math.round((Number(tip.player.volume) || 0) * 100) + "%" : ""
+                opacity: 0.75
             }
         }
     }

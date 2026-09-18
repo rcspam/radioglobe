@@ -103,6 +103,8 @@ PlasmoidItem {
         onNextRequested: root.next()
         onPreviousRequested: root.previous()
         onStopRequested: player.stop()
+        onVolumeRequested: value => player.setVolume(value)
+        onMuteRequested: player.toggleMute()
     }
     // A launcher, not a notifier: staying passive would hide the icon in the
     // system tray whenever nothing is playing, which is exactly when the user
