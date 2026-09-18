@@ -168,6 +168,32 @@ TestCase {
         marquee.text = "short";
     }
 
+    function test_marquee_label_modes() {
+        marquee.pauseMs = 10;
+        marquee.pixelsPerSecond = 2000;
+        marquee.text = "A station name far too long for sixty pixels of width";
+        wait(50);
+        // Loop: the text runs past its own overflow, a copy following it.
+        compare(marquee.mode, "loop");
+        const overflow = marquee.implicitWidth - marquee.width;
+        tryVerify(() => marquee.textX < -overflow - 5, 1000);
+        // Bounce: never further than the overflow.
+        marquee.mode = "bounce";
+        compare(marquee.textX, 0);
+        tryVerify(() => marquee.textX < -5, 1000);
+        wait(100);
+        verify(marquee.textX >= -overflow - 0.5, "bounce went past the end: " + marquee.textX);
+        // None: still overflowing, but elided and still.
+        marquee.mode = "none";
+        compare(marquee.scrolling, false);
+        compare(marquee.textX, 0);
+        compare(marquee.overflowing, true);
+        marquee.mode = "loop";
+        marquee.pauseMs = 2000;
+        marquee.pixelsPerSecond = 30;
+        marquee.text = "short";
+    }
+
     function test_marquee_label_goes_back_to_the_start_when_it_stops() {
         marquee.pauseMs = 10;
         marquee.pixelsPerSecond = 2000;

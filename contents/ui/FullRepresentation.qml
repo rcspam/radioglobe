@@ -399,6 +399,7 @@ Item {
                     player: full.mediaPlayer
                     localTime: root.stationLocalTime
                     localTimeDescription: root.stationLocalTimeDescription
+                    marqueeMode: Plasmoid.configuration.marqueeMode
                     favorite: full.mediaPlayer.station ? root.isFavorite(full.mediaPlayer.station.uuid) : false
                     onPlayPauseRequested: full.mediaPlayer.togglePause()
                     onStopRequested: full.mediaPlayer.stop()

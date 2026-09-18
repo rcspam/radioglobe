@@ -99,6 +99,7 @@ PlasmoidItem {
         player: player
         localTime: root.stationLocalTime
         localTimeDescription: root.stationLocalTimeDescription
+        marqueeMode: Plasmoid.configuration.marqueeMode
         onPlayPauseRequested: player.togglePause()
         onNextRequested: root.next()
         onPreviousRequested: root.previous()

@@ -13,6 +13,8 @@ ColumnLayout {
     property string localTime: ""
     // "Europe/Paris, UTC+2", the clock's tooltip.
     property string localTimeDescription: ""
+    // How over-long lines behave, see MarqueeLabel.mode.
+    property string marqueeMode: "loop"
 
     signal playPauseRequested
     signal stopRequested
@@ -106,6 +108,7 @@ ColumnLayout {
                     // narrow for them (MarqueeLabel), instead of eliding.
                     MarqueeLabel {
                         objectName: "nameLabel"
+                        mode: bar.marqueeMode
                         Layout.fillWidth: true
                         text: bar.primaryText
                         font.bold: true
@@ -128,6 +131,7 @@ ColumnLayout {
                 }
                 MarqueeLabel {
                     objectName: "statusLabel"
+                    mode: bar.marqueeMode
                     Layout.fillWidth: true
                     text: bar.secondaryText
                     opacity: 0.75

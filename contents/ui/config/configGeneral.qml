@@ -27,6 +27,7 @@ KCM.SimpleKCM {
     property alias cfg_autoplayLastStation: autoplayLastStation.checked
     property string cfg_icon: "map-globe"
     property string cfg_nextPreviousSource: "queue"
+    property string cfg_marqueeMode: "loop"
     // Empty means "theme colour"; the check boxes drive that.
     property string cfg_iconColor: ""
     property string cfg_badgeColor: ""
@@ -210,6 +211,25 @@ KCM.SimpleKCM {
         Kirigami.Separator {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: i18n("Appearance")
+        }
+        QQC2.RadioButton {
+            objectName: "marqueeLoop"
+            Kirigami.FormData.label: i18n("Names and titles too long to fit:")
+            text: i18n("Scroll in a loop")
+            checked: page.cfg_marqueeMode !== "bounce" && page.cfg_marqueeMode !== "none"
+            onClicked: page.cfg_marqueeMode = "loop"
+        }
+        QQC2.RadioButton {
+            objectName: "marqueeBounce"
+            text: i18n("Scroll back and forth")
+            checked: page.cfg_marqueeMode === "bounce"
+            onClicked: page.cfg_marqueeMode = "bounce"
+        }
+        QQC2.RadioButton {
+            objectName: "marqueeNone"
+            text: i18n("Cut with an ellipsis")
+            checked: page.cfg_marqueeMode === "none"
+            onClicked: page.cfg_marqueeMode = "none"
         }
         RowLayout {
             Kirigami.FormData.label: i18n("Panel icon:")

@@ -13,6 +13,8 @@ Item {
     // Local time where the station broadcasts, after its name (LocalClock.qml).
     property string localTime: ""
     property string localTimeDescription: ""
+    // How over-long lines behave, see MarqueeLabel.mode.
+    property string marqueeMode: "loop"
 
     signal playPauseRequested
     signal nextRequested
@@ -55,6 +57,7 @@ Item {
 
             MarqueeLabel {
                 objectName: "tipMain"
+                mode: tip.marqueeMode
                 Layout.fillWidth: true
                 text: tip.mainText
                 font.bold: true
@@ -75,6 +78,7 @@ Item {
         }
         MarqueeLabel {
             objectName: "tipSub"
+            mode: tip.marqueeMode
             Layout.fillWidth: true
             Layout.maximumWidth: Kirigami.Units.gridUnit * 20
             text: tip.subText

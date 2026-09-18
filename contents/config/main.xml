@@ -90,6 +90,11 @@
     <entry name="nextPreviousSource" type="String">
       <default>queue</default>
     </entry>
+    <!-- Station names and titles too wide for the player or the tooltip:
+         "loop" (ticker), "bounce" (back and forth) or "none" (elided). -->
+    <entry name="marqueeMode" type="String">
+      <default>loop</default>
+    </entry>
     <!-- Not settings: the popup size libplasma saves on every close and reads
          first when the popup opens. Declared so main.qml can seed them at the
          first launch, when a widget dropped from the explorer otherwise opens
