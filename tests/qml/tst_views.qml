@@ -108,8 +108,10 @@ TestCase {
         compare(bar.errorText, "");
     }
 
-    function test_player_bar_appends_the_station_local_time() {
-        fakePlayer = ({
+    function test_player_bar_shows_the_station_local_time_after_the_name() {
+        const clock = findChild(bar, "clockLabel");
+        verify(clock !== null, "clockLabel not found");
+        bar.player = ({
                 state: "playing",
                 station: {
                     uuid: "a",
@@ -121,23 +123,13 @@ TestCase {
                 muted: false,
                 errorKind: ""
             });
-        bar.player = fakePlayer;
+        compare(clock.visible, false);
         bar.localTime = "14:32";
-        compare(bar.secondaryText, "Live · 14:32");
-        fakePlayer.track = "Song - Artist";
-        bar.player = ({
-                state: "playing",
-                station: fakePlayer.station,
-                track: "Song - Artist",
-                volume: 0.5,
-                muted: false,
-                errorKind: ""
-            });
-        compare(bar.secondaryText, "Song - Artist · 14:32");
-        bar.localTime = "";
-        compare(bar.secondaryText, "Song - Artist");
-        // No station: the hint stays alone whatever the clock says.
-        bar.localTime = "14:32";
+        bar.localTimeDescription = "Europe/Paris, UTC+2";
+        compare(clock.visible, true);
+        compare(clock.text, "14:32");
+        compare(bar.secondaryText, "Live");
+        // No station: no clock, whatever LocalClock still holds.
         bar.player = ({
                 state: "idle",
                 station: null,
@@ -146,8 +138,57 @@ TestCase {
                 muted: false,
                 errorKind: ""
             });
-        compare(bar.secondaryText, "Pick a signal on the globe or a station in the list");
+        compare(clock.visible, false);
+        bar.player = fakePlayer;
         bar.localTime = "";
+        bar.localTimeDescription = "";
+    }
+
+    Ui.MarqueeLabel {
+        id: marquee
+        width: 60
+        text: "short"
+    }
+
+    function test_marquee_label_scrolls_only_when_the_text_overflows() {
+        wait(50);
+        compare(marquee.overflowing, false);
+        compare(marquee.scrolling, false);
+        marquee.text = "A station name far too long for sixty pixels of width";
+        wait(50);
+        compare(marquee.overflowing, true);
+        compare(marquee.scrolling, true);
+        // Widen it: the text fits again and sits back at the start.
+        marquee.width = 1000;
+        wait(50);
+        compare(marquee.overflowing, false);
+        compare(marquee.scrolling, false);
+        compare(marquee.textX, 0);
+        marquee.width = 60;
+        marquee.text = "short";
+    }
+
+    function test_player_bar_lines_scroll_when_narrow() {
+        const name = findChild(bar, "nameLabel");
+        const status = findChild(bar, "statusLabel");
+        verify(name !== null && status !== null, "labels not found");
+        bar.player = ({
+                state: "playing",
+                station: {
+                    uuid: "a",
+                    name: "Radio with a deliberately very long name that overflows the bar",
+                    url: "https://s/a.mp3"
+                },
+                track: "A track title that is also far too long to fit in the narrow player",
+                volume: 0.5,
+                muted: false,
+                errorKind: ""
+            });
+        bar.width = 200;
+        wait(50);
+        compare(name.overflowing, true);
+        compare(status.overflowing, true);
+        bar.width = 400;
         bar.player = fakePlayer;
     }
 

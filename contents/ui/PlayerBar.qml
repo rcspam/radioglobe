@@ -8,10 +8,10 @@ ColumnLayout {
 
     property var player: null
     property bool favorite: false
-    // Local time where the station broadcasts ("14:32"), "" when unknown; it
-    // follows the status or track on the second line. See LocalClock.qml.
+    // Local time where the station broadcasts ("14:32"), "" when unknown;
+    // shown at the end of the station name line. See LocalClock.qml.
     property string localTime: ""
-    // "Europe/Paris, UTC+2", shown as the tooltip of the station text.
+    // "Europe/Paris, UTC+2", the clock's tooltip.
     property string localTimeDescription: ""
 
     signal playPauseRequested
@@ -38,12 +38,6 @@ ColumnLayout {
     readonly property string secondaryText: {
         if (!bar.player || !bar.player.station)
             return i18n("Pick a signal on the globe or a station in the list");
-        const status = bar.statusText;
-        return bar.localTime !== "" ? status + " · " + bar.localTime : status;
-    }
-    readonly property string statusText: {
-        if (!bar.player || !bar.player.station)
-            return "";
         if (bar.player.track)
             return bar.player.track;
         switch (bar.state) {
@@ -104,18 +98,38 @@ ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
 
-                PlasmaComponents3.Label {
+                RowLayout {
                     Layout.fillWidth: true
-                    text: bar.primaryText
-                    textFormat: Text.PlainText
-                    elide: Text.ElideRight
-                    font.bold: true
+                    spacing: Kirigami.Units.smallSpacing
+
+                    // Both lines slide back and forth when the bar is too
+                    // narrow for them (MarqueeLabel), instead of eliding.
+                    MarqueeLabel {
+                        objectName: "nameLabel"
+                        Layout.fillWidth: true
+                        text: bar.primaryText
+                        font.bold: true
+                    }
+                    PlasmaComponents3.Label {
+                        id: clockLabel
+                        objectName: "clockLabel"
+                        visible: bar.localTime !== "" && bar.player && bar.player.station ? true : false
+                        text: bar.localTime
+                        textFormat: Text.PlainText
+                        opacity: 0.75
+                        PlasmaComponents3.ToolTip.text: bar.localTimeDescription
+                        PlasmaComponents3.ToolTip.visible: clockHover.hovered && bar.localTimeDescription !== ""
+                        PlasmaComponents3.ToolTip.delay: Kirigami.Units.toolTipDelay
+                        // A handler, so the MouseArea below keeps its clicks.
+                        HoverHandler {
+                            id: clockHover
+                        }
+                    }
                 }
-                PlasmaComponents3.Label {
+                MarqueeLabel {
+                    objectName: "statusLabel"
                     Layout.fillWidth: true
                     text: bar.secondaryText
-                    textFormat: Text.PlainText
-                    elide: Text.ElideRight
                     opacity: 0.75
                 }
             }
@@ -123,10 +137,6 @@ ColumnLayout {
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                hoverEnabled: bar.localTimeDescription !== ""
-                PlasmaComponents3.ToolTip.text: bar.localTimeDescription
-                PlasmaComponents3.ToolTip.visible: containsMouse && bar.localTimeDescription !== ""
-                PlasmaComponents3.ToolTip.delay: Kirigami.Units.toolTipDelay
                 onDoubleClicked: mouse => {
                     if (mouse.button === Qt.LeftButton && bar.player && bar.player.station)
                         bar.locateRequested();
