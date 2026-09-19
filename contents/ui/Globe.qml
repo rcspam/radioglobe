@@ -66,7 +66,7 @@ Item {
     property bool paintDirty: false
     // While the globe moves the canvas paints without antialiasing (about a
     // third cheaper); the frame painted when it stops is antialiased again.
-    readonly property bool moving: dragHandler.active || kineticAnimation.running || zoomAnimation.running
+    readonly property bool moving: dragHandler.active || kineticAnimation.running || zoomAnimation.running || wheelAnimation.running
     onMovingChanged: if (!moving)
         root.schedulePaint()
     readonly property alias paintCount: paintCounter.value
@@ -186,12 +186,53 @@ Item {
     // A second click before the first lands starts from the first's target,
     // so clicks compound; any wheel, drag or focus cuts the animation short.
     readonly property real zoomStep: 2
-    readonly property real zoomTarget: zoomAnimation.running ? zoomAnimation.to : globeScale
+    // Percent of zoom per wheel notch (a setting): 25 means x1.25 a notch.
+    property int wheelZoomStep: 25
+    readonly property real zoomTarget: zoomAnimation.running ? zoomAnimation.to : (wheelAnimation.running ? wheelTargetScale : globeScale)
     readonly property bool canZoomIn: zoomTarget < maximumScale - 0.001
     readonly property bool canZoomOut: zoomTarget > minimumScale + 0.001
 
     function stopZoomAnimation() {
         zoomAnimation.stop();
+        if (wheelAnimation.running) {
+            wheelAnimation.stop();
+            centreLongitude = RadioModel.wrapLongitude(centreLongitude);
+        }
+    }
+
+    // Wheel zoom: a short glide of scale and centre together, so the place
+    // under the cursor stays there while the globe grows. Notches that
+    // arrive during the glide compound from its target, not from wherever
+    // the glide has got to, so a fast spin lands where a slow one would.
+    property real wheelTargetScale: 1
+    property real wheelTargetLatitude: 0
+    property real wheelTargetLongitude: 0
+
+    function wheelZoom(x, y, angleDelta) {
+        var baseScale = wheelAnimation.running ? wheelTargetScale : globeScale;
+        var baseLatitude = wheelAnimation.running ? wheelTargetLatitude : centreLatitude;
+        var baseLongitude = wheelAnimation.running ? wheelTargetLongitude : centreLongitude;
+        var factor = Math.pow(1 + Math.max(1, wheelZoomStep) / 100, angleDelta / 120);
+        var nextScale = RadioModel.clamp(baseScale * factor, minimumScale, maximumScale);
+        var centre = RadioModel.zoomAnchoredCentre(x, y, width, height, baseScale, nextScale, baseLatitude, baseLongitude);
+        wheelTargetScale = nextScale;
+        wheelTargetLatitude = centre.latitude;
+        // The shortest way round: a target at 179 from a centre at -179 is
+        // 2 degrees away, not 358. Wrapped back when the glide ends.
+        var longitude = centre.longitude;
+        while (longitude - centreLongitude > 180)
+            longitude -= 360;
+        while (longitude - centreLongitude < -180)
+            longitude += 360;
+        wheelTargetLongitude = longitude;
+        wheelAnimation.stop();
+        wheelScaleAnimation.from = globeScale;
+        wheelScaleAnimation.to = nextScale;
+        wheelLatitudeAnimation.from = centreLatitude;
+        wheelLatitudeAnimation.to = centre.latitude;
+        wheelLongitudeAnimation.from = centreLongitude;
+        wheelLongitudeAnimation.to = longitude;
+        wheelAnimation.start();
     }
 
     function zoomBy(factor) {
@@ -779,6 +820,33 @@ Item {
         easing.type: Easing.OutCubic
     }
 
+    ParallelAnimation {
+        id: wheelAnimation
+        onFinished: root.centreLongitude = RadioModel.wrapLongitude(root.centreLongitude)
+
+        NumberAnimation {
+            id: wheelScaleAnimation
+            target: root
+            property: "globeScale"
+            duration: 120
+            easing.type: Easing.OutCubic
+        }
+        NumberAnimation {
+            id: wheelLatitudeAnimation
+            target: root
+            property: "centreLatitude"
+            duration: 120
+            easing.type: Easing.OutCubic
+        }
+        NumberAnimation {
+            id: wheelLongitudeAnimation
+            target: root
+            property: "centreLongitude"
+            duration: 120
+            easing.type: Easing.OutCubic
+        }
+    }
+
     Canvas {
         id: sphereCanvas
         anchors.fill: parent
@@ -1031,17 +1099,12 @@ Item {
         onWheel: function (event) {
             root.interactionStarted();
             root.stopKineticRotation(true);
-            root.stopZoomAnimation();
+            zoomAnimation.stop();
             root.suppressNextTap = false;
             root.hoveredStation = null;
-            var factor = Math.exp(event.angleDelta.y / 360);
-            var nextScale = RadioModel.clamp(root.globeScale * factor, root.minimumScale, root.maximumScale);
             // The place under the cursor stays under the cursor, so zooming
             // into a city is a matter of pointing at it.
-            var centre = RadioModel.zoomAnchoredCentre(point.position.x, point.position.y, root.width, root.height, root.globeScale, nextScale, root.centreLatitude, root.centreLongitude);
-            root.globeScale = nextScale;
-            root.centreLatitude = centre.latitude;
-            root.centreLongitude = centre.longitude;
+            root.wheelZoom(point.position.x, point.position.y, event.angleDelta.y);
             event.accepted = true;
         }
     }

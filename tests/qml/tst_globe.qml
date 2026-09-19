@@ -415,10 +415,25 @@ TestCase {
     // is under the 12 px hit radius, so the ceiling has to sit higher.
     function test_wheelZoomStepAndCeiling() {
         mouseWheel(globe, 400, 300, 0, 120);
-        fuzzyCompare(globe.globeScale, Math.exp(120 / 360), 0.001);
+        // A glide, not a jump, and one notch is the configured step.
+        verify(globe.globeScale < 1.25, "animated, not jumped: " + globe.globeScale);
+        tryCompare(globe, "globeScale", 1.25);
         for (var i = 0; i < 60; i++)
             mouseWheel(globe, 400, 300, 0, 120);
-        compare(globe.globeScale, 1024);
+        tryCompare(globe, "globeScale", 1024);
+    }
+
+    // Notches during the glide compound from its target: a fast spin lands
+    // where a slow one would.
+    function test_wheelNotchesCompoundFromTheTarget() {
+        mouseWheel(globe, 400, 300, 0, 120);
+        mouseWheel(globe, 400, 300, 0, 120);
+        mouseWheel(globe, 400, 300, 0, -120);
+        tryCompare(globe, "globeScale", 1.25);
+        globe.wheelZoomStep = 50;
+        mouseWheel(globe, 400, 300, 0, 120);
+        tryCompare(globe, "globeScale", 1.875);
+        globe.wheelZoomStep = 25;
     }
 
     function test_zoomButtonsStepByTwoAndAnimate() {
@@ -464,21 +479,35 @@ TestCase {
 
     function test_wheelInterruptsTheButtonZoom() {
         globe.zoomIn();
+        wait(30);
+        const beforeWheel = globe.globeScale;
         mouseWheel(globe, 400, 300, 0, -120);
-        const afterWheel = globe.globeScale;
         wait(250);
-        compare(globe.globeScale, afterWheel);
-        verify(afterWheel < 2, "the animation did not carry on to 2: " + afterWheel);
+        // The button's glide to 2 is dropped; the wheel's own target wins.
+        fuzzyCompare(globe.globeScale, beforeWheel / 1.25, 0.001);
     }
 
     function test_wheelZoomKeepsThePointUnderTheCursor() {
         var radius = globe.radius();
         var anchor = RadioModel.unproject((560 - 400) / radius, -(210 - 300) / radius, 0, 0);
-        for (var i = 0; i < 20; i++)
+        for (var i = 0; i < 30; i++)
             mouseWheel(globe, 560, 210, 0, 120);
+        tryVerify(() => !globe.moving, 1000);
         verify(globe.globeScale > 500, "reached a deep zoom: " + globe.globeScale);
         var position = RadioModel.stationPosition(anchor, globe.width, globe.height, globe.globeScale, globe.centreLatitude, globe.centreLongitude);
         verify(Math.abs(position.x - 560) < 1 && Math.abs(position.y - 210) < 1, JSON.stringify(position));
+    }
+
+    // Zooming near the date line: the centre takes the short way round and
+    // ends up wrapped.
+    function test_wheelZoomAcrossTheDateLine() {
+        globe.centreLongitude = -179;
+        globe.globeScale = 4;
+        for (var i = 0; i < 5; i++)
+            mouseWheel(globe, 250, 300, 0, 120);
+        tryVerify(() => !globe.moving, 1000);
+        verify(globe.centreLongitude >= -180 && globe.centreLongitude <= 180, "wrapped: " + globe.centreLongitude);
+        verify(Math.abs(globe.centreLongitude) > 170, "still near the date line: " + globe.centreLongitude);
     }
 
     function test_offscreenMarkersAreSkippedButEdgeMarkersRemainClickable() {

@@ -58,6 +58,7 @@ PlasmoidItem {
     readonly property bool pinned: Plasmoid.configuration.pinned
     readonly property bool approximateLocations: Plasmoid.configuration.approximateLocations
     readonly property bool showDayNight: Plasmoid.configuration.showDayNight
+    readonly property int wheelZoomStep: Plasmoid.configuration.wheelZoomStep
 
     function setPinned(value) {
         Plasmoid.configuration.pinned = value;

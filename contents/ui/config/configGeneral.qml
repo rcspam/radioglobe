@@ -23,6 +23,7 @@ KCM.SimpleKCM {
     property alias cfg_invertWheel: invertWheel.checked
     property alias cfg_toolTipDelay: toolTipDelay.value
     property alias cfg_showDayNight: showDayNight.checked
+    property alias cfg_wheelZoomStep: wheelZoomStep.value
     property alias cfg_restoreLastStation: restoreLastStation.checked
     property alias cfg_autoplayLastStation: autoplayLastStation.checked
     property string cfg_icon: "map-globe"
@@ -109,6 +110,16 @@ KCM.SimpleKCM {
             // asking for more only promises stations that never arrive.
             to: 5000
             stepSize: 500
+        }
+        QQC2.SpinBox {
+            id: wheelZoomStep
+            objectName: "wheelZoomStep"
+            Kirigami.FormData.label: i18n("Zoom per mouse wheel notch:")
+            from: 5
+            to: 100
+            stepSize: 5
+            textFromValue: (value, locale) => i18n("%1 %", value)
+            valueFromText: (text, locale) => parseInt(text, 10) || 5
         }
         QQC2.SpinBox {
             id: maxCountryStations

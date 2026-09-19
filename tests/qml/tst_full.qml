@@ -63,6 +63,7 @@ TestCase {
         property var favorites: []
         property bool approximateLocations: false
         property bool showDayNight: true
+        property int wheelZoomStep: 25
         property bool expanded: true
         property bool isOnDesktop: false
         property bool pinned: false
