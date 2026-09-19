@@ -173,6 +173,20 @@ Item {
     }
 
     // One menu and one properties panel for every station of the popup.
+    // Menus are popups inside the widget's window: hidden with it, they
+    // would still be open when it shows again. Close them with it.
+    Connections {
+        target: root
+        function onExpandedChanged() {
+            if (!root.expanded)
+                full.closeMenus();
+        }
+    }
+    function closeMenus() {
+        searchBar.closeMenu();
+        stationMenu.close();
+    }
+
     StationMenu {
         id: stationMenu
         objectName: "stationMenu"
@@ -233,6 +247,7 @@ Item {
                 filters: root.listFilters
                 filtersActive: root.filtersActive
                 onFilterRequested: (key, value) => root.setListFilter(key, value)
+                onFiltersResetRequested: root.resetListFilters()
             }
 
             // The form lives in the configuration dialog ("Add a station"

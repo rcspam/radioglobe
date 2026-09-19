@@ -131,6 +131,10 @@ TestCase {
         function voteFor(station) {
             root.calls.push("vote:" + station.uuid);
         }
+
+        function resetListFilters() {
+            root.calls.push("resetFilters");
+        }
     }
 
     QtObject {
@@ -490,6 +494,18 @@ TestCase {
         // Emptying the field asks the plasmoid to drop the search.
         searchBar.text = "";
         compare(root.calls.indexOf("clearSearch") >= 0, true, JSON.stringify(root.calls));
+        // The clear button does the same, and only that: no search, and not
+        // the selected row either.
+        const field = findChild(searchBar, "searchField");
+        const clear = field.rightActions[0];
+        compare(clear.visible, false);
+        searchBar.text = "rock";
+        compare(clear.visible, true);
+        findChild(loader.item, "stationList").selectedIndex = 0;
+        const before = root.calls.length;
+        clear.trigger();
+        compare(searchBar.text, "");
+        compare(root.calls.slice(before), ["clearSearch"]);
     }
 
     function test_globe_country_click_reaches_root() {
@@ -625,6 +641,58 @@ TestCase {
                 minBitrate: 0
             });
         compare(loader.item.statusLine, "2 signals");
+    }
+
+    // The button toggles the menu, the widget's popup closing closes it and
+    // it does not come back with the popup, Reset asks for the defaults.
+    function test_filter_menu_opens_closes_and_stays_closed() {
+        const searchBar = findChild(loader.item, "searchBar");
+        const button = findChild(searchBar, "filterButton");
+        const menu = findChild(searchBar, "filterMenu");
+        root.expanded = true;
+        mouseClick(button);
+        tryCompare(menu, "visible", true);
+        mouseClick(button);
+        tryCompare(menu, "visible", false);
+        mouseClick(button);
+        tryCompare(menu, "visible", true);
+        root.expanded = false;
+        tryCompare(menu, "visible", false);
+        root.expanded = true;
+        wait(50);
+        compare(menu.visible, false);
+        // Escape closes it too.
+        mouseClick(button);
+        tryCompare(menu, "visible", true);
+        keyClick(Qt.Key_Escape);
+        tryCompare(menu, "visible", false);
+        let reset = null;
+        for (let i = 0; i < menu.count; i++)
+            if (menu.itemAt(i).objectName === "filterReset")
+                reset = menu.itemAt(i);
+        compare(reset.enabled, false, "nothing to reset by default");
+        root.filtersActive = true;
+        compare(reset.enabled, true);
+        reset.triggered();
+        compare(root.calls.indexOf("resetFilters") >= 0, true, JSON.stringify(root.calls));
+        root.filtersActive = false;
+    }
+
+    function test_station_menu_closes_with_the_widget() {
+        const list = findChild(loader.item, "stationList");
+        const menu = findChild(loader.item, "stationMenu");
+        root.expanded = true;
+        list.menuRequested({
+            uuid: "m",
+            name: "M",
+            url: "https://s/m.mp3"
+        });
+        tryCompare(menu, "visible", true);
+        root.expanded = false;
+        tryCompare(menu, "visible", false);
+        root.expanded = true;
+        wait(50);
+        compare(menu.visible, false);
     }
 
     function test_notice_takes_over_the_status_line() {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-18 20:53+0200\n"
+"POT-Creation-Date: 2026-09-19 10:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,8 +28,8 @@ msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/SearchBar.qml:140 contents/ui/SearchBar.qml:145
-#: contents/ui/SearchBar.qml:150 contents/ui/SearchBar.qml:155
+#: contents/ui/SearchBar.qml:170 contents/ui/SearchBar.qml:175
+#: contents/ui/SearchBar.qml:180 contents/ui/SearchBar.qml:185
 #: contents/ui/StationProperties.qml:41
 msgid "%1 kbps"
 msgstr ""
@@ -82,8 +82,8 @@ msgstr ""
 msgid "Add a station"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:245
-#: contents/ui/FullRepresentation.qml:246
+#: contents/ui/FullRepresentation.qml:260
+#: contents/ui/FullRepresentation.qml:261
 msgid "Add a station…"
 msgstr ""
 
@@ -119,11 +119,11 @@ msgstr ""
 msgid "Also show its stations without coordinates, at an approximate spot inside the country"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:135
+#: contents/ui/SearchBar.qml:165
 msgid "Any bitrate"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:115
+#: contents/ui/SearchBar.qml:145
 msgid "Any codec"
 msgstr ""
 
@@ -147,7 +147,7 @@ msgstr ""
 msgid "Backup"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:105
+#: contents/ui/SearchBar.qml:135
 msgid "Bitrate"
 msgstr ""
 
@@ -171,6 +171,10 @@ msgstr ""
 msgid "Choose…"
 msgstr ""
 
+#: contents/ui/SearchBar.qml:52
+msgid "Clear search"
+msgstr ""
+
 #: contents/ui/config/configAddStation.qml:376
 msgid "Click the map to place the station, scroll to zoom, drag to pan."
 msgstr ""
@@ -183,7 +187,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:109
+#: contents/ui/SearchBar.qml:139
 msgid "Codec"
 msgstr ""
 
@@ -199,7 +203,7 @@ msgstr ""
 msgid "Copy stream URL"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:210
+#: contents/ui/FullRepresentation.qml:224
 msgid "Copy the install command"
 msgstr ""
 
@@ -330,8 +334,8 @@ msgstr ""
 msgid "JSON files (*.json)"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:259
-#: contents/ui/FullRepresentation.qml:260
+#: contents/ui/FullRepresentation.qml:274
+#: contents/ui/FullRepresentation.qml:275
 msgid "Keep open"
 msgstr ""
 
@@ -387,7 +391,7 @@ msgstr ""
 msgid "Maximum stations on the globe:"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:129
+#: contents/ui/SearchBar.qml:159
 msgid "Minimum bitrate"
 msgstr ""
 
@@ -413,7 +417,7 @@ msgstr ""
 msgid "Mute"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:100 contents/ui/StationProperties.qml:37
+#: contents/ui/SearchBar.qml:130 contents/ui/StationProperties.qml:37
 msgid "Name"
 msgstr ""
 
@@ -527,7 +531,7 @@ msgstr ""
 msgid "Playing badge colour:"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:90
+#: contents/ui/SearchBar.qml:120
 msgid "Popularity"
 msgstr ""
 
@@ -571,7 +575,7 @@ msgstr ""
 msgid "RadioGlobe"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:161
+#: contents/ui/SearchBar.qml:199
 msgid "Random"
 msgstr ""
 
@@ -611,7 +615,11 @@ msgstr ""
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:360 contents/ui/PlayerBar.qml:83
+#: contents/ui/SearchBar.qml:190
+msgid "Reset"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml:375 contents/ui/PlayerBar.qml:83
 msgid "Retry"
 msgstr ""
 
@@ -651,7 +659,7 @@ msgstr ""
 msgid "Search an address or a place, then press Enter"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:34
+#: contents/ui/SearchBar.qml:46
 msgid "Search stations, countries, tags…"
 msgstr ""
 
@@ -667,11 +675,11 @@ msgstr ""
 msgid "Show the last station played in the player"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:53 contents/ui/SearchBar.qml:54
+#: contents/ui/SearchBar.qml:81 contents/ui/SearchBar.qml:82
 msgid "Sort and filter the list"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:84
+#: contents/ui/SearchBar.qml:114
 msgid "Sort by"
 msgstr ""
 
@@ -748,11 +756,11 @@ msgstr ""
 msgid "Toggle favorite (F)"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:164
+#: contents/ui/SearchBar.qml:202
 msgid "Tune a random station (R)"
 msgstr ""
 
-#: contents/ui/main.qml:279
+#: contents/ui/main.qml:285
 msgid "Vote counted for %1"
 msgstr ""
 
@@ -760,11 +768,11 @@ msgstr ""
 msgid "Vote for this station on Radio Browser"
 msgstr ""
 
-#: contents/ui/main.qml:279
+#: contents/ui/main.qml:285
 msgid "Vote refused: already voted for %1 recently"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:95
+#: contents/ui/SearchBar.qml:125
 msgid "Votes"
 msgstr ""
 
@@ -776,13 +784,13 @@ msgstr ""
 msgid "World"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:323
-#: contents/ui/FullRepresentation.qml:324
+#: contents/ui/FullRepresentation.qml:338
+#: contents/ui/FullRepresentation.qml:339
 msgid "Zoom in"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:334
-#: contents/ui/FullRepresentation.qml:335
+#: contents/ui/FullRepresentation.qml:349
+#: contents/ui/FullRepresentation.qml:350
 msgid "Zoom out"
 msgstr ""
 

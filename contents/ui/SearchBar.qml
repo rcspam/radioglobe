@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls as QQC2
 import org.kde.plasma.components as PlasmaComponents3
+import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
 
 RowLayout {
@@ -19,6 +21,13 @@ RowLayout {
     signal randomRequested
     // key "sort" / "codec" / "minBitrate", the new value.
     signal filterRequested(string key, var value)
+    signal filtersResetRequested
+
+    // The owner calls this when the widget's popup closes: a menu left open
+    // in a hidden window would be back, still open, the next time.
+    function closeMenu() {
+        filterMenu.close();
+    }
 
     function focusInput() {
         field.forceActiveFocus();
@@ -27,11 +36,23 @@ RowLayout {
 
     spacing: Kirigami.Units.smallSpacing
 
-    PlasmaComponents3.TextField {
+    // A text field with a clear button. Not PlasmaExtras.SearchField: its
+    // own clear action stays in rightActions next to any added one, and it
+    // also fires accepted(), which here plays the list row Up/Down picked.
+    PlasmaExtras.ActionTextField {
         id: field
         objectName: "searchField"
         Layout.fillWidth: true
         placeholderText: i18n("Search stations, countries, tags…")
+        rightActions: [
+            Kirigami.Action {
+                objectName: "clearAction"
+                icon.name: field.effectiveHorizontalAlignment === TextInput.AlignRight ? "edit-clear-locationbar-ltr" : "edit-clear-locationbar-rtl"
+                visible: field.text.length > 0
+                text: i18n("Clear search")
+                onTriggered: field.clear()
+            }
+        ]
         onAccepted: bar.searchRequested(text)
         onTextChanged: if (text === "")
             bar.cleared()
@@ -49,7 +70,14 @@ RowLayout {
         icon.name: "view-filter"
         // Stays lit while a sort or a filter is on.
         highlighted: bar.filtersActive
-        onClicked: filterMenu.popup(filterButton, 0, filterButton.height)
+        // A second click closes the menu: it does not close on a press over
+        // its parent (closePolicy below), so this sees it still open.
+        onClicked: {
+            if (filterMenu.visible)
+                filterMenu.close();
+            else
+                filterMenu.popup(0, filterButton.height);
+        }
         Accessible.name: i18n("Sort and filter the list")
         PlasmaComponents3.ToolTip.text: i18n("Sort and filter the list")
         PlasmaComponents3.ToolTip.visible: hovered && !filterMenu.visible
@@ -70,6 +98,8 @@ RowLayout {
     PlasmaComponents3.Menu {
         id: filterMenu
         objectName: "filterMenu"
+        parent: filterButton
+        closePolicy: QQC2.Popup.CloseOnEscape | QQC2.Popup.CloseOnPressOutsideParent
 
         function current(key) {
             const filters = bar.filters || {};
@@ -153,6 +183,14 @@ RowLayout {
             key: "minBitrate"
             value: 256
             text: i18n("%1 kbps", 256)
+        }
+        PlasmaComponents3.MenuSeparator {}
+        PlasmaComponents3.MenuItem {
+            objectName: "filterReset"
+            text: i18n("Reset")
+            icon.name: "edit-clear-all"
+            enabled: bar.filtersActive
+            onTriggered: bar.filtersResetRequested()
         }
     }
 

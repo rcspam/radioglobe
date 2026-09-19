@@ -271,6 +271,12 @@ PlasmoidItem {
             Plasmoid.configuration.minBitrate = Number(value) || 0;
     }
 
+    function resetListFilters() {
+        Plasmoid.configuration.listSort = "popularity";
+        Plasmoid.configuration.codecFilter = "";
+        Plasmoid.configuration.minBitrate = 0;
+    }
+
     // Radio Browser's vote: one per station and IP every ten minutes.
     function voteFor(station) {
         if (!station || !station.uuid)
