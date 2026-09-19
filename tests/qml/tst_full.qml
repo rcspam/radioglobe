@@ -715,6 +715,25 @@ TestCase {
         menu.leaveDelayMs = 400;
     }
 
+    // The button sits at the right of the bar: the menu opens leftwards
+    // from it and never sticks out of the window.
+    function test_filter_menu_stays_inside_the_window() {
+        const searchBar = findChild(loader.item, "searchBar");
+        const button = findChild(searchBar, "filterButton");
+        const menu = findChild(searchBar, "filterMenu");
+        root.expanded = true;
+        mouseClick(button);
+        tryCompare(menu, "visible", true);
+        const origin = button.mapToItem(null, 0, 0);
+        const left = origin.x + menu.x;
+        const right = left + menu.width;
+        verify(left >= 0, "menu starts at " + left);
+        verify(right <= button.Window.width + 0.5, "menu ends at " + right + " in a window " + button.Window.width + " wide");
+        verify(origin.y + menu.y + menu.height <= button.Window.height + 0.5, "menu bottom out of the window");
+        menu.close();
+        tryCompare(menu, "visible", false);
+    }
+
     function test_station_menu_closes_with_the_widget() {
         const list = findChild(loader.item, "stationList");
         const menu = findChild(loader.item, "stationMenu");

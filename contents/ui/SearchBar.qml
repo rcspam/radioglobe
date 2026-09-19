@@ -16,6 +16,8 @@ RowLayout {
     // RadioModel.applyFilters) and whether any departs from the defaults.
     property var filters: ({})
     property bool filtersActive: false
+    // The window the bar lives in, for keeping the filter menu inside it.
+    readonly property var hostWindow: Window.window
 
     signal searchRequested(string text)
     signal cleared
@@ -126,7 +128,25 @@ RowLayout {
         id: filterMenu
         objectName: "filterMenu"
         parent: filterButton
-        y: filterButton.height // qmllint disable Quick.layout-positioning
+        // Right-aligned to its button, which sits at the right of the bar,
+        // and kept inside the window whatever the popup's size (a Popup
+        // never moves itself, unlike a Menu). Placed on each opening: the
+        // bar may have been resized since the last one.
+        onAboutToShow: filterMenu.place()
+        function place() {
+            const origin = filterButton.mapToItem(null, 0, 0);
+            const window = bar.hostWindow;
+            const windowWidth = window ? window.width : Infinity;
+            const windowHeight = window ? window.height : Infinity;
+            let wantedX = filterButton.width - filterMenu.width;
+            if (origin.x + wantedX < 0)
+                wantedX = -origin.x;
+            let wantedY = filterButton.height;
+            if (origin.y + wantedY + filterMenu.height > windowHeight)
+                wantedY = Math.max(-origin.y, windowHeight - filterMenu.height - origin.y);
+            filterMenu.x = Math.round(Math.min(wantedX, windowWidth - filterMenu.width - origin.x));
+            filterMenu.y = Math.round(wantedY);
+        }
         // Grace period once the pointer is out, so a quick brush past the
         // edge does not close it.
         property int leaveDelayMs: 400
