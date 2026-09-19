@@ -518,6 +518,30 @@ TestCase {
         compare(root.calls.indexOf("play:b") >= 0, true, JSON.stringify(root.calls));
     }
 
+    // With a country open, a button next to the status line leaves it, and
+    // so does a tap on the sea.
+    function test_leaving_a_country_from_the_status_line_and_the_sea() {
+        const button = findChild(loader.item, "leaveCountryButton");
+        const globe = findChild(loader.item, "globe");
+        verify(button !== null, "leaveCountryButton not found");
+        compare(button.visible, false);
+        root.currentCountry = {
+            code: "FR",
+            name: "France"
+        };
+        compare(button.visible, true);
+        const before = root.calls.length;
+        mouseClick(button);
+        compare(root.calls.slice(before), ["clearCountry"]);
+        globe.emptyActivated();
+        compare(root.calls.slice(before), ["clearCountry", "clearCountry"]);
+        // Nothing open: the sea is just the sea.
+        root.currentCountry = null;
+        globe.emptyActivated();
+        compare(root.calls.slice(before), ["clearCountry", "clearCountry"]);
+        compare(button.visible, false);
+    }
+
     function test_keys_reach_targets() {
         const targets = loader.item.keyTargets;
         targets.random();

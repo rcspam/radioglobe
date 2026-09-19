@@ -205,6 +205,27 @@ TestCase {
         globe.countries = [];
     }
 
+    // A tap on the sea or off the sphere says so; on land it names the
+    // country.
+    function test_tapOnSeaOrSpaceIsEmpty() {
+        globe.countries = loadCountries();
+        globe.centreLatitude = 20;
+        globe.centreLongitude = 20;
+        const empties = [];
+        const countries = [];
+        globe.emptyActivated.connect(() => empties.push(1));
+        globe.countryActivated.connect((code, name) => countries.push(code));
+        globe.activateAt(400, 300);
+        compare(countries.length, 1, "Sahara is a country: " + JSON.stringify(countries));
+        compare(empties.length, 0);
+        globe.activateAt(400 + globe.radius() * 0.55, 300 + globe.radius() * 0.25);
+        compare(empties.length, 1, "Indian Ocean is empty");
+        globe.activateAt(2, 2);
+        compare(empties.length, 2, "off the sphere is empty");
+        compare(countries.length, 1);
+        globe.countries = [];
+    }
+
     // Away from the borders the simplified land looks exactly like the full
     // one: centre of a large country and open sea.
     function test_simplifiedCountriesMatchTheFullOnesAwayFromBorders() {

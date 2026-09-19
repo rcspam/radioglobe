@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-19 11:09+0200\n"
+"POT-Creation-Date: 2026-09-19 14:35+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -35,9 +35,9 @@ msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] "%1 favori importé. Appliquez pour le garder."
 msgstr[1] "%1 favoris importés. Appliquez pour les garder."
 
-#: contents/ui/config/configGeneral.qml:243 contents/ui/SearchBar.qml:257
-#: contents/ui/SearchBar.qml:262 contents/ui/SearchBar.qml:267
-#: contents/ui/SearchBar.qml:272 contents/ui/StationProperties.qml:41
+#: contents/ui/config/configGeneral.qml:243 contents/ui/SearchBar.qml:260
+#: contents/ui/SearchBar.qml:265 contents/ui/SearchBar.qml:270
+#: contents/ui/SearchBar.qml:275 contents/ui/StationProperties.qml:41
 msgid "%1 kbps"
 msgstr "%1 kbps"
 
@@ -63,7 +63,7 @@ msgid_plural "%1 signals"
 msgstr[0] "%1 signal"
 msgstr[1] "%1 signaux"
 
-#: contents/ui/Globe.qml:1179
+#: contents/ui/Globe.qml:1186
 msgid "%1 · approximate location"
 msgstr "%1 · position approximative"
 
@@ -77,7 +77,7 @@ msgid_plural "%2 · %1 stations after filters"
 msgstr[0] "%2 · %1 station après filtres"
 msgstr[1] "%2 · %1 stations après filtres"
 
-#: contents/ui/config/configGeneral.qml:42 contents/ui/SearchBar.qml:235
+#: contents/ui/config/configGeneral.qml:42 contents/ui/SearchBar.qml:238
 msgid "AAC (and AAC+)"
 msgstr "AAC (et AAC+)"
 
@@ -130,11 +130,11 @@ msgstr "Publier aussi sur Radio Browser (public)"
 msgid "Also show its stations without coordinates, at an approximate spot inside the country"
 msgstr "Afficher aussi ses stations sans coordonnées, à une position approximative dans le pays"
 
-#: contents/ui/config/configGeneral.qml:243 contents/ui/SearchBar.qml:252
+#: contents/ui/config/configGeneral.qml:243 contents/ui/SearchBar.qml:255
 msgid "Any bitrate"
 msgstr "Tout débit"
 
-#: contents/ui/SearchBar.qml:226
+#: contents/ui/SearchBar.qml:229
 msgid "Any codec"
 msgstr "Tout codec"
 
@@ -158,7 +158,7 @@ msgstr "Disponible"
 msgid "Backup"
 msgstr "Sauvegarde"
 
-#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:211
+#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:214
 msgid "Bitrate"
 msgstr "Débit"
 
@@ -198,7 +198,7 @@ msgstr "Écoutes sur Radio Browser"
 msgid "Close"
 msgstr "Fermer"
 
-#: contents/ui/SearchBar.qml:218
+#: contents/ui/SearchBar.qml:221
 msgid "Codec"
 msgstr "Codec"
 
@@ -354,7 +354,7 @@ msgstr "Fichiers JSON (*.json)"
 msgid "Keep open"
 msgstr "Garder ouvert"
 
-#: contents/ui/Globe.qml:1177
+#: contents/ui/Globe.qml:1184
 msgid "Landed near · %1"
 msgstr "À proximité de · %1"
 
@@ -365,6 +365,11 @@ msgstr "Langue"
 #: contents/ui/config/configAddStation.qml:320
 msgid "Latitude"
 msgstr "Latitude"
+
+#: contents/ui/FullRepresentation.qml:371
+#: contents/ui/FullRepresentation.qml:372
+msgid "Leave %1"
+msgstr "Quitter %1"
 
 #: contents/ui/PlayerBar.qml:51
 msgid "Live"
@@ -406,7 +411,7 @@ msgstr "Données cartographiques © les contributeurs d'OpenStreetMap"
 msgid "Maximum stations on the globe:"
 msgstr "Nombre maximal de stations sur le globe :"
 
-#: contents/ui/SearchBar.qml:246
+#: contents/ui/SearchBar.qml:249
 msgid "Minimum bitrate"
 msgstr "Débit minimum"
 
@@ -442,7 +447,7 @@ msgstr "Molette sur l'icône :"
 msgid "Mute"
 msgstr "Muet"
 
-#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:206
+#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:209
 #: contents/ui/StationProperties.qml:37
 msgid "Name"
 msgstr "Nom"
@@ -503,7 +508,7 @@ msgstr "Introuvable. Installer le paquet « mpv »."
 msgid "Nothing played yet"
 msgstr "Rien n’a encore été écouté"
 
-#: contents/ui/config/configGeneral.qml:43 contents/ui/SearchBar.qml:239
+#: contents/ui/config/configGeneral.qml:43 contents/ui/SearchBar.qml:242
 msgid "OGG (Vorbis)"
 msgstr "OGG (Vorbis)"
 
@@ -565,7 +570,7 @@ msgstr "Lecture en cours"
 msgid "Playing badge colour:"
 msgstr "Couleur du point de lecture :"
 
-#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:196
+#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:199
 msgid "Popularity"
 msgstr "Popularité"
 
@@ -609,7 +614,7 @@ msgstr "Radio Browser :"
 msgid "RadioGlobe"
 msgstr "RadioGlobe"
 
-#: contents/ui/SearchBar.qml:290
+#: contents/ui/SearchBar.qml:293
 msgid "Random"
 msgstr "Aléatoire"
 
@@ -649,11 +654,11 @@ msgstr "Remplace les favoris et l'historique actuels. Rien ne change avant d'app
 msgid "Report played stations to the click counter"
 msgstr "Signaler les stations écoutées au compteur de clics"
 
-#: contents/ui/SearchBar.qml:280
+#: contents/ui/SearchBar.qml:283
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: contents/ui/FullRepresentation.qml:376 contents/ui/PlayerBar.qml:83
+#: contents/ui/FullRepresentation.qml:390 contents/ui/PlayerBar.qml:83
 msgid "Retry"
 msgstr "Réessayer"
 
@@ -713,7 +718,7 @@ msgstr "Remettre la dernière station écoutée dans le lecteur"
 msgid "Sort and filter the list"
 msgstr "Trier et filtrer la liste"
 
-#: contents/ui/SearchBar.qml:190
+#: contents/ui/SearchBar.qml:193
 msgid "Sort by"
 msgstr "Trier par"
 
@@ -798,7 +803,7 @@ msgstr "Cette station n’a pas pu être lue. Elle est peut-être hors ligne : r
 msgid "Toggle favorite (F)"
 msgstr "Basculer le favori (F)"
 
-#: contents/ui/SearchBar.qml:293
+#: contents/ui/SearchBar.qml:296
 msgid "Tune a random station (R)"
 msgstr "Écouter une station aléatoire (R)"
 
@@ -814,7 +819,7 @@ msgstr "Voter pour cette station sur Radio Browser"
 msgid "Vote refused: already voted for %1 recently"
 msgstr "Vote refusé : déjà voté pour %1 récemment"
 
-#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:201
+#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:204
 msgid "Votes"
 msgstr "Votes"
 
@@ -826,13 +831,13 @@ msgstr "Votes sur Radio Browser"
 msgid "World"
 msgstr "Monde"
 
-#: contents/ui/FullRepresentation.qml:339
-#: contents/ui/FullRepresentation.qml:340
+#: contents/ui/FullRepresentation.qml:342
+#: contents/ui/FullRepresentation.qml:343
 msgid "Zoom in"
 msgstr "Zoom avant"
 
-#: contents/ui/FullRepresentation.qml:350
-#: contents/ui/FullRepresentation.qml:351
+#: contents/ui/FullRepresentation.qml:353
+#: contents/ui/FullRepresentation.qml:354
 msgid "Zoom out"
 msgstr "Zoom arrière"
 
@@ -840,7 +845,7 @@ msgstr "Zoom arrière"
 msgid "Zoom step (wheel notch, + and − buttons):"
 msgstr "Pas de zoom (cran de molette, boutons + et −) :"
 
-#: contents/ui/Globe.qml:1192
+#: contents/ui/Globe.qml:1199
 msgid "approximate location"
 msgstr "position approximative"
 

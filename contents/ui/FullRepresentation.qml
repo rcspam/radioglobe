@@ -321,6 +321,9 @@ Item {
                         nightColor: Qt.darker(Kirigami.Theme.backgroundColor, 3)
                         onStationActivated: station => root.playFrom(root.shownStations, station)
                         onCountryActivated: (code, name) => root.openCountry(code, name)
+                        // The sea, or space: out of the country.
+                        onEmptyActivated: if (root.currentCountry)
+                            root.clearCountry()
                     }
 
                     // Wheel-less zoom, over the globe's bottom-right corner.
@@ -358,6 +361,17 @@ Item {
                     Layout.fillWidth: true
                     spacing: Kirigami.Units.smallSpacing
 
+                    // The visible way out of a country (Escape, the World tab
+                    // and a click on the sea do it too).
+                    PlasmaComponents3.ToolButton {
+                        objectName: "leaveCountryButton"
+                        visible: root.currentCountry ? true : false
+                        icon.name: "edit-clear-locationbar-ltr"
+                        onClicked: root.clearCountry()
+                        Accessible.name: root.currentCountry ? i18n("Leave %1", root.currentCountry.name) : ""
+                        PlasmaComponents3.ToolTip.text: root.currentCountry ? i18n("Leave %1", root.currentCountry.name) : ""
+                        PlasmaComponents3.ToolTip.visible: hovered
+                    }
                     PlasmaComponents3.Label {
                         Layout.fillWidth: true
                         text: full.statusLine

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-19 11:09+0200\n"
+"POT-Creation-Date: 2026-09-19 14:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,9 +36,9 @@ msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/config/configGeneral.qml:243 contents/ui/SearchBar.qml:257
-#: contents/ui/SearchBar.qml:262 contents/ui/SearchBar.qml:267
-#: contents/ui/SearchBar.qml:272 contents/ui/StationProperties.qml:41
+#: contents/ui/config/configGeneral.qml:243 contents/ui/SearchBar.qml:260
+#: contents/ui/SearchBar.qml:265 contents/ui/SearchBar.qml:270
+#: contents/ui/SearchBar.qml:275 contents/ui/StationProperties.qml:41
 msgid "%1 kbps"
 msgstr ""
 
@@ -64,7 +64,7 @@ msgid_plural "%1 signals"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/Globe.qml:1179
+#: contents/ui/Globe.qml:1186
 msgid "%1 · approximate location"
 msgstr ""
 
@@ -78,7 +78,7 @@ msgid_plural "%2 · %1 stations after filters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/config/configGeneral.qml:42 contents/ui/SearchBar.qml:235
+#: contents/ui/config/configGeneral.qml:42 contents/ui/SearchBar.qml:238
 msgid "AAC (and AAC+)"
 msgstr ""
 
@@ -131,11 +131,11 @@ msgstr ""
 msgid "Also show its stations without coordinates, at an approximate spot inside the country"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:243 contents/ui/SearchBar.qml:252
+#: contents/ui/config/configGeneral.qml:243 contents/ui/SearchBar.qml:255
 msgid "Any bitrate"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:226
+#: contents/ui/SearchBar.qml:229
 msgid "Any codec"
 msgstr ""
 
@@ -159,7 +159,7 @@ msgstr ""
 msgid "Backup"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:211
+#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:214
 msgid "Bitrate"
 msgstr ""
 
@@ -199,7 +199,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:218
+#: contents/ui/SearchBar.qml:221
 msgid "Codec"
 msgstr ""
 
@@ -355,7 +355,7 @@ msgstr ""
 msgid "Keep open"
 msgstr ""
 
-#: contents/ui/Globe.qml:1177
+#: contents/ui/Globe.qml:1184
 msgid "Landed near · %1"
 msgstr ""
 
@@ -365,6 +365,11 @@ msgstr ""
 
 #: contents/ui/config/configAddStation.qml:320
 msgid "Latitude"
+msgstr ""
+
+#: contents/ui/FullRepresentation.qml:371
+#: contents/ui/FullRepresentation.qml:372
+msgid "Leave %1"
 msgstr ""
 
 #: contents/ui/PlayerBar.qml:51
@@ -407,7 +412,7 @@ msgstr ""
 msgid "Maximum stations on the globe:"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:246
+#: contents/ui/SearchBar.qml:249
 msgid "Minimum bitrate"
 msgstr ""
 
@@ -437,7 +442,7 @@ msgstr ""
 msgid "Mute"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:206
+#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:209
 #: contents/ui/StationProperties.qml:37
 msgid "Name"
 msgstr ""
@@ -498,7 +503,7 @@ msgstr ""
 msgid "Nothing played yet"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:43 contents/ui/SearchBar.qml:239
+#: contents/ui/config/configGeneral.qml:43 contents/ui/SearchBar.qml:242
 msgid "OGG (Vorbis)"
 msgstr ""
 
@@ -560,7 +565,7 @@ msgstr ""
 msgid "Playing badge colour:"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:196
+#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:199
 msgid "Popularity"
 msgstr ""
 
@@ -604,7 +609,7 @@ msgstr ""
 msgid "RadioGlobe"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:290
+#: contents/ui/SearchBar.qml:293
 msgid "Random"
 msgstr ""
 
@@ -644,11 +649,11 @@ msgstr ""
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:280
+#: contents/ui/SearchBar.qml:283
 msgid "Reset"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:376 contents/ui/PlayerBar.qml:83
+#: contents/ui/FullRepresentation.qml:390 contents/ui/PlayerBar.qml:83
 msgid "Retry"
 msgstr ""
 
@@ -708,7 +713,7 @@ msgstr ""
 msgid "Sort and filter the list"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:190
+#: contents/ui/SearchBar.qml:193
 msgid "Sort by"
 msgstr ""
 
@@ -793,7 +798,7 @@ msgstr ""
 msgid "Toggle favorite (F)"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:293
+#: contents/ui/SearchBar.qml:296
 msgid "Tune a random station (R)"
 msgstr ""
 
@@ -809,7 +814,7 @@ msgstr ""
 msgid "Vote refused: already voted for %1 recently"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:201
+#: contents/ui/config/configGeneral.qml:211 contents/ui/SearchBar.qml:204
 msgid "Votes"
 msgstr ""
 
@@ -821,13 +826,13 @@ msgstr ""
 msgid "World"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:339
-#: contents/ui/FullRepresentation.qml:340
+#: contents/ui/FullRepresentation.qml:342
+#: contents/ui/FullRepresentation.qml:343
 msgid "Zoom in"
 msgstr ""
 
-#: contents/ui/FullRepresentation.qml:350
-#: contents/ui/FullRepresentation.qml:351
+#: contents/ui/FullRepresentation.qml:353
+#: contents/ui/FullRepresentation.qml:354
 msgid "Zoom out"
 msgstr ""
 
@@ -835,7 +840,7 @@ msgstr ""
 msgid "Zoom step (wheel notch, + and − buttons):"
 msgstr ""
 
-#: contents/ui/Globe.qml:1192
+#: contents/ui/Globe.qml:1199
 msgid "approximate location"
 msgstr ""
 

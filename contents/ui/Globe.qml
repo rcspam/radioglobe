@@ -74,6 +74,9 @@ Item {
 
     signal stationActivated(var station)
     signal countryActivated(string code, string name)
+    // A tap on the sea, or off the sphere: nothing to open, and the owner
+    // takes it as "leave the current country".
+    signal emptyActivated
     signal interactionStarted
     signal pointerMoved
 
@@ -727,11 +730,15 @@ Item {
         var normalizedX = (x - width / 2) / globeRadius;
         var normalizedY = -(y - height / 2) / globeRadius;
         var coordinate = RadioModel.unproject(normalizedX, normalizedY, centreLatitude, centreLongitude);
-        if (!coordinate)
+        if (!coordinate) {
+            emptyActivated();
             return;
+        }
         var country = RadioModel.countryAt(countries, coordinate.latitude, coordinate.longitude);
-        if (!country || !country.code || country.code === "-99")
+        if (!country || !country.code || country.code === "-99") {
+            emptyActivated();
             return;
+        }
         countryActivated(String(country.code).toUpperCase(), String(country.name || country.code));
     }
 
