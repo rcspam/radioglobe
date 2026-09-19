@@ -35,27 +35,18 @@ KCM.SimpleKCM {
     property string cfg_codecFilter: ""
     property int cfg_minBitrate: 0
     readonly property var sortChoices: ["popularity", "votes", "name", "bitrate"]
-    // The directory's codecs plus whatever the setting names on top.
+    // The three families with the directory's station counts (0 offline).
     readonly property var codecRows: {
-        const rows = [];
-        const seen = [];
-        for (const choice of radioBrowser.codecs) {
-            const name = String(choice.name).toLowerCase();
-            seen.push(name);
-            rows.push({
-                name: name,
-                label: choice.name,
-                count: choice.count
-            });
-        }
-        for (const name of RadioModel.codecSet(page.cfg_codecFilter))
-            if (seen.indexOf(name) < 0)
-                rows.push({
-                    name: name,
-                    label: name.toUpperCase(),
-                    count: 0
-                });
-        return rows;
+        const labels = {
+            mp3: "MP3",
+            aac: i18n("AAC (and AAC+)"),
+            ogg: i18n("OGG (Vorbis)")
+        };
+        return radioBrowser.codecs.map(choice => ({
+                    name: choice.name,
+                    label: labels[choice.name] || choice.name,
+                    count: choice.count
+                }));
     }
     readonly property var bitrateChoices: [0, 64, 128, 192, 256]
     // Empty means "theme colour"; the check boxes drive that.
@@ -221,9 +212,8 @@ KCM.SimpleKCM {
             currentIndex: Math.max(0, page.sortChoices.indexOf(page.cfg_listSort))
             onActivated: index => page.cfg_listSort = page.sortChoices[index]
         }
-        // Radio Browser's own codec list with its station counts, a fixed
-        // one until it arrives (or offline). A codec the setting names that
-        // is not on the list still shows, so it can be unticked.
+        // One line per family, with how many stations of the whole
+        // directory it covers once /json/codecs has answered.
         ColumnLayout {
             objectName: "codecList"
             Kirigami.FormData.label: i18n("Codecs:")

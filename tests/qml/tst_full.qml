@@ -64,24 +64,6 @@ TestCase {
         property bool approximateLocations: false
         property bool showDayNight: true
         property int zoomStep: 20
-        property var codecChoices: [
-            {
-                name: "MP3",
-                count: 43877
-            },
-            {
-                name: "AAC+",
-                count: 9830
-            },
-            {
-                name: "AAC",
-                count: 8867
-            },
-            {
-                name: "OGG",
-                count: 746
-            }
-        ]
         property bool expanded: true
         property bool isOnDesktop: false
         property bool pinned: false
@@ -651,49 +633,17 @@ TestCase {
         verify(item("codec-aac").checked);
         verify(!item("codec-any").checked);
         item("codec-mp3").triggered();
-        compare(root.calls[root.calls.length - 1], "filter:codec=aac,mp3");
+        compare(root.calls[root.calls.length - 1], "filter:codec=mp3,aac");
         root.listFilters = ({
                 sort: "popularity",
-                codec: "aac,mp3",
+                codec: "mp3,aac",
                 minBitrate: 0
             });
         verify(item("codec-mp3").checked && item("codec-aac").checked);
-        verify(item("codec-aac+") !== null && !item("codec-aac+").checked, "AAC+ listed from the directory");
         item("codec-aac").triggered();
         compare(root.calls[root.calls.length - 1], "filter:codec=mp3");
         item("codec-any").triggered();
         compare(root.calls[root.calls.length - 1], "filter:codec=");
-        // The list follows the directory.
-        root.codecChoices = [
-            {
-                name: "MP3",
-                count: 1
-            },
-            {
-                name: "FLAC",
-                count: 1
-            }
-        ];
-        verify(item("codec-flac") !== null, "new codec listed");
-        verify(item("codec-ogg") === null, "dropped codec gone");
-        root.codecChoices = [
-            {
-                name: "MP3",
-                count: 43877
-            },
-            {
-                name: "AAC+",
-                count: 9830
-            },
-            {
-                name: "AAC",
-                count: 8867
-            },
-            {
-                name: "OGG",
-                count: 746
-            }
-        ];
         menu.close();
         tryCompare(menu, "visible", false);
         // The owner applied them: the menu and the button follow.

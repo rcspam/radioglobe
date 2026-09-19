@@ -120,7 +120,8 @@ TestCase {
     // The codec list comes with the first start, is cached for a week and
     // served from the cache meanwhile; a fixed list stands in before.
     function test_codecs_are_loaded_once_and_cached() {
-        compare(rb.codecs.map(c => c.name), ["MP3", "AAC+", "AAC", "OGG"]);
+        compare(rb.codecs.map(c => c.name), ["mp3", "aac", "ogg"]);
+        compare(rb.codecs.map(c => c.count), [0, 0, 0]);
         rb.start();
         rb.loadCodecs();
         answer("/json/servers", 200, [
@@ -134,6 +135,14 @@ TestCase {
                 stationcount: 40000
             },
             {
+                name: "AAC+",
+                stationcount: 9000
+            },
+            {
+                name: "AAC",
+                stationcount: 8000
+            },
+            {
                 name: "OGG",
                 stationcount: 700
             },
@@ -142,8 +151,7 @@ TestCase {
                 stationcount: 2
             }
         ]);
-        compare(rb.codecs.map(c => c.name), ["MP3", "OGG"]);
-        compare(rb.codecs[0].count, 40000);
+        compare(rb.codecs.map(c => c.count), [40000, 17000, 700]);
         verify(store[rb.codecsKey] !== undefined, "cached");
         answer("/json/stations/search", 200, [raw("a")]);
         // Fresh cache: no request.
@@ -152,7 +160,7 @@ TestCase {
         // A week later: served, then refreshed.
         clock += 8 * 24 * 3600 * 1000;
         rb.loadCodecs();
-        compare(rb.codecs.map(c => c.name), ["MP3", "OGG"]);
+        compare(rb.codecs.map(c => c.count), [40000, 17000, 700]);
         compare(pending.length, 1);
         answer("/json/codecs", 200, [
             {
@@ -160,7 +168,7 @@ TestCase {
                 stationcount: 9000
             }
         ]);
-        compare(rb.codecs.map(c => c.name), ["AAC"]);
+        compare(rb.codecs.map(c => c.count), [0, 9000, 0]);
     }
 
     function test_vote_reports_ok_and_refusals() {

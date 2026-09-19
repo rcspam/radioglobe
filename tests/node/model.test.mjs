@@ -515,19 +515,16 @@ test("applyFilters sorts and filters a loaded list without touching it", () => {
     assert.deepEqual(ids(model.applyFilters(list, { sort: "votes" })), ["b", "c", "a", "e", "d", "f", "g", "h"]);
     assert.deepEqual(ids(model.applyFilters(list, { sort: "name" })), ["b", "d", "f", "c", "g", "e", "h", "a"]);
     assert.deepEqual(ids(model.applyFilters(list, { sort: "bitrate" })), ["f", "c", "e", "h", "a", "g", "b", "d"]);
-    // Codec names as Radio Browser writes them, several at once; a station
-    // listing two ("AAC,H.264") matches either; an empty codec is "unknown".
+    // Codec families, several at once: AAC covers AAC+ and "AAC,H.264",
+    // OGG covers Vorbis, unknown families (FLAC, empty) never match.
     assert.deepEqual(ids(model.applyFilters(list, { codec: "mp3" })), ["a"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "aac" })), ["c", "g"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "AAC+" })), ["b"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "aac,aac+" })), ["b", "c", "g"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "h.264" })), ["g"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "ogg" })), ["e"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "vorbis" })), ["h"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "flac" })), ["f"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "unknown" })), ["d"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "ogg, mp3" })), ["a", "e"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "opus" })), []);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "aac" })), ["b", "c", "g"]);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "AAC" })), ["b", "c", "g"]);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "ogg" })), ["e", "h"]);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "mp3,ogg" })), ["a", "e", "h"]);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "ogg, mp3" })), ["a", "e", "h"]);
+    // Only unknown names: no restriction at all.
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "flac,opus" })), all);
     // Minimum bitrate; an unknown bitrate (0) is dropped once a minimum is set.
     assert.deepEqual(ids(model.applyFilters(list, { minBitrate: 128 })), ["a", "c", "e", "f", "h"]);
     assert.deepEqual(ids(model.applyFilters(list, { minBitrate: 128, sort: "bitrate" })), ["f", "c", "e", "h", "a"]);
@@ -542,39 +539,37 @@ test("filtersActive says whether anything departs from the defaults", () => {
     assert.equal(model.filtersActive(null), false);
     assert.equal(model.filtersActive({ sort: "votes" }), true);
     assert.equal(model.filtersActive({ codec: "mp3" }), true);
-    assert.equal(model.filtersActive({ codec: "opus" }), true);
+    assert.equal(model.filtersActive({ codec: "opus" }), false);
     assert.equal(model.filtersActive({ minBitrate: 64 }), true);
 });
 
 test("codecSet and toggleCodec keep the codec setting clean", () => {
-    assert.deepEqual([...model.codecSet("aac,mp3")], ["aac", "mp3"]);
-    assert.deepEqual([...model.codecSet(" MP3 ,flac, ,mp3")], ["mp3", "flac"]);
+    assert.deepEqual([...model.codecSet("aac,mp3")], ["mp3", "aac"]);
+    assert.deepEqual([...model.codecSet(" MP3 ,flac")], ["mp3"]);
     assert.deepEqual([...model.codecSet("")], []);
     assert.deepEqual([...model.codecSet(null)], []);
-    assert.equal(model.toggleCodec("", "AAC+", true), "aac+");
-    assert.equal(model.toggleCodec("aac", "mp3", true), "aac,mp3");
+    assert.equal(model.toggleCodec("", "aac", true), "aac");
+    assert.equal(model.toggleCodec("aac", "mp3", true), "mp3,aac");
     assert.equal(model.toggleCodec("mp3,aac", "aac", false), "mp3");
     assert.equal(model.toggleCodec("mp3", "mp3", false), "");
     assert.equal(model.toggleCodec("mp3", "mp3", true), "mp3");
-    assert.equal(model.toggleCodec("mp3", "", true), "mp3");
 });
 
-test("codecChoices keeps the codecs worth offering, most used first", () => {
+test("codecChoices sums the directory's counts per family", () => {
     const rows = [
         { name: "AAC+", stationcount: 9830 },
         { name: "MP3", stationcount: 43877 },
+        { name: "AAC", stationcount: 8867 },
         { name: "UNKNOWN", stationcount: 2100 },
         { name: "AAC,H.264", stationcount: 88 },
         { name: "ogg", stationcount: 746 },
-        { name: "FLAC", stationcount: 5 },
-        { name: "FLV", stationcount: 4 },
-        { name: "", stationcount: 1000 }
+        { name: "FLAC", stationcount: 5 }
     ];
-    const choices = JSON.parse(JSON.stringify(model.codecChoices(rows)));
-    assert.deepEqual(choices.map(c => c.name), ["MP3", "AAC+", "UNKNOWN", "OGG", "FLAC"]);
-    assert.equal(choices[0].count, 43877);
-    assert.deepEqual(JSON.parse(JSON.stringify(model.codecChoices(rows, 100))).map(c => c.name), ["MP3", "AAC+", "UNKNOWN", "OGG"]);
-    // Nothing usable: the built-in list, so the pickers work offline.
-    assert.deepEqual(JSON.parse(JSON.stringify(model.codecChoices(null))).map(c => c.name), ["MP3", "AAC+", "AAC", "OGG"]);
-    assert.deepEqual(JSON.parse(JSON.stringify(model.codecChoices([{ name: "x", stationcount: 1 }]))).map(c => c.name), ["MP3", "AAC+", "AAC", "OGG"]);
+    assert.deepEqual(JSON.parse(JSON.stringify(model.codecChoices(rows))), [
+        { name: "mp3", count: 43877 },
+        { name: "aac", count: 9830 + 8867 + 88 },
+        { name: "ogg", count: 746 }
+    ]);
+    assert.deepEqual(JSON.parse(JSON.stringify(model.codecChoices(null))).map(c => c.count), [0, 0, 0]);
+    assert.deepEqual(JSON.parse(JSON.stringify(model.defaultCodecChoices())).map(c => c.name), ["mp3", "aac", "ogg"]);
 });

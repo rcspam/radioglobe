@@ -48,14 +48,13 @@ TestCase {
         compare(component.status, Component.Ready, component.errorString());
         const page = component.createObject(null, {
             cfg_listSort: "name",
-            cfg_codecFilter: "mp3,ogg,wma",
+            cfg_codecFilter: "mp3,ogg",
             cfg_minBitrate: 128
         });
         verify(page !== null, component.errorString());
         compare(findChild(page, "listSort").currentIndex, 2);
         compare(findChild(page, "minBitrate").currentIndex, 2);
-        // Offline: the built-in list, plus the codec the setting names that
-        // is not on it. Repeater-made boxes are not findChild's children.
+        // Repeater-made boxes are not findChild's children: walk the list.
         const list = findChild(page, "codecList");
         function box(name) {
             const kids = list.children;
@@ -65,17 +64,15 @@ TestCase {
             return null;
         }
         compare(box("codec-mp3").checked, true);
-        compare(box("codec-aac+").checked, false);
         compare(box("codec-aac").checked, false);
         compare(box("codec-ogg").checked, true);
-        compare(box("codec-wma").checked, true);
         // toggle() flips the box without the user's toggled(): emit it too.
         box("codec-aac").toggle();
         box("codec-aac").toggled();
-        compare(page.cfg_codecFilter, "mp3,ogg,wma,aac");
+        compare(page.cfg_codecFilter, "mp3,aac,ogg");
         box("codec-mp3").toggle();
         box("codec-mp3").toggled();
-        compare(page.cfg_codecFilter, "ogg,wma,aac");
+        compare(page.cfg_codecFilter, "aac,ogg");
         findChild(page, "listSort").activated(1);
         compare(page.cfg_listSort, "votes");
         findChild(page, "minBitrate").activated(0);

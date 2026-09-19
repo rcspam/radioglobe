@@ -31,7 +31,6 @@ PlasmoidItem {
         })
     readonly property var shownStations: RadioModel.applyFilters(root.listStations, root.listFilters)
     readonly property bool filtersActive: RadioModel.filtersActive(root.listFilters)
-    readonly property var codecChoices: radioBrowser.codecs
     // A short message for the status line (vote result), cleared after a while.
     property string notice: ""
     property string listSource: "world"

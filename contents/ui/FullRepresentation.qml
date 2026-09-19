@@ -245,7 +245,6 @@ Item {
                 onCleared: root.clearSearch()
                 onRandomRequested: root.playRandom()
                 filters: root.listFilters
-                codecs: root.codecChoices
                 filtersActive: root.filtersActive
                 onFilterRequested: (key, value) => root.setListFilter(key, value)
                 onFiltersResetRequested: root.resetListFilters()
