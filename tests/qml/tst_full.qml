@@ -535,8 +535,17 @@ TestCase {
         compare(root.calls.slice(before), ["clearCountry"]);
         globe.emptyActivated();
         compare(root.calls.slice(before), ["clearCountry", "clearCountry"]);
-        // Nothing open: the sea is just the sea.
+        compare(globe.activeCountryCode, "FR");
+        // Nothing open: the sea is just the sea, and no country is coloured,
+        // the playing station's included.
+        player.station = {
+            uuid: "fr",
+            name: "FIP",
+            countryCode: "FR"
+        };
         root.currentCountry = null;
+        compare(globe.activeCountryCode, "");
+        player.station = null;
         globe.emptyActivated();
         compare(root.calls.slice(before), ["clearCountry", "clearCountry"]);
         compare(button.visible, false);

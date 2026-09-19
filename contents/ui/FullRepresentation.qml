@@ -304,7 +304,10 @@ Item {
                         countries: root.countries
                         stations: full.globeStations
                         selectedStation: player.station
-                        activeCountryCode: root.currentCountry ? root.currentCountry.code : (player.station ? player.station.countryCode : "")
+                        // Only the open country is coloured: the playing
+                        // station's own country used to be as well, which
+                        // read as a selection that would not go away.
+                        activeCountryCode: root.currentCountry ? root.currentCountry.code : ""
                         backgroundColor: Kirigami.Theme.backgroundColor
                         sphereColor: Qt.darker(Kirigami.Theme.backgroundColor, 1.25)
                         landColor: Kirigami.Theme.alternateBackgroundColor
