@@ -769,6 +769,28 @@ TestCase {
     // Plasma preloads the popup at 0x0, and a ScrollView around the ListView
     // once made that build, then destroy, all 3000 rows: 5 seconds of GUI
     // thread at every plasmashell start.
+    // The attached scroll bar paints over the list: with enough rows for
+    // it to show, the rows stop short of it so the star stays clickable.
+    function test_rows_leave_room_for_the_scroll_bar() {
+        const many = [];
+        for (let i = 0; i < 60; i++)
+            many.push({
+                uuid: "s" + i,
+                name: "Station " + i,
+                url: "https://s/" + i
+            });
+        list.stations = many;
+        wait(50);
+        const view = findChild(list, "stationView");
+        verify(view.barWidth > 0, "scroll bar not shown, width " + view.barWidth);
+        const row = findChild(list, "stationRow");
+        verify(row !== null, "no row");
+        verify(row.width <= view.width - view.barWidth + 0.5, "row " + row.width + " overlaps the bar in " + view.width);
+        list.stations = [];
+        wait(50);
+        compare(view.barWidth, 0);
+    }
+
     function test_big_list_builds_visible_rows_only() {
         const rows = [];
         for (let i = 0; i < 3000; i++)

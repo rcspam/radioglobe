@@ -90,6 +90,9 @@ ColumnLayout {
         Layout.fillHeight: true
         QQC2.ScrollBar.vertical: PlasmaComponents3.ScrollBar {}
         clip: true
+        // An attached scroll bar paints over the rows: keep them clear of it,
+        // or the star sits underneath.
+        readonly property real barWidth: view.QQC2.ScrollBar.vertical && view.QQC2.ScrollBar.vertical.visible ? view.QQC2.ScrollBar.vertical.width : 0
 
         // What the ScrollView used to add: wheel and touchpad scrolling with
         // Kirigami's stepping and momentum.
@@ -121,7 +124,7 @@ ColumnLayout {
             // the binding re-evaluates when the favourites change.
             readonly property bool favorite: list.favoriteCheck(row.modelData.uuid)
 
-            width: view.width
+            width: view.width - view.barWidth
             height: Math.max(nameLabel.implicitHeight + metaLabel.implicitHeight + Kirigami.Units.smallSpacing * 2, starArea.height)
 
             // An Item is not an ItemDelegate: the screen reader gets
