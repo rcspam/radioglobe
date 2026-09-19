@@ -88,35 +88,38 @@ RowLayout {
 
     // A checkable menu line with a plain check icon: Plasma's own indicator
     // draws its hover frame over the mark, which hides it in some themes.
+    // Not `checkable`: a checkable MenuItem flips its own `checked` on every
+    // click, before the owner has applied anything, and from then on shows
+    // its private state rather than the filters. `active` is bound to the
+    // filters alone; a click only asks the owner for a change.
     component CheckedItem: PlasmaComponents3.MenuItem {
         id: line
+        property bool active: false
         Layout.fillWidth: true
-        checkable: true
+        checkable: false
+        // Room for the mark, which a non-checkable item does not reserve.
+        leftPadding: Kirigami.Units.iconSizes.small + Kirigami.Units.smallSpacing * 3
         indicator: Kirigami.Icon {
-            x: line.mirrored ? line.width - width - line.rightPadding : line.leftPadding
+            x: line.mirrored ? line.width - width - Kirigami.Units.smallSpacing * 2 : Kirigami.Units.smallSpacing * 2
             y: line.topPadding + Math.round((line.availableHeight - height) / 2)
             implicitWidth: Kirigami.Units.iconSizes.small
             implicitHeight: Kirigami.Units.iconSizes.small
             source: "checkmark"
-            visible: line.checked
+            visible: line.active
         }
     }
-
     component CodecItem: CheckedItem {
         required property string family
         objectName: "codec-" + family
-        checked: filterMenu.codecs.indexOf(family) >= 0
-        onTriggered: bar.filterRequested("codec", RadioModel.toggleCodec(filterMenu.current("codec"), family, !checked))
+        active: filterMenu.codecs.indexOf(family) >= 0
+        onTriggered: bar.filterRequested("codec", RadioModel.toggleCodec(filterMenu.current("codec"), family, !active))
     }
-
-    // One checkable line of the filter menu: the choice it stands for is
-    // lit when it is the current one, and asks for itself when triggered.
     component FilterItem: CheckedItem {
         required property string key
         required property var value
         readonly property var current: filterMenu.current(key)
         objectName: key + "-" + (value === "" || value === 0 ? "any" : value)
-        checked: current === value
+        active: current === value
         onTriggered: bar.filterRequested(key, value)
     }
 
@@ -224,7 +227,7 @@ RowLayout {
                 key: "codec"
                 value: ""
                 text: i18n("Any codec")
-                checked: filterMenu.codecs.length === 0
+                active: filterMenu.codecs.length === 0
             }
             CodecItem {
                 family: "mp3"

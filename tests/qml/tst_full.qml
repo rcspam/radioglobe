@@ -616,36 +616,18 @@ TestCase {
                     return kids[i];
             return null;
         }
-        verify(item("sort-popularity").checked, "default sort is popularity");
-        verify(item("codec-any").checked);
-        verify(item("minBitrate-any").checked);
-        item("sort-votes").triggered();
-        item("codec-aac").triggered();
-        item("minBitrate-128").triggered();
+        verify(item("sort-popularity").active, "default sort is popularity");
+        verify(item("codec-any").active);
+        verify(item("minBitrate-any").active);
+        // Real clicks: the entries never keep a state of their own, they
+        // only ask; the marks follow what the owner applied.
+        mouseClick(item("sort-votes"));
+        mouseClick(item("codec-aac"));
+        mouseClick(item("minBitrate-128"));
         for (const expected of ["filter:sort=votes", "filter:codec=aac", "filter:minBitrate=128"])
             compare(root.calls.indexOf(expected) >= 0, true, JSON.stringify(root.calls));
-        // Codecs add up: a second one joins the set, "Any" empties it.
-        root.listFilters = ({
-                sort: "popularity",
-                codec: "aac",
-                minBitrate: 0
-            });
-        verify(item("codec-aac").checked);
-        verify(!item("codec-any").checked);
-        item("codec-mp3").triggered();
-        compare(root.calls[root.calls.length - 1], "filter:codec=mp3,aac");
-        root.listFilters = ({
-                sort: "popularity",
-                codec: "mp3,aac",
-                minBitrate: 0
-            });
-        verify(item("codec-mp3").checked && item("codec-aac").checked);
-        item("codec-aac").triggered();
-        compare(root.calls[root.calls.length - 1], "filter:codec=mp3");
-        item("codec-any").triggered();
-        compare(root.calls[root.calls.length - 1], "filter:codec=");
-        menu.close();
-        tryCompare(menu, "visible", false);
+        verify(!item("codec-aac").active, "nothing applied yet, no mark");
+        verify(item("sort-popularity").active);
         // The owner applied them: the menu and the button follow.
         root.listFilters = ({
                 sort: "votes",
@@ -654,10 +636,11 @@ TestCase {
             });
         root.filtersActive = true;
         root.listStations = [root.worldStations[0]];
-        verify(item("sort-votes").checked);
-        verify(!item("sort-popularity").checked);
-        verify(item("codec-aac").checked);
-        verify(item("minBitrate-128").checked);
+        verify(item("sort-votes").active);
+        verify(!item("sort-popularity").active);
+        verify(item("codec-aac").active);
+        verify(!item("codec-any").active);
+        verify(item("minBitrate-128").active);
         compare(findChild(searchBar, "filterButton").highlighted, true);
         compare(loader.item.statusLine, "2 signals · 1 station after filters");
         // The filtered list is what the globe maps.
@@ -670,6 +653,33 @@ TestCase {
                 minBitrate: 0
             });
         compare(loader.item.statusLine, "2 signals");
+        // Codecs add up: a second one joins the set, a click on one that is
+        // on drops it, "Any" empties the set whatever is on.
+        root.listFilters = ({
+                sort: "popularity",
+                codec: "aac",
+                minBitrate: 0
+            });
+        mouseClick(item("codec-mp3"));
+        compare(root.calls[root.calls.length - 1], "filter:codec=mp3,aac");
+        root.listFilters = ({
+                sort: "popularity",
+                codec: "mp3,aac",
+                minBitrate: 0
+            });
+        verify(item("codec-mp3").active && item("codec-aac").active);
+        mouseClick(item("codec-aac"));
+        compare(root.calls[root.calls.length - 1], "filter:codec=mp3");
+        mouseClick(item("codec-any"));
+        compare(root.calls[root.calls.length - 1], "filter:codec=");
+        root.listFilters = ({
+                sort: "popularity",
+                codec: "",
+                minBitrate: 0
+            });
+        verify(item("codec-any").active && !item("codec-mp3").active && !item("codec-aac").active);
+        menu.close();
+        tryCompare(menu, "visible", false);
     }
 
     // The button toggles the menu, the widget's popup closing closes it and
@@ -850,9 +860,10 @@ TestCase {
         tryCompare(globe, "globeScale", 1.2);
         mouseClick(zoomOut);
         tryCompare(globe, "globeScale", 1);
-        // Disabled at the limits.
+        // Disabled at the limits (once the button's glide has fully ended).
+        tryVerify(() => !globe.moving, 1000);
         globe.globeScale = globe.maximumScale;
-        compare(zoomIn.enabled, false);
+        tryCompare(zoomIn, "enabled", false);
         compare(zoomOut.enabled, true);
         globe.globeScale = 1;
     }
