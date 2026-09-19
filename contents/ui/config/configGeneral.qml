@@ -28,6 +28,13 @@ KCM.SimpleKCM {
     property string cfg_icon: "map-globe"
     property string cfg_nextPreviousSource: "queue"
     property string cfg_marqueeMode: "loop"
+    // The list's sort and filters, also driven by the filter menu in the
+    // popup; the dialog shows and saves the same keys.
+    property string cfg_listSort: "popularity"
+    property string cfg_codecFilter: ""
+    property int cfg_minBitrate: 0
+    readonly property var sortChoices: ["popularity", "votes", "name", "bitrate"]
+    readonly property var bitrateChoices: [0, 64, 128, 192, 256]
     // Empty means "theme colour"; the check boxes drive that.
     property string cfg_iconColor: ""
     property string cfg_badgeColor: ""
@@ -155,6 +162,61 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: showDayNight
             text: i18n("Shade the night side of the globe")
+        }
+
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: i18n("Station list")
+        }
+        QQC2.ComboBox {
+            id: listSort
+            objectName: "listSort"
+            Kirigami.FormData.label: i18n("Sort by:")
+            model: [i18n("Popularity"), i18n("Votes"), i18n("Name"), i18n("Bitrate")]
+            currentIndex: Math.max(0, page.sortChoices.indexOf(page.cfg_listSort))
+            onActivated: index => page.cfg_listSort = page.sortChoices[index]
+        }
+        RowLayout {
+            Kirigami.FormData.label: i18n("Codecs:")
+            spacing: Kirigami.Units.largeSpacing
+
+            Repeater {
+                model: [
+                    {
+                        "family": "mp3",
+                        "label": "MP3"
+                    },
+                    {
+                        "family": "aac",
+                        "label": i18n("AAC (and AAC+)")
+                    },
+                    {
+                        "family": "ogg",
+                        "label": i18n("OGG (Vorbis)")
+                    }
+                ]
+                delegate: QQC2.CheckBox {
+                    required property var modelData
+                    objectName: "codec-" + modelData.family
+                    text: modelData.label
+                    checked: RadioModel.codecSet(page.cfg_codecFilter).indexOf(modelData.family) >= 0
+                    onToggled: page.cfg_codecFilter = RadioModel.toggleCodec(page.cfg_codecFilter, modelData.family, checked)
+                }
+            }
+        }
+        QQC2.Label {
+            text: i18n("None checked: every codec.")
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
+            opacity: 0.7
+        }
+        QQC2.ComboBox {
+            id: minBitrate
+            objectName: "minBitrate"
+            Kirigami.FormData.label: i18n("Minimum bitrate:")
+            model: [i18n("Any bitrate"), i18n("%1 kbps", 64), i18n("%1 kbps", 128), i18n("%1 kbps", 192), i18n("%1 kbps", 256)]
+            currentIndex: Math.max(0, page.bitrateChoices.indexOf(page.cfg_minBitrate))
+            onActivated: index => page.cfg_minBitrate = page.bitrateChoices[index]
         }
 
         Kirigami.Separator {

@@ -1271,24 +1271,26 @@ function sortWorld(stations, homeCountry) {
     return output;
 }
 
-// The list's sort and filters (the filter menu next to the search field),
-// applied locally to whatever list is loaded. `options`: sort "popularity"
-// (the input order, which is the server's click ranking or the user's own
-// order for favourites), "votes", "name" or "bitrate"; codec "" / "mp3" /
-// "aac" (AAC+ included) / "ogg" / "flac" / "opus"; minBitrate in kbps, 0 for none. A station whose
-// bitrate is unknown (0) is dropped as soon as a minimum is set. Ties keep
-// the input order; the input array is left untouched.
+// The list's sort and filters (the filter menu next to the search field
+// and the List section of the settings), applied locally to whatever list
+// is loaded. `options`: sort "popularity" (the input order, which is the
+// server's click ranking or the user's own order for favourites), "votes",
+// "name" or "bitrate"; codec, a comma-separated set of families among
+// "mp3", "aac" (AAC+ included) and "ogg" (Vorbis included), "" for any;
+// minBitrate in kbps, 0 for none. A station whose bitrate is unknown (0)
+// is dropped as soon as a minimum is set. Ties keep the input order; the
+// input array is left untouched.
 function applyFilters(stations, options) {
     var rows = Array.isArray(stations) ? stations : [];
     var opts = options || {};
-    var codec = String(opts.codec || "").toLowerCase();
+    var codecs = codecSet(opts.codec);
     var minBitrate = Number(opts.minBitrate) || 0;
     var sort = String(opts.sort || "popularity");
     var kept = [];
     for (var i = 0; i < rows.length; i++) {
         var station = rows[i];
         if (!station) continue;
-        if (codec !== "" && codecFamily(station.codec) !== codec) continue;
+        if (codecs.length > 0 && codecs.indexOf(codecFamily(station.codec)) < 0) continue;
         if (minBitrate > 0 && (Number(station.bitrate) || 0) < minBitrate) continue;
         kept.push({ station: station, index: i });
     }
@@ -1306,22 +1308,41 @@ function applyFilters(stations, options) {
     return output;
 }
 
-// "mp3", "aac" (AAC, AAC+, AAC+ v2...), "ogg" (OGG, Vorbis), "flac",
-// "opus", or "" for anything else. Radio Browser's codec field is free
-// text ("AAC,H.264" happens), hence the substring matches.
+// "mp3", "aac" (AAC, AAC+, AAC+ v2...), "ogg" (OGG, Vorbis) or "" for
+// anything else. Radio Browser's codec field is free text ("AAC,H.264"
+// happens), hence the substring matches. FLAC and Opus are not offered:
+// five stations and none, respectively, on the whole directory.
 function codecFamily(codec) {
     var text = String(codec || "").toUpperCase();
     if (text.indexOf("MP3") >= 0) return "mp3";
     if (text.indexOf("AAC") >= 0) return "aac";
-    if (text.indexOf("OPUS") >= 0) return "opus";
-    if (text.indexOf("FLAC") >= 0) return "flac";
     if (text.indexOf("OGG") >= 0 || text.indexOf("VORBIS") >= 0) return "ogg";
     return "";
+}
+
+// The codec setting ("mp3,aac") as a clean sorted list of known families.
+function codecSet(value) {
+    var parts = String(value || "").toLowerCase().split(",");
+    for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
+    var known = ["mp3", "aac", "ogg"];
+    var output = [];
+    for (var i = 0; i < known.length; i++)
+        if (parts.indexOf(known[i]) >= 0) output.push(known[i]);
+    return output;
+}
+
+// The codec setting with one family added or removed.
+function toggleCodec(value, family, enabled) {
+    var set = codecSet(value);
+    var at = set.indexOf(family);
+    if (enabled && at < 0) set.push(family);
+    if (!enabled && at >= 0) set.splice(at, 1);
+    return codecSet(set.join(",")).join(",");
 }
 
 function filtersActive(options) {
     if (!options) return false;
     return String(options.sort || "popularity") !== "popularity"
-        || String(options.codec || "") !== ""
+        || codecSet(options.codec).length > 0
         || (Number(options.minBitrate) || 0) > 0;
 }

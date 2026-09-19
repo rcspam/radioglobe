@@ -614,6 +614,26 @@ TestCase {
         item("minBitrate-128").triggered();
         for (const expected of ["filter:sort=votes", "filter:codec=aac", "filter:minBitrate=128"])
             compare(root.calls.indexOf(expected) >= 0, true, JSON.stringify(root.calls));
+        // Codecs add up: a second one joins the set, "Any" empties it.
+        root.listFilters = ({
+                sort: "popularity",
+                codec: "aac",
+                minBitrate: 0
+            });
+        verify(item("codec-aac").checked);
+        verify(!item("codec-any").checked);
+        item("codec-mp3").triggered();
+        compare(root.calls[root.calls.length - 1], "filter:codec=mp3,aac");
+        root.listFilters = ({
+                sort: "popularity",
+                codec: "mp3,aac",
+                minBitrate: 0
+            });
+        verify(item("codec-mp3").checked && item("codec-aac").checked);
+        item("codec-aac").triggered();
+        compare(root.calls[root.calls.length - 1], "filter:codec=mp3");
+        item("codec-any").triggered();
+        compare(root.calls[root.calls.length - 1], "filter:codec=");
         // The owner applied them: the menu and the button follow.
         root.listFilters = ({
                 sort: "votes",

@@ -501,7 +501,7 @@ test("applyFilters sorts and filters a loaded list without touching it", () => {
         { uuid: "d", name: "Beta", codec: "", bitrate: 0, clicks: 20 },
         { uuid: "e", name: "Gamma", codec: "OGG", bitrate: 192, clicks: 10, votes: 1 },
         { uuid: "f", name: "Delta", codec: "FLAC", bitrate: 900, clicks: 5, votes: 0 },
-        { uuid: "g", name: "Eta", codec: "OPUS", bitrate: 96, clicks: 4, votes: 0 },
+        { uuid: "g", name: "Eta", codec: "AAC,H.264", bitrate: 96, clicks: 4, votes: 0 },
         { uuid: "h", name: "Theta", codec: "Vorbis", bitrate: 160, clicks: 3, votes: 0 }
     ];
     const ids = rows => Array.from(rows, r => r.uuid);
@@ -515,13 +515,16 @@ test("applyFilters sorts and filters a loaded list without touching it", () => {
     assert.deepEqual(ids(model.applyFilters(list, { sort: "votes" })), ["b", "c", "a", "e", "d", "f", "g", "h"]);
     assert.deepEqual(ids(model.applyFilters(list, { sort: "name" })), ["b", "d", "f", "c", "g", "e", "h", "a"]);
     assert.deepEqual(ids(model.applyFilters(list, { sort: "bitrate" })), ["f", "c", "e", "h", "a", "g", "b", "d"]);
-    // Codec families: AAC covers AAC+, OGG covers Vorbis, unknown never match.
+    // Codec families, several at once: AAC covers AAC+ and "AAC,H.264",
+    // OGG covers Vorbis, unknown families (FLAC, empty) never match.
     assert.deepEqual(ids(model.applyFilters(list, { codec: "mp3" })), ["a"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "aac" })), ["b", "c"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "AAC" })), ["b", "c"]);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "aac" })), ["b", "c", "g"]);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "AAC" })), ["b", "c", "g"]);
     assert.deepEqual(ids(model.applyFilters(list, { codec: "ogg" })), ["e", "h"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "flac" })), ["f"]);
-    assert.deepEqual(ids(model.applyFilters(list, { codec: "opus" })), ["g"]);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "mp3,ogg" })), ["a", "e", "h"]);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "ogg, mp3" })), ["a", "e", "h"]);
+    // Only unknown names: no restriction at all.
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "flac,opus" })), all);
     // Minimum bitrate; an unknown bitrate (0) is dropped once a minimum is set.
     assert.deepEqual(ids(model.applyFilters(list, { minBitrate: 128 })), ["a", "c", "e", "f", "h"]);
     assert.deepEqual(ids(model.applyFilters(list, { minBitrate: 128, sort: "bitrate" })), ["f", "c", "e", "h", "a"]);
@@ -536,5 +539,18 @@ test("filtersActive says whether anything departs from the defaults", () => {
     assert.equal(model.filtersActive(null), false);
     assert.equal(model.filtersActive({ sort: "votes" }), true);
     assert.equal(model.filtersActive({ codec: "mp3" }), true);
+    assert.equal(model.filtersActive({ codec: "opus" }), false);
     assert.equal(model.filtersActive({ minBitrate: 64 }), true);
+});
+
+test("codecSet and toggleCodec keep the codec setting clean", () => {
+    assert.deepEqual([...model.codecSet("aac,mp3")], ["mp3", "aac"]);
+    assert.deepEqual([...model.codecSet(" MP3 ,flac")], ["mp3"]);
+    assert.deepEqual([...model.codecSet("")], []);
+    assert.deepEqual([...model.codecSet(null)], []);
+    assert.equal(model.toggleCodec("", "aac", true), "aac");
+    assert.equal(model.toggleCodec("aac", "mp3", true), "mp3,aac");
+    assert.equal(model.toggleCodec("mp3,aac", "aac", false), "mp3");
+    assert.equal(model.toggleCodec("mp3", "mp3", false), "");
+    assert.equal(model.toggleCodec("mp3", "mp3", true), "mp3");
 });

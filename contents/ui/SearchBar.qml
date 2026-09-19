@@ -4,6 +4,7 @@ import QtQuick.Controls as QQC2
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
+import "RadioModel.js" as RadioModel
 
 RowLayout {
     id: bar
@@ -83,15 +84,36 @@ RowLayout {
         PlasmaComponents3.ToolTip.visible: hovered && !filterMenu.visible
     }
 
+    // A checkable menu line with a plain check icon: Plasma's own indicator
+    // draws its hover frame over the mark, which hides it in some themes.
+    component CheckedItem: PlasmaComponents3.MenuItem {
+        id: line
+        Layout.fillWidth: true
+        checkable: true
+        indicator: Kirigami.Icon {
+            x: line.mirrored ? line.width - width - line.rightPadding : line.leftPadding
+            y: line.topPadding + Math.round((line.availableHeight - height) / 2)
+            implicitWidth: Kirigami.Units.iconSizes.small
+            implicitHeight: Kirigami.Units.iconSizes.small
+            source: "checkmark"
+            visible: line.checked
+        }
+    }
+
+    component CodecItem: CheckedItem {
+        required property string family
+        objectName: "codec-" + family
+        checked: filterMenu.codecs.indexOf(family) >= 0
+        onTriggered: bar.filterRequested("codec", RadioModel.toggleCodec(filterMenu.current("codec"), family, !checked))
+    }
+
     // One checkable line of the filter menu: the choice it stands for is
     // lit when it is the current one, and asks for itself when triggered.
-    component FilterItem: PlasmaComponents3.MenuItem {
+    component FilterItem: CheckedItem {
         required property string key
         required property var value
         readonly property var current: filterMenu.current(key)
         objectName: key + "-" + (value === "" || value === 0 ? "any" : value)
-        Layout.fillWidth: true
-        checkable: true
         checked: current === value
         onTriggered: bar.filterRequested(key, value)
     }
@@ -109,6 +131,8 @@ RowLayout {
         // edge does not close it.
         property int leaveDelayMs: 400
         closePolicy: QQC2.Popup.CloseOnEscape | QQC2.Popup.CloseOnPressOutsideParent
+
+        readonly property var codecs: RadioModel.codecSet(filterMenu.current("codec"))
 
         function current(key) {
             const filters = bar.filters || {};
@@ -174,35 +198,25 @@ RowLayout {
                 text: i18n("Codec")
                 enabled: false
             }
+            // Codecs combine: each entry toggles its family in the set,
+            // "Any" empties it.
             FilterItem {
                 key: "codec"
                 value: ""
                 text: i18n("Any codec")
+                checked: filterMenu.codecs.length === 0
             }
-            FilterItem {
-                key: "codec"
-                value: "mp3"
+            CodecItem {
+                family: "mp3"
                 text: "MP3"
             }
-            FilterItem {
-                key: "codec"
-                value: "aac"
-                text: "AAC"
+            CodecItem {
+                family: "aac"
+                text: i18n("AAC (and AAC+)")
             }
-            FilterItem {
-                key: "codec"
-                value: "ogg"
-                text: "OGG"
-            }
-            FilterItem {
-                key: "codec"
-                value: "opus"
-                text: "Opus"
-            }
-            FilterItem {
-                key: "codec"
-                value: "flac"
-                text: "FLAC"
+            CodecItem {
+                family: "ogg"
+                text: i18n("OGG (Vorbis)")
             }
             PlasmaComponents3.MenuSeparator {
                 Layout.fillWidth: true

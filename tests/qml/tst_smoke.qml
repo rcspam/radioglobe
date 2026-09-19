@@ -42,6 +42,35 @@ TestCase {
         page.destroy();
     }
 
+    // The List section edits the same keys as the popup's filter menu.
+    function test_list_section_edits_sort_codecs_and_bitrate() {
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/config/configGeneral.qml"));
+        compare(component.status, Component.Ready, component.errorString());
+        const page = component.createObject(null, {
+            cfg_listSort: "name",
+            cfg_codecFilter: "mp3,ogg",
+            cfg_minBitrate: 128
+        });
+        verify(page !== null, component.errorString());
+        compare(findChild(page, "listSort").currentIndex, 2);
+        compare(findChild(page, "minBitrate").currentIndex, 2);
+        compare(findChild(page, "codec-mp3").checked, true);
+        compare(findChild(page, "codec-aac").checked, false);
+        compare(findChild(page, "codec-ogg").checked, true);
+        // toggle() flips the box without the user's toggled(): emit it too.
+        findChild(page, "codec-aac").toggle();
+        findChild(page, "codec-aac").toggled();
+        compare(page.cfg_codecFilter, "mp3,aac,ogg");
+        findChild(page, "codec-mp3").toggle();
+        findChild(page, "codec-mp3").toggled();
+        compare(page.cfg_codecFilter, "aac,ogg");
+        findChild(page, "listSort").activated(1);
+        compare(page.cfg_listSort, "votes");
+        findChild(page, "minBitrate").activated(0);
+        compare(page.cfg_minBitrate, 0);
+        page.destroy();
+    }
+
     // An empty home country falls back to the country of the user's locale,
     // which the placeholder advertises. Radio Browser only knows upper case
     // ISO codes, so whatever the user types is normalised.
