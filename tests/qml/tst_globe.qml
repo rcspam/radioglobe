@@ -416,8 +416,8 @@ TestCase {
     function test_wheelZoomStepAndCeiling() {
         mouseWheel(globe, 400, 300, 0, 120);
         // A glide, not a jump, and one notch is the configured step.
-        verify(globe.globeScale < 1.25, "animated, not jumped: " + globe.globeScale);
-        tryCompare(globe, "globeScale", 1.25);
+        verify(globe.globeScale < 1.2, "animated, not jumped: " + globe.globeScale);
+        tryCompare(globe, "globeScale", 1.2);
         for (var i = 0; i < 60; i++)
             mouseWheel(globe, 400, 300, 0, 120);
         tryCompare(globe, "globeScale", 1024);
@@ -429,19 +429,24 @@ TestCase {
         mouseWheel(globe, 400, 300, 0, 120);
         mouseWheel(globe, 400, 300, 0, 120);
         mouseWheel(globe, 400, 300, 0, -120);
-        tryCompare(globe, "globeScale", 1.25);
-        globe.wheelZoomStep = 50;
+        tryCompare(globe, "globeScale", 1.2);
+        globe.zoomStep = 50;
         mouseWheel(globe, 400, 300, 0, 120);
-        tryCompare(globe, "globeScale", 1.875);
-        globe.wheelZoomStep = 25;
+        tryCompare(globe, "globeScale", 1.8);
+        globe.zoomStep = 20;
     }
 
-    function test_zoomButtonsStepByTwoAndAnimate() {
+    // The buttons step by the same setting as the wheel.
+    function test_zoomButtonsStepBySettingAndAnimate() {
         globe.zoomIn();
-        verify(globe.globeScale < 2, "animated, not jumped: " + globe.globeScale);
-        tryCompare(globe, "globeScale", 2);
+        verify(globe.globeScale < 1.2, "animated, not jumped: " + globe.globeScale);
+        tryCompare(globe, "globeScale", 1.2);
         globe.zoomOut();
         tryCompare(globe, "globeScale", 1);
+        globe.zoomStep = 100;
+        globe.zoomIn();
+        tryCompare(globe, "globeScale", 2);
+        globe.zoomStep = 20;
     }
 
     // The centre stays where it is: a button zoom has no cursor to anchor.
@@ -449,7 +454,7 @@ TestCase {
         globe.centreLatitude = 40;
         globe.centreLongitude = -3;
         globe.zoomIn();
-        tryCompare(globe, "globeScale", 2);
+        tryCompare(globe, "globeScale", 1.2);
         compare(globe.centreLatitude, 40);
         compare(globe.centreLongitude, -3);
     }
@@ -474,7 +479,7 @@ TestCase {
     function test_zoomButtonsQueueFromTheTarget() {
         globe.zoomIn();
         globe.zoomIn();
-        tryCompare(globe, "globeScale", 4);
+        tryCompare(globe, "globeScale", 1.44);
     }
 
     function test_wheelInterruptsTheButtonZoom() {
@@ -483,14 +488,14 @@ TestCase {
         const beforeWheel = globe.globeScale;
         mouseWheel(globe, 400, 300, 0, -120);
         wait(250);
-        // The button's glide to 2 is dropped; the wheel's own target wins.
-        fuzzyCompare(globe.globeScale, beforeWheel / 1.25, 0.001);
+        // The button's glide is dropped; the wheel's own target wins.
+        fuzzyCompare(globe.globeScale, beforeWheel / 1.2, 0.001);
     }
 
     function test_wheelZoomKeepsThePointUnderTheCursor() {
         var radius = globe.radius();
         var anchor = RadioModel.unproject((560 - 400) / radius, -(210 - 300) / radius, 0, 0);
-        for (var i = 0; i < 30; i++)
+        for (var i = 0; i < 40; i++)
             mouseWheel(globe, 560, 210, 0, 120);
         tryVerify(() => !globe.moving, 1000);
         verify(globe.globeScale > 500, "reached a deep zoom: " + globe.globeScale);

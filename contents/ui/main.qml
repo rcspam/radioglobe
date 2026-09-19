@@ -31,6 +31,7 @@ PlasmoidItem {
         })
     readonly property var shownStations: RadioModel.applyFilters(root.listStations, root.listFilters)
     readonly property bool filtersActive: RadioModel.filtersActive(root.listFilters)
+    readonly property var codecChoices: radioBrowser.codecs
     // A short message for the status line (vote result), cleared after a while.
     property string notice: ""
     property string listSource: "world"
@@ -58,7 +59,7 @@ PlasmoidItem {
     readonly property bool pinned: Plasmoid.configuration.pinned
     readonly property bool approximateLocations: Plasmoid.configuration.approximateLocations
     readonly property bool showDayNight: Plasmoid.configuration.showDayNight
-    readonly property int wheelZoomStep: Plasmoid.configuration.wheelZoomStep
+    readonly property int zoomStep: Plasmoid.configuration.zoomStep
 
     function setPinned(value) {
         Plasmoid.configuration.pinned = value;
@@ -556,6 +557,7 @@ PlasmoidItem {
                 }
             }
             radioBrowser.start();
+            radioBrowser.loadCodecs();
             if (root.isOnDesktop || root.expanded)
                 radioBrowser.expandWorld();
         });

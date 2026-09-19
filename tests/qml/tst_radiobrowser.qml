@@ -117,6 +117,52 @@ TestCase {
 
     // QtQuick.LocalStorage is not installed on a stock Kubuntu: without a cache
     // the world still loads from the network, nothing is written anywhere.
+    // The codec list comes with the first start, is cached for a week and
+    // served from the cache meanwhile; a fixed list stands in before.
+    function test_codecs_are_loaded_once_and_cached() {
+        compare(rb.codecs.map(c => c.name), ["MP3", "AAC+", "AAC", "OGG"]);
+        rb.start();
+        rb.loadCodecs();
+        answer("/json/servers", 200, [
+            {
+                name: "de1.api.radio-browser.info"
+            }
+        ]);
+        answer("/json/codecs", 200, [
+            {
+                name: "MP3",
+                stationcount: 40000
+            },
+            {
+                name: "OGG",
+                stationcount: 700
+            },
+            {
+                name: "FLV",
+                stationcount: 2
+            }
+        ]);
+        compare(rb.codecs.map(c => c.name), ["MP3", "OGG"]);
+        compare(rb.codecs[0].count, 40000);
+        verify(store[rb.codecsKey] !== undefined, "cached");
+        answer("/json/stations/search", 200, [raw("a")]);
+        // Fresh cache: no request.
+        rb.loadCodecs();
+        compare(pending.length, 0);
+        // A week later: served, then refreshed.
+        clock += 8 * 24 * 3600 * 1000;
+        rb.loadCodecs();
+        compare(rb.codecs.map(c => c.name), ["MP3", "OGG"]);
+        compare(pending.length, 1);
+        answer("/json/codecs", 200, [
+            {
+                name: "AAC",
+                stationcount: 9000
+            }
+        ]);
+        compare(rb.codecs.map(c => c.name), ["AAC"]);
+    }
+
     function test_vote_reports_ok_and_refusals() {
         const results = [];
         rb.vote("abc", ok => results.push(ok));

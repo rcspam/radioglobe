@@ -23,7 +23,7 @@ KCM.SimpleKCM {
     property alias cfg_invertWheel: invertWheel.checked
     property alias cfg_toolTipDelay: toolTipDelay.value
     property alias cfg_showDayNight: showDayNight.checked
-    property alias cfg_wheelZoomStep: wheelZoomStep.value
+    property alias cfg_zoomStep: zoomStep.value
     property alias cfg_restoreLastStation: restoreLastStation.checked
     property alias cfg_autoplayLastStation: autoplayLastStation.checked
     property string cfg_icon: "map-globe"
@@ -35,6 +35,28 @@ KCM.SimpleKCM {
     property string cfg_codecFilter: ""
     property int cfg_minBitrate: 0
     readonly property var sortChoices: ["popularity", "votes", "name", "bitrate"]
+    // The directory's codecs plus whatever the setting names on top.
+    readonly property var codecRows: {
+        const rows = [];
+        const seen = [];
+        for (const choice of radioBrowser.codecs) {
+            const name = String(choice.name).toLowerCase();
+            seen.push(name);
+            rows.push({
+                name: name,
+                label: choice.name,
+                count: choice.count
+            });
+        }
+        for (const name of RadioModel.codecSet(page.cfg_codecFilter))
+            if (seen.indexOf(name) < 0)
+                rows.push({
+                    name: name,
+                    label: name.toUpperCase(),
+                    count: 0
+                });
+        return rows;
+    }
     readonly property var bitrateChoices: [0, 64, 128, 192, 256]
     // Empty means "theme colour"; the check boxes drive that.
     property string cfg_iconColor: ""
@@ -57,6 +79,18 @@ KCM.SimpleKCM {
     property string mprisStatus: checkingText
     // Whether QtQuick.LocalStorage loads here: same check as the widget's cache Loader.
     readonly property bool cacheAvailable: Qt.createComponent(Qt.resolvedUrl("../Cache.qml")).status === Component.Ready
+
+    Ui.Http {
+        id: http
+        userAgent: "RadioGlobe (settings)"
+    }
+
+    // Only for the codec list: no world, no cache.
+    Ui.RadioBrowser {
+        id: radioBrowser
+        request: http.request
+        Component.onCompleted: radioBrowser.loadCodecs()
+    }
 
     Ui.Exec {
         id: exec
@@ -112,9 +146,9 @@ KCM.SimpleKCM {
             stepSize: 500
         }
         QQC2.SpinBox {
-            id: wheelZoomStep
-            objectName: "wheelZoomStep"
-            Kirigami.FormData.label: i18n("Zoom per mouse wheel notch:")
+            id: zoomStep
+            objectName: "zoomStep"
+            Kirigami.FormData.label: i18n("Zoom step (wheel notch, + and − buttons):")
             from: 5
             to: 100
             stepSize: 5
@@ -187,36 +221,27 @@ KCM.SimpleKCM {
             currentIndex: Math.max(0, page.sortChoices.indexOf(page.cfg_listSort))
             onActivated: index => page.cfg_listSort = page.sortChoices[index]
         }
-        RowLayout {
+        // Radio Browser's own codec list with its station counts, a fixed
+        // one until it arrives (or offline). A codec the setting names that
+        // is not on the list still shows, so it can be unticked.
+        ColumnLayout {
+            objectName: "codecList"
             Kirigami.FormData.label: i18n("Codecs:")
-            spacing: Kirigami.Units.largeSpacing
+            spacing: Kirigami.Units.smallSpacing
 
             Repeater {
-                model: [
-                    {
-                        "family": "mp3",
-                        "label": "MP3"
-                    },
-                    {
-                        "family": "aac",
-                        "label": i18n("AAC (and AAC+)")
-                    },
-                    {
-                        "family": "ogg",
-                        "label": i18n("OGG (Vorbis)")
-                    }
-                ]
+                model: page.codecRows
                 delegate: QQC2.CheckBox {
                     required property var modelData
-                    objectName: "codec-" + modelData.family
-                    text: modelData.label
-                    checked: RadioModel.codecSet(page.cfg_codecFilter).indexOf(modelData.family) >= 0
-                    onToggled: page.cfg_codecFilter = RadioModel.toggleCodec(page.cfg_codecFilter, modelData.family, checked)
+                    objectName: "codec-" + modelData.name
+                    text: modelData.count > 0 ? i18n("%1 (%2 stations)", modelData.label, Number(modelData.count).toLocaleString(Qt.locale(), "f", 0)) : modelData.label
+                    checked: RadioModel.codecSet(page.cfg_codecFilter).indexOf(modelData.name) >= 0
+                    onToggled: page.cfg_codecFilter = RadioModel.toggleCodec(page.cfg_codecFilter, modelData.name, checked)
                 }
             }
         }
         QQC2.Label {
-            text: i18n("None checked: every codec.")
+            text: i18n("None checked: every codec. Counts are for the whole directory.")
             wrapMode: Text.Wrap
             Layout.fillWidth: true
             opacity: 0.7

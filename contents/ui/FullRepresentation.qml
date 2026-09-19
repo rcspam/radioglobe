@@ -245,6 +245,7 @@ Item {
                 onCleared: root.clearSearch()
                 onRandomRequested: root.playRandom()
                 filters: root.listFilters
+                codecs: root.codecChoices
                 filtersActive: root.filtersActive
                 onFilterRequested: (key, value) => root.setListFilter(key, value)
                 onFiltersResetRequested: root.resetListFilters()
@@ -315,7 +316,7 @@ Item {
                         textColor: Kirigami.Theme.textColor
                         fontFamily: Kirigami.Theme.defaultFont.family
                         showDayNight: root.showDayNight
-                        wheelZoomStep: root.wheelZoomStep
+                        zoomStep: root.zoomStep
                         // Darker than the sphere in both light and dark
                         // themes, so the night side reads as a shadow.
                         nightColor: Qt.darker(Kirigami.Theme.backgroundColor, 3)

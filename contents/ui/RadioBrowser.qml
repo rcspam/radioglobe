@@ -49,10 +49,14 @@ Item {
     readonly property bool worldFromCache: root._worldFromCache
     readonly property bool expanding: root._expanding
     readonly property string lastError: root._lastError
+    // What the codec pickers offer ([{name, count}], most used first): the
+    // directory's own list once loadCodecs() got it, a fixed one before.
+    readonly property var codecs: root._codecs
 
     signal worldUpdated
 
     property var _world: []
+    property var _codecs: RadioModel.defaultCodecChoices()
     property bool _worldFromCache: false
     property bool _expanding: false
     property string _lastError: ""
@@ -89,6 +93,7 @@ Item {
         // instead of flushing an empty list over a usable cache.
         root._worldDirty = false;
         root._started = false;
+        root._codecs = RadioModel.defaultCodecChoices();
     }
 
     // `force` re-runs a start that already happened and goes to the network
@@ -128,6 +133,24 @@ Item {
             root._absorb(rows);
         });
         root._loadHome();
+    }
+
+    // The directory's codec list, cached for a week: it moves slowly.
+    readonly property string codecsKey: "codecs:1"
+    function loadCodecs() {
+        const cached = root.cache ? root.cache.get(root.codecsKey) : null;
+        if (cached && Array.isArray(cached.value) && cached.value.length > 0) {
+            root._codecs = RadioModel.codecChoices(cached.value);
+            if (root.now() - cached.savedAt < root.cacheTtlMs * 7)
+                return;
+        }
+        root._api("/json/codecs", null, rows => {
+            if (rows === null || rows.length === 0)
+                return;
+            root._codecs = RadioModel.codecChoices(rows);
+            if (root.cache)
+                root.cache.set(root.codecsKey, rows, root.now());
+        });
     }
 
     // Manual retry after "Radio Browser unreachable": clears the error and

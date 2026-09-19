@@ -74,9 +74,9 @@
     <entry name="toolTipDelay" type="Int">
       <default>300</default>
     </entry>
-    <!-- Percent of zoom per mouse wheel notch on the globe. -->
-    <entry name="wheelZoomStep" type="Int">
-      <default>25</default>
+    <!-- Percent of zoom per mouse wheel notch or + / - click on the globe. -->
+    <entry name="zoomStep" type="Int">
+      <default>20</default>
     </entry>
     <entry name="showDayNight" type="Bool">
       <default>true</default>

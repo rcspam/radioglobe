@@ -48,22 +48,34 @@ TestCase {
         compare(component.status, Component.Ready, component.errorString());
         const page = component.createObject(null, {
             cfg_listSort: "name",
-            cfg_codecFilter: "mp3,ogg",
+            cfg_codecFilter: "mp3,ogg,wma",
             cfg_minBitrate: 128
         });
         verify(page !== null, component.errorString());
         compare(findChild(page, "listSort").currentIndex, 2);
         compare(findChild(page, "minBitrate").currentIndex, 2);
-        compare(findChild(page, "codec-mp3").checked, true);
-        compare(findChild(page, "codec-aac").checked, false);
-        compare(findChild(page, "codec-ogg").checked, true);
+        // Offline: the built-in list, plus the codec the setting names that
+        // is not on it. Repeater-made boxes are not findChild's children.
+        const list = findChild(page, "codecList");
+        function box(name) {
+            const kids = list.children;
+            for (let i = 0; i < kids.length; i++)
+                if (kids[i].objectName === name)
+                    return kids[i];
+            return null;
+        }
+        compare(box("codec-mp3").checked, true);
+        compare(box("codec-aac+").checked, false);
+        compare(box("codec-aac").checked, false);
+        compare(box("codec-ogg").checked, true);
+        compare(box("codec-wma").checked, true);
         // toggle() flips the box without the user's toggled(): emit it too.
-        findChild(page, "codec-aac").toggle();
-        findChild(page, "codec-aac").toggled();
-        compare(page.cfg_codecFilter, "mp3,aac,ogg");
-        findChild(page, "codec-mp3").toggle();
-        findChild(page, "codec-mp3").toggled();
-        compare(page.cfg_codecFilter, "aac,ogg");
+        box("codec-aac").toggle();
+        box("codec-aac").toggled();
+        compare(page.cfg_codecFilter, "mp3,ogg,wma,aac");
+        box("codec-mp3").toggle();
+        box("codec-mp3").toggled();
+        compare(page.cfg_codecFilter, "ogg,wma,aac");
         findChild(page, "listSort").activated(1);
         compare(page.cfg_listSort, "votes");
         findChild(page, "minBitrate").activated(0);

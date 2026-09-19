@@ -63,7 +63,25 @@ TestCase {
         property var favorites: []
         property bool approximateLocations: false
         property bool showDayNight: true
-        property int wheelZoomStep: 25
+        property int zoomStep: 20
+        property var codecChoices: [
+            {
+                name: "MP3",
+                count: 43877
+            },
+            {
+                name: "AAC+",
+                count: 9830
+            },
+            {
+                name: "AAC",
+                count: 8867
+            },
+            {
+                name: "OGG",
+                count: 746
+            }
+        ]
         property bool expanded: true
         property bool isOnDesktop: false
         property bool pinned: false
@@ -604,8 +622,17 @@ TestCase {
         const searchBar = findChild(loader.item, "searchBar");
         const menu = findChild(searchBar, "filterMenu");
         verify(menu !== null, "filterMenu not found");
+        // Repeater-made entries are not findChild's children, and only exist
+        // once the popup has been shown: open it and walk it.
+        root.expanded = true;
+        mouseClick(findChild(searchBar, "filterButton"));
+        tryCompare(menu, "visible", true);
         function item(name) {
-            return findChild(searchBar, name);
+            const kids = menu.contentItem.children;
+            for (let i = 0; i < kids.length; i++)
+                if (kids[i].objectName === name)
+                    return kids[i];
+            return null;
         }
         verify(item("sort-popularity").checked, "default sort is popularity");
         verify(item("codec-any").checked);
@@ -624,17 +651,51 @@ TestCase {
         verify(item("codec-aac").checked);
         verify(!item("codec-any").checked);
         item("codec-mp3").triggered();
-        compare(root.calls[root.calls.length - 1], "filter:codec=mp3,aac");
+        compare(root.calls[root.calls.length - 1], "filter:codec=aac,mp3");
         root.listFilters = ({
                 sort: "popularity",
-                codec: "mp3,aac",
+                codec: "aac,mp3",
                 minBitrate: 0
             });
         verify(item("codec-mp3").checked && item("codec-aac").checked);
+        verify(item("codec-aac+") !== null && !item("codec-aac+").checked, "AAC+ listed from the directory");
         item("codec-aac").triggered();
         compare(root.calls[root.calls.length - 1], "filter:codec=mp3");
         item("codec-any").triggered();
         compare(root.calls[root.calls.length - 1], "filter:codec=");
+        // The list follows the directory.
+        root.codecChoices = [
+            {
+                name: "MP3",
+                count: 1
+            },
+            {
+                name: "FLAC",
+                count: 1
+            }
+        ];
+        verify(item("codec-flac") !== null, "new codec listed");
+        verify(item("codec-ogg") === null, "dropped codec gone");
+        root.codecChoices = [
+            {
+                name: "MP3",
+                count: 43877
+            },
+            {
+                name: "AAC+",
+                count: 9830
+            },
+            {
+                name: "AAC",
+                count: 8867
+            },
+            {
+                name: "OGG",
+                count: 746
+            }
+        ];
+        menu.close();
+        tryCompare(menu, "visible", false);
         // The owner applied them: the menu and the button follow.
         root.listFilters = ({
                 sort: "votes",
@@ -836,7 +897,7 @@ TestCase {
         verify(zoomIn !== null && zoomOut !== null, "zoom buttons not found");
         globe.globeScale = 1;
         mouseClick(zoomIn);
-        tryCompare(globe, "globeScale", 2);
+        tryCompare(globe, "globeScale", 1.2);
         mouseClick(zoomOut);
         tryCompare(globe, "globeScale", 1);
         // Disabled at the limits.

@@ -1275,11 +1275,10 @@ function sortWorld(stations, homeCountry) {
 // and the List section of the settings), applied locally to whatever list
 // is loaded. `options`: sort "popularity" (the input order, which is the
 // server's click ranking or the user's own order for favourites), "votes",
-// "name" or "bitrate"; codec, a comma-separated set of families among
-// "mp3", "aac" (AAC+ included) and "ogg" (Vorbis included), "" for any;
-// minBitrate in kbps, 0 for none. A station whose bitrate is unknown (0)
-// is dropped as soon as a minimum is set. Ties keep the input order; the
-// input array is left untouched.
+// "name" or "bitrate"; codec, a comma-separated set of Radio Browser codec
+// names ("mp3,aac+"), "" for any; minBitrate in kbps, 0 for none. A station
+// whose bitrate is unknown (0) is dropped as soon as a minimum is set. Ties
+// keep the input order; the input array is left untouched.
 function applyFilters(stations, options) {
     var rows = Array.isArray(stations) ? stations : [];
     var opts = options || {};
@@ -1290,7 +1289,7 @@ function applyFilters(stations, options) {
     for (var i = 0; i < rows.length; i++) {
         var station = rows[i];
         if (!station) continue;
-        if (codecs.length > 0 && codecs.indexOf(codecFamily(station.codec)) < 0) continue;
+        if (codecs.length > 0 && !codecMatches(station.codec, codecs)) continue;
         if (minBitrate > 0 && (Number(station.bitrate) || 0) < minBitrate) continue;
         kept.push({ station: station, index: i });
     }
@@ -1308,36 +1307,73 @@ function applyFilters(stations, options) {
     return output;
 }
 
-// "mp3", "aac" (AAC, AAC+, AAC+ v2...), "ogg" (OGG, Vorbis) or "" for
-// anything else. Radio Browser's codec field is free text ("AAC,H.264"
-// happens), hence the substring matches. FLAC and Opus are not offered:
-// five stations and none, respectively, on the whole directory.
-function codecFamily(codec) {
-    var text = String(codec || "").toUpperCase();
-    if (text.indexOf("MP3") >= 0) return "mp3";
-    if (text.indexOf("AAC") >= 0) return "aac";
-    if (text.indexOf("OGG") >= 0 || text.indexOf("VORBIS") >= 0) return "ogg";
-    return "";
+// A station's codec field as lower-case names: Radio Browser writes
+// "AAC+", "AAC,H.264" and the like, and "UNKNOWN" (or nothing) when it
+// could not tell.
+function codecTokens(codec) {
+    var parts = String(codec || "").toLowerCase().split(",");
+    var output = [];
+    for (var i = 0; i < parts.length; i++) {
+        var part = parts[i].trim();
+        if (part !== "" && output.indexOf(part) < 0) output.push(part);
+    }
+    return output.length ? output : ["unknown"];
 }
 
-// The codec setting ("mp3,aac") as a clean sorted list of known families.
+function codecMatches(codec, codecs) {
+    var tokens = codecTokens(codec);
+    for (var i = 0; i < tokens.length; i++)
+        if (codecs.indexOf(tokens[i]) >= 0) return true;
+    return false;
+}
+
+// The codec setting ("mp3,aac+") as a clean list of lower-case names.
 function codecSet(value) {
     var parts = String(value || "").toLowerCase().split(",");
-    for (var p = 0; p < parts.length; p++) parts[p] = parts[p].trim();
-    var known = ["mp3", "aac", "ogg"];
     var output = [];
-    for (var i = 0; i < known.length; i++)
-        if (parts.indexOf(known[i]) >= 0) output.push(known[i]);
+    for (var i = 0; i < parts.length; i++) {
+        var part = parts[i].trim();
+        if (part !== "" && output.indexOf(part) < 0) output.push(part);
+    }
     return output;
 }
 
-// The codec setting with one family added or removed.
-function toggleCodec(value, family, enabled) {
+// The codec setting with one name added or removed.
+function toggleCodec(value, name, enabled) {
     var set = codecSet(value);
-    var at = set.indexOf(family);
-    if (enabled && at < 0) set.push(family);
+    var wanted = String(name || "").toLowerCase().trim();
+    var at = set.indexOf(wanted);
+    if (enabled && at < 0 && wanted !== "") set.push(wanted);
     if (!enabled && at >= 0) set.splice(at, 1);
-    return codecSet(set.join(",")).join(",");
+    return set.join(",");
+}
+
+// What the codec pickers offer: Radio Browser's /json/codecs rows
+// ({name, stationcount}) with at least `minimum` stations (5 by default:
+// the directory lists FLAC with five and a dozen one-offs), plain names
+// only ("AAC,H.264" is a station's pair, not a codec), most used first.
+// Without usable rows, a fixed list, so the pickers work offline.
+function codecChoices(rows, minimum) {
+    var floor = Number(minimum) > 0 ? Number(minimum) : 5;
+    var output = [];
+    var list = Array.isArray(rows) ? rows : [];
+    for (var i = 0; i < list.length; i++) {
+        var name = String(list[i] && list[i].name || "").trim();
+        var count = Number(list[i] && list[i].stationcount) || 0;
+        if (name === "" || name.indexOf(",") >= 0 || count < floor) continue;
+        output.push({ name: name.toUpperCase(), count: count });
+    }
+    output.sort(function (a, b) { return b.count - a.count; });
+    return output.length ? output : defaultCodecChoices();
+}
+
+function defaultCodecChoices() {
+    return [
+        { name: "MP3", count: 0 },
+        { name: "AAC+", count: 0 },
+        { name: "AAC", count: 0 },
+        { name: "OGG", count: 0 }
+    ];
 }
 
 function filtersActive(options) {

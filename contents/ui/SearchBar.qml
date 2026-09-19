@@ -16,6 +16,8 @@ RowLayout {
     // RadioModel.applyFilters) and whether any departs from the defaults.
     property var filters: ({})
     property bool filtersActive: false
+    // The codecs on offer ([{name, count}], RadioBrowser.codecs).
+    property var codecs: RadioModel.defaultCodecChoices()
     // The window the bar lives in, for keeping the filter menu inside it.
     readonly property var hostWindow: Window.window
 
@@ -103,10 +105,12 @@ RowLayout {
     }
 
     component CodecItem: CheckedItem {
-        required property string family
-        objectName: "codec-" + family
-        checked: filterMenu.codecs.indexOf(family) >= 0
-        onTriggered: bar.filterRequested("codec", RadioModel.toggleCodec(filterMenu.current("codec"), family, !checked))
+        required property var modelData
+        readonly property string name: String(modelData.name).toLowerCase()
+        objectName: "codec-" + name
+        text: modelData.name
+        checked: filterMenu.codecs.indexOf(name) >= 0
+        onTriggered: bar.filterRequested("codec", RadioModel.toggleCodec(filterMenu.current("codec"), name, !checked))
     }
 
     // One checkable line of the filter menu: the choice it stands for is
@@ -226,17 +230,9 @@ RowLayout {
                 text: i18n("Any codec")
                 checked: filterMenu.codecs.length === 0
             }
-            CodecItem {
-                family: "mp3"
-                text: "MP3"
-            }
-            CodecItem {
-                family: "aac"
-                text: i18n("AAC (and AAC+)")
-            }
-            CodecItem {
-                family: "ogg"
-                text: i18n("OGG (Vorbis)")
+            Repeater {
+                model: bar.codecs
+                delegate: CodecItem {}
             }
             PlasmaComponents3.MenuSeparator {
                 Layout.fillWidth: true

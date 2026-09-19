@@ -185,9 +185,10 @@ Item {
     // Button zoom: a short animation of the scale about the current centre.
     // A second click before the first lands starts from the first's target,
     // so clicks compound; any wheel, drag or focus cuts the animation short.
-    readonly property real zoomStep: 2
-    // Percent of zoom per wheel notch (a setting): 25 means x1.25 a notch.
-    property int wheelZoomStep: 25
+    // Percent of zoom per wheel notch or button click (a setting): 20
+    // means x1.2 a step.
+    property int zoomStep: 20
+    readonly property real zoomFactor: 1 + Math.max(1, zoomStep) / 100
     readonly property real zoomTarget: zoomAnimation.running ? zoomAnimation.to : (wheelAnimation.running ? wheelTargetScale : globeScale)
     readonly property bool canZoomIn: zoomTarget < maximumScale - 0.001
     readonly property bool canZoomOut: zoomTarget > minimumScale + 0.001
@@ -212,7 +213,7 @@ Item {
         var baseScale = wheelAnimation.running ? wheelTargetScale : globeScale;
         var baseLatitude = wheelAnimation.running ? wheelTargetLatitude : centreLatitude;
         var baseLongitude = wheelAnimation.running ? wheelTargetLongitude : centreLongitude;
-        var factor = Math.pow(1 + Math.max(1, wheelZoomStep) / 100, angleDelta / 120);
+        var factor = Math.pow(zoomFactor, angleDelta / 120);
         var nextScale = RadioModel.clamp(baseScale * factor, minimumScale, maximumScale);
         var centre = RadioModel.zoomAnchoredCentre(x, y, width, height, baseScale, nextScale, baseLatitude, baseLongitude);
         wheelTargetScale = nextScale;
@@ -250,11 +251,11 @@ Item {
     }
 
     function zoomIn() {
-        zoomBy(zoomStep);
+        zoomBy(zoomFactor);
     }
 
     function zoomOut() {
-        zoomBy(1 / zoomStep);
+        zoomBy(1 / zoomFactor);
     }
 
     function focusCoordinate(latitude, longitude) {
