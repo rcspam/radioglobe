@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-19 10:11+0200\n"
+"POT-Creation-Date: 2026-09-19 10:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,8 +28,8 @@ msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/SearchBar.qml:170 contents/ui/SearchBar.qml:175
-#: contents/ui/SearchBar.qml:180 contents/ui/SearchBar.qml:185
+#: contents/ui/SearchBar.qml:223 contents/ui/SearchBar.qml:228
+#: contents/ui/SearchBar.qml:233 contents/ui/SearchBar.qml:238
 #: contents/ui/StationProperties.qml:41
 msgid "%1 kbps"
 msgstr ""
@@ -119,11 +119,11 @@ msgstr ""
 msgid "Also show its stations without coordinates, at an approximate spot inside the country"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:165
+#: contents/ui/SearchBar.qml:218
 msgid "Any bitrate"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:145
+#: contents/ui/SearchBar.qml:180
 msgid "Any codec"
 msgstr ""
 
@@ -147,7 +147,7 @@ msgstr ""
 msgid "Backup"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:135
+#: contents/ui/SearchBar.qml:167
 msgid "Bitrate"
 msgstr ""
 
@@ -187,7 +187,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:139
+#: contents/ui/SearchBar.qml:174
 msgid "Codec"
 msgstr ""
 
@@ -391,7 +391,7 @@ msgstr ""
 msgid "Maximum stations on the globe:"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:159
+#: contents/ui/SearchBar.qml:212
 msgid "Minimum bitrate"
 msgstr ""
 
@@ -417,7 +417,7 @@ msgstr ""
 msgid "Mute"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:130 contents/ui/StationProperties.qml:37
+#: contents/ui/SearchBar.qml:162 contents/ui/StationProperties.qml:37
 msgid "Name"
 msgstr ""
 
@@ -531,7 +531,7 @@ msgstr ""
 msgid "Playing badge colour:"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:120
+#: contents/ui/SearchBar.qml:152
 msgid "Popularity"
 msgstr ""
 
@@ -575,7 +575,7 @@ msgstr ""
 msgid "RadioGlobe"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:199
+#: contents/ui/SearchBar.qml:256
 msgid "Random"
 msgstr ""
 
@@ -615,7 +615,7 @@ msgstr ""
 msgid "Report played stations to the click counter"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:190
+#: contents/ui/SearchBar.qml:246
 msgid "Reset"
 msgstr ""
 
@@ -679,7 +679,7 @@ msgstr ""
 msgid "Sort and filter the list"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:114
+#: contents/ui/SearchBar.qml:146
 msgid "Sort by"
 msgstr ""
 
@@ -756,7 +756,7 @@ msgstr ""
 msgid "Toggle favorite (F)"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:202
+#: contents/ui/SearchBar.qml:259
 msgid "Tune a random station (R)"
 msgstr ""
 
@@ -772,7 +772,7 @@ msgstr ""
 msgid "Vote refused: already voted for %1 recently"
 msgstr ""
 
-#: contents/ui/SearchBar.qml:125
+#: contents/ui/SearchBar.qml:157
 msgid "Votes"
 msgstr ""
 

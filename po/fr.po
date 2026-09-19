@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-19 10:11+0200\n"
+"POT-Creation-Date: 2026-09-19 10:18+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -27,8 +27,8 @@ msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] "%1 favori importé. Appliquez pour le garder."
 msgstr[1] "%1 favoris importés. Appliquez pour les garder."
 
-#: contents/ui/SearchBar.qml:170 contents/ui/SearchBar.qml:175
-#: contents/ui/SearchBar.qml:180 contents/ui/SearchBar.qml:185
+#: contents/ui/SearchBar.qml:223 contents/ui/SearchBar.qml:228
+#: contents/ui/SearchBar.qml:233 contents/ui/SearchBar.qml:238
 #: contents/ui/StationProperties.qml:41
 msgid "%1 kbps"
 msgstr "%1 kbps"
@@ -118,11 +118,11 @@ msgstr "Publier aussi sur Radio Browser (public)"
 msgid "Also show its stations without coordinates, at an approximate spot inside the country"
 msgstr "Afficher aussi ses stations sans coordonnées, à une position approximative dans le pays"
 
-#: contents/ui/SearchBar.qml:165
+#: contents/ui/SearchBar.qml:218
 msgid "Any bitrate"
 msgstr "Tout débit"
 
-#: contents/ui/SearchBar.qml:145
+#: contents/ui/SearchBar.qml:180
 msgid "Any codec"
 msgstr "Tout codec"
 
@@ -146,7 +146,7 @@ msgstr "Disponible"
 msgid "Backup"
 msgstr "Sauvegarde"
 
-#: contents/ui/SearchBar.qml:135
+#: contents/ui/SearchBar.qml:167
 msgid "Bitrate"
 msgstr "Débit"
 
@@ -186,7 +186,7 @@ msgstr "Écoutes sur Radio Browser"
 msgid "Close"
 msgstr "Fermer"
 
-#: contents/ui/SearchBar.qml:139
+#: contents/ui/SearchBar.qml:174
 msgid "Codec"
 msgstr "Codec"
 
@@ -390,7 +390,7 @@ msgstr "Données cartographiques © les contributeurs d'OpenStreetMap"
 msgid "Maximum stations on the globe:"
 msgstr "Nombre maximal de stations sur le globe :"
 
-#: contents/ui/SearchBar.qml:159
+#: contents/ui/SearchBar.qml:212
 msgid "Minimum bitrate"
 msgstr "Débit minimum"
 
@@ -422,7 +422,7 @@ msgstr "Molette sur l'icône :"
 msgid "Mute"
 msgstr "Muet"
 
-#: contents/ui/SearchBar.qml:130 contents/ui/StationProperties.qml:37
+#: contents/ui/SearchBar.qml:162 contents/ui/StationProperties.qml:37
 msgid "Name"
 msgstr "Nom"
 
@@ -536,7 +536,7 @@ msgstr "Lecture en cours"
 msgid "Playing badge colour:"
 msgstr "Couleur du point de lecture :"
 
-#: contents/ui/SearchBar.qml:120
+#: contents/ui/SearchBar.qml:152
 msgid "Popularity"
 msgstr "Popularité"
 
@@ -580,7 +580,7 @@ msgstr "Radio Browser :"
 msgid "RadioGlobe"
 msgstr "RadioGlobe"
 
-#: contents/ui/SearchBar.qml:199
+#: contents/ui/SearchBar.qml:256
 msgid "Random"
 msgstr "Aléatoire"
 
@@ -620,7 +620,7 @@ msgstr "Remplace les favoris et l'historique actuels. Rien ne change avant d'app
 msgid "Report played stations to the click counter"
 msgstr "Signaler les stations écoutées au compteur de clics"
 
-#: contents/ui/SearchBar.qml:190
+#: contents/ui/SearchBar.qml:246
 msgid "Reset"
 msgstr "Réinitialiser"
 
@@ -684,7 +684,7 @@ msgstr "Remettre la dernière station écoutée dans le lecteur"
 msgid "Sort and filter the list"
 msgstr "Trier et filtrer la liste"
 
-#: contents/ui/SearchBar.qml:114
+#: contents/ui/SearchBar.qml:146
 msgid "Sort by"
 msgstr "Trier par"
 
@@ -761,7 +761,7 @@ msgstr "Cette station n’a pas pu être lue. Elle est peut-être hors ligne : r
 msgid "Toggle favorite (F)"
 msgstr "Basculer le favori (F)"
 
-#: contents/ui/SearchBar.qml:202
+#: contents/ui/SearchBar.qml:259
 msgid "Tune a random station (R)"
 msgstr "Écouter une station aléatoire (R)"
 
@@ -777,7 +777,7 @@ msgstr "Voter pour cette station sur Radio Browser"
 msgid "Vote refused: already voted for %1 recently"
 msgstr "Vote refusé : déjà voté pour %1 récemment"
 
-#: contents/ui/SearchBar.qml:125
+#: contents/ui/SearchBar.qml:157
 msgid "Votes"
 msgstr "Votes"
 

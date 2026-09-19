@@ -1275,7 +1275,7 @@ function sortWorld(stations, homeCountry) {
 // applied locally to whatever list is loaded. `options`: sort "popularity"
 // (the input order, which is the server's click ranking or the user's own
 // order for favourites), "votes", "name" or "bitrate"; codec "" / "mp3" /
-// "aac" (AAC+ included); minBitrate in kbps, 0 for none. A station whose
+// "aac" (AAC+ included) / "ogg" / "flac" / "opus"; minBitrate in kbps, 0 for none. A station whose
 // bitrate is unknown (0) is dropped as soon as a minimum is set. Ties keep
 // the input order; the input array is left untouched.
 function applyFilters(stations, options) {
@@ -1306,11 +1306,16 @@ function applyFilters(stations, options) {
     return output;
 }
 
-// "mp3", "aac" (AAC, AAC+, AAC+ v2...) or "" for anything else.
+// "mp3", "aac" (AAC, AAC+, AAC+ v2...), "ogg" (OGG, Vorbis), "flac",
+// "opus", or "" for anything else. Radio Browser's codec field is free
+// text ("AAC,H.264" happens), hence the substring matches.
 function codecFamily(codec) {
     var text = String(codec || "").toUpperCase();
     if (text.indexOf("MP3") >= 0) return "mp3";
     if (text.indexOf("AAC") >= 0) return "aac";
+    if (text.indexOf("OPUS") >= 0) return "opus";
+    if (text.indexOf("FLAC") >= 0) return "flac";
+    if (text.indexOf("OGG") >= 0 || text.indexOf("VORBIS") >= 0) return "ogg";
     return "";
 }
 

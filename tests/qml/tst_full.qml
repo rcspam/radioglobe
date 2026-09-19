@@ -604,10 +604,7 @@ TestCase {
         const menu = findChild(searchBar, "filterMenu");
         verify(menu !== null, "filterMenu not found");
         function item(name) {
-            for (let i = 0; i < menu.count; i++)
-                if (menu.itemAt(i).objectName === name)
-                    return menu.itemAt(i);
-            return null;
+            return findChild(searchBar, name);
         }
         verify(item("sort-popularity").checked, "default sort is popularity");
         verify(item("codec-any").checked);
@@ -666,16 +663,36 @@ TestCase {
         tryCompare(menu, "visible", true);
         keyClick(Qt.Key_Escape);
         tryCompare(menu, "visible", false);
-        let reset = null;
-        for (let i = 0; i < menu.count; i++)
-            if (menu.itemAt(i).objectName === "filterReset")
-                reset = menu.itemAt(i);
+        const reset = findChild(searchBar, "filterReset");
         compare(reset.enabled, false, "nothing to reset by default");
         root.filtersActive = true;
         compare(reset.enabled, true);
         reset.triggered();
         compare(root.calls.indexOf("resetFilters") >= 0, true, JSON.stringify(root.calls));
         root.filtersActive = false;
+    }
+
+    // Picking an entry leaves the menu open; the pointer leaving it for a
+    // moment closes it.
+    function test_filter_menu_stays_open_on_a_choice_and_closes_when_the_pointer_leaves() {
+        const searchBar = findChild(loader.item, "searchBar");
+        const button = findChild(searchBar, "filterButton");
+        const menu = findChild(searchBar, "filterMenu");
+        menu.leaveDelayMs = 60;
+        root.expanded = true;
+        mouseClick(button);
+        tryCompare(menu, "visible", true);
+        const entry = findChild(searchBar, "sort-name");
+        mouseMove(entry, 5, 5);
+        wait(20);
+        mouseClick(entry, 5, 5);
+        compare(root.calls.indexOf("filter:sort=name") >= 0, true, JSON.stringify(root.calls));
+        wait(150);
+        compare(menu.visible, true, "still open after a choice");
+        // Pointer far away: closed after the grace period.
+        mouseMove(loader.item, 5, loader.item.height - 5);
+        tryCompare(menu, "visible", false);
+        menu.leaveDelayMs = 400;
     }
 
     function test_station_menu_closes_with_the_widget() {

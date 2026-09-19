@@ -76,7 +76,7 @@ RowLayout {
             if (filterMenu.visible)
                 filterMenu.close();
             else
-                filterMenu.popup(0, filterButton.height);
+                filterMenu.open();
         }
         Accessible.name: i18n("Sort and filter the list")
         PlasmaComponents3.ToolTip.text: i18n("Sort and filter the list")
@@ -90,15 +90,24 @@ RowLayout {
         required property var value
         readonly property var current: filterMenu.current(key)
         objectName: key + "-" + (value === "" || value === 0 ? "any" : value)
+        Layout.fillWidth: true
         checkable: true
         checked: current === value
         onTriggered: bar.filterRequested(key, value)
     }
 
-    PlasmaComponents3.Menu {
+    // A Popup, not a Menu: a Menu closes as soon as an entry is picked, and
+    // one usually sets two or three things here. It closes when the pointer
+    // leaves it (or the button) for a moment, on Escape, on a press outside
+    // or on a second click on the button.
+    PlasmaComponents3.Popup {
         id: filterMenu
         objectName: "filterMenu"
         parent: filterButton
+        y: filterButton.height // qmllint disable Quick.layout-positioning
+        // Grace period once the pointer is out, so a quick brush past the
+        // edge does not close it.
+        property int leaveDelayMs: 400
         closePolicy: QQC2.Popup.CloseOnEscape | QQC2.Popup.CloseOnPressOutsideParent
 
         function current(key) {
@@ -110,87 +119,135 @@ RowLayout {
             return String(filters.codec || "");
         }
 
-        PlasmaComponents3.MenuItem {
-            text: i18n("Sort by")
-            enabled: false
+        readonly property bool pointerInside: menuHover.hovered || filterButton.hovered
+        onPointerInsideChanged: {
+            if (filterMenu.pointerInside)
+                leaveTimer.stop();
+            else if (filterMenu.visible)
+                leaveTimer.restart();
         }
-        FilterItem {
-            key: "sort"
-            value: "popularity"
-            text: i18n("Popularity")
+        onClosed: leaveTimer.stop()
+
+        HoverHandler {
+            id: menuHover
         }
-        FilterItem {
-            key: "sort"
-            value: "votes"
-            text: i18n("Votes")
+        Timer {
+            id: leaveTimer
+            interval: filterMenu.leaveDelayMs
+            onTriggered: if (!filterMenu.pointerInside)
+                filterMenu.close()
         }
-        FilterItem {
-            key: "sort"
-            value: "name"
-            text: i18n("Name")
-        }
-        FilterItem {
-            key: "sort"
-            value: "bitrate"
-            text: i18n("Bitrate")
-        }
-        PlasmaComponents3.MenuSeparator {}
-        PlasmaComponents3.MenuItem {
-            text: i18n("Codec")
-            enabled: false
-        }
-        FilterItem {
-            key: "codec"
-            value: ""
-            text: i18n("Any codec")
-        }
-        FilterItem {
-            key: "codec"
-            value: "mp3"
-            text: "MP3"
-        }
-        FilterItem {
-            key: "codec"
-            value: "aac"
-            text: "AAC"
-        }
-        PlasmaComponents3.MenuSeparator {}
-        PlasmaComponents3.MenuItem {
-            text: i18n("Minimum bitrate")
-            enabled: false
-        }
-        FilterItem {
-            key: "minBitrate"
-            value: 0
-            text: i18n("Any bitrate")
-        }
-        FilterItem {
-            key: "minBitrate"
-            value: 64
-            text: i18n("%1 kbps", 64)
-        }
-        FilterItem {
-            key: "minBitrate"
-            value: 128
-            text: i18n("%1 kbps", 128)
-        }
-        FilterItem {
-            key: "minBitrate"
-            value: 192
-            text: i18n("%1 kbps", 192)
-        }
-        FilterItem {
-            key: "minBitrate"
-            value: 256
-            text: i18n("%1 kbps", 256)
-        }
-        PlasmaComponents3.MenuSeparator {}
-        PlasmaComponents3.MenuItem {
-            objectName: "filterReset"
-            text: i18n("Reset")
-            icon.name: "edit-clear-all"
-            enabled: bar.filtersActive
-            onTriggered: bar.filtersResetRequested()
+
+        contentItem: ColumnLayout {
+            spacing: 0
+
+            PlasmaComponents3.MenuItem {
+                Layout.fillWidth: true
+                text: i18n("Sort by")
+                enabled: false
+            }
+            FilterItem {
+                key: "sort"
+                value: "popularity"
+                text: i18n("Popularity")
+            }
+            FilterItem {
+                key: "sort"
+                value: "votes"
+                text: i18n("Votes")
+            }
+            FilterItem {
+                key: "sort"
+                value: "name"
+                text: i18n("Name")
+            }
+            FilterItem {
+                key: "sort"
+                value: "bitrate"
+                text: i18n("Bitrate")
+            }
+            PlasmaComponents3.MenuSeparator {
+                Layout.fillWidth: true
+            }
+            PlasmaComponents3.MenuItem {
+                Layout.fillWidth: true
+                text: i18n("Codec")
+                enabled: false
+            }
+            FilterItem {
+                key: "codec"
+                value: ""
+                text: i18n("Any codec")
+            }
+            FilterItem {
+                key: "codec"
+                value: "mp3"
+                text: "MP3"
+            }
+            FilterItem {
+                key: "codec"
+                value: "aac"
+                text: "AAC"
+            }
+            FilterItem {
+                key: "codec"
+                value: "ogg"
+                text: "OGG"
+            }
+            FilterItem {
+                key: "codec"
+                value: "opus"
+                text: "Opus"
+            }
+            FilterItem {
+                key: "codec"
+                value: "flac"
+                text: "FLAC"
+            }
+            PlasmaComponents3.MenuSeparator {
+                Layout.fillWidth: true
+            }
+            PlasmaComponents3.MenuItem {
+                Layout.fillWidth: true
+                text: i18n("Minimum bitrate")
+                enabled: false
+            }
+            FilterItem {
+                key: "minBitrate"
+                value: 0
+                text: i18n("Any bitrate")
+            }
+            FilterItem {
+                key: "minBitrate"
+                value: 64
+                text: i18n("%1 kbps", 64)
+            }
+            FilterItem {
+                key: "minBitrate"
+                value: 128
+                text: i18n("%1 kbps", 128)
+            }
+            FilterItem {
+                key: "minBitrate"
+                value: 192
+                text: i18n("%1 kbps", 192)
+            }
+            FilterItem {
+                key: "minBitrate"
+                value: 256
+                text: i18n("%1 kbps", 256)
+            }
+            PlasmaComponents3.MenuSeparator {
+                Layout.fillWidth: true
+            }
+            PlasmaComponents3.MenuItem {
+                objectName: "filterReset"
+                Layout.fillWidth: true
+                text: i18n("Reset")
+                icon.name: "edit-clear-all"
+                enabled: bar.filtersActive
+                onTriggered: bar.filtersResetRequested()
+            }
         }
     }
 

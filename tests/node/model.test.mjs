@@ -499,28 +499,35 @@ test("applyFilters sorts and filters a loaded list without touching it", () => {
         { uuid: "b", name: "alpha", codec: "AAC+", bitrate: 64, clicks: 40, votes: 10 },
         { uuid: "c", name: "Éclair", codec: "AAC", bitrate: 256, clicks: 30, votes: 10 },
         { uuid: "d", name: "Beta", codec: "", bitrate: 0, clicks: 20 },
-        { uuid: "e", name: "Gamma", codec: "OGG", bitrate: 192, clicks: 10, votes: 1 }
+        { uuid: "e", name: "Gamma", codec: "OGG", bitrate: 192, clicks: 10, votes: 1 },
+        { uuid: "f", name: "Delta", codec: "FLAC", bitrate: 900, clicks: 5, votes: 0 },
+        { uuid: "g", name: "Eta", codec: "OPUS", bitrate: 96, clicks: 4, votes: 0 },
+        { uuid: "h", name: "Theta", codec: "Vorbis", bitrate: 160, clicks: 3, votes: 0 }
     ];
     const ids = rows => Array.from(rows, r => r.uuid);
     const none = { sort: "popularity", codec: "", minBitrate: 0 };
     // Default: the input order, untouched.
-    assert.deepEqual(ids(model.applyFilters(list, none)), ["a", "b", "c", "d", "e"]);
-    assert.deepEqual(ids(model.applyFilters(list, null)), ["a", "b", "c", "d", "e"]);
-    assert.deepEqual(ids(model.applyFilters(list, {})), ["a", "b", "c", "d", "e"]);
+    const all = ["a", "b", "c", "d", "e", "f", "g", "h"];
+    assert.deepEqual(ids(model.applyFilters(list, none)), all);
+    assert.deepEqual(ids(model.applyFilters(list, null)), all);
+    assert.deepEqual(ids(model.applyFilters(list, {})), all);
     // Sorts: ties keep the input order; missing votes count as 0.
-    assert.deepEqual(ids(model.applyFilters(list, { sort: "votes" })), ["b", "c", "a", "e", "d"]);
-    assert.deepEqual(ids(model.applyFilters(list, { sort: "name" })), ["b", "d", "c", "e", "a"]);
-    assert.deepEqual(ids(model.applyFilters(list, { sort: "bitrate" })), ["c", "e", "a", "b", "d"]);
-    // Codec: MP3 exact family, AAC covers AAC+ too, unknown codecs never match.
+    assert.deepEqual(ids(model.applyFilters(list, { sort: "votes" })), ["b", "c", "a", "e", "d", "f", "g", "h"]);
+    assert.deepEqual(ids(model.applyFilters(list, { sort: "name" })), ["b", "d", "f", "c", "g", "e", "h", "a"]);
+    assert.deepEqual(ids(model.applyFilters(list, { sort: "bitrate" })), ["f", "c", "e", "h", "a", "g", "b", "d"]);
+    // Codec families: AAC covers AAC+, OGG covers Vorbis, unknown never match.
     assert.deepEqual(ids(model.applyFilters(list, { codec: "mp3" })), ["a"]);
     assert.deepEqual(ids(model.applyFilters(list, { codec: "aac" })), ["b", "c"]);
     assert.deepEqual(ids(model.applyFilters(list, { codec: "AAC" })), ["b", "c"]);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "ogg" })), ["e", "h"]);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "flac" })), ["f"]);
+    assert.deepEqual(ids(model.applyFilters(list, { codec: "opus" })), ["g"]);
     // Minimum bitrate; an unknown bitrate (0) is dropped once a minimum is set.
-    assert.deepEqual(ids(model.applyFilters(list, { minBitrate: 128 })), ["a", "c", "e"]);
-    assert.deepEqual(ids(model.applyFilters(list, { minBitrate: 128, sort: "bitrate" })), ["c", "e", "a"]);
+    assert.deepEqual(ids(model.applyFilters(list, { minBitrate: 128 })), ["a", "c", "e", "f", "h"]);
+    assert.deepEqual(ids(model.applyFilters(list, { minBitrate: 128, sort: "bitrate" })), ["f", "c", "e", "h", "a"]);
     assert.deepEqual(ids(model.applyFilters(list, { codec: "aac", minBitrate: 128 })), ["c"]);
     // The input is left alone.
-    assert.deepEqual(ids(list), ["a", "b", "c", "d", "e"]);
+    assert.deepEqual(ids(list), all);
     assert.deepEqual(ids(model.applyFilters(null, { sort: "name" })), []);
 });
 
