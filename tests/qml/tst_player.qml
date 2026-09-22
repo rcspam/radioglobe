@@ -32,6 +32,10 @@ TestCase {
             canStop: status > 1,
             canQuit: true,
             calls: [],
+            position: 0,
+            // Set by a test to say whether mpv is really decoding: only then
+            // does a position poll come back with a fresher value.
+            streaming: false,
             trackChanged: makeSignal(),
             playbackStatusChanged: makeSignal(),
             volumeChanged: makeSignal(),
@@ -52,6 +56,13 @@ TestCase {
             },
             Quit: function () {
                 this.calls.push("Quit");
+            },
+            // Real containers only refresh position when asked: MPRIS never
+            // signals it on its own.
+            updatePosition: function () {
+                this.calls.push("updatePosition");
+                if (this.streaming)
+                    this.position += 500000;
             },
             setStatus: function (s) {
                 this.playbackStatus = s;
@@ -143,6 +154,9 @@ TestCase {
         player.mpris = model;
         player.userAgent = "RadioGlobe/test";
         started.clear();
+        // Tests that need room to load raise it; put it back so a failure
+        // mid-test cannot carry its timing over to the next one.
+        player.loadTimeoutMs = 60;
         player.resetForTests();
     }
 
@@ -340,6 +354,39 @@ TestCase {
         player.resetRetriesForTests(1);
         c.setStatus(1);
         compare(player.state, "error");
+        compare(player.errorKind, "stream");
+    }
+
+    // Stations without ICY metadata keep the title mpv derived from the URL,
+    // so reopening one emits no trackChanged and the probe cannot tell the
+    // reload from the leftover title. A position that moves is the only proof
+    // the stream came back, and mpv-mpris keeps claiming Stopped until the
+    // Pause/Play workaround runs.
+    function test_reopening_a_titleless_station_is_detected_by_position() {
+        const c = startAndAttach(2);
+        c.streaming = true;
+        c.setTrack("stream");
+        tryCompare(player, "state", "playing", 1000);
+        // Two probe ticks are needed to compare positions, so the reopen gets
+        // more room than the 60 ms the other tests run with.
+        player.loadTimeoutMs = 800;
+        // The server cuts the stream: one silent retry reopens the same URL.
+        c.setStatus(1);
+        compare(player.state, "loading");
+        compare(c.calls.filter(x => x.indexOf("OpenUri") === 0).length, 2);
+        // mpv reloads and plays again, with the very same title and a status
+        // still stuck on Stopped. Only the position gives it away.
+        tryCompare(player, "state", "playing", 2000);
+        compare(player.errorKind, "");
+        verify(c.calls.indexOf("updatePosition") >= 0);
+    }
+
+    // The mirror case: a position that never moves must still end in an error,
+    // otherwise a dead stream would look alive.
+    function test_a_frozen_position_still_times_out() {
+        const c = startAndAttach(2);
+        c.streaming = false;
+        tryCompare(player, "state", "error", 1000);
         compare(player.errorKind, "stream");
     }
 

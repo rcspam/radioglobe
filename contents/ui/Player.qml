@@ -53,6 +53,9 @@ Item {
     // Title the container was showing when the current OpenUri went out: mpv
     // keeps the previous station's metadata until the new stream sends its own.
     property string _trackAtOpen: ""
+    // Last position seen while loading, in microseconds. -1 until the first
+    // poll answers, so the very first sample is never read as progress.
+    property real _positionSample: -1
     property var _connectedModel: null
     property int _launchEpoch: 0
 
@@ -364,6 +367,7 @@ Item {
         root._setState("loading");
         root._track = "";
         root._trackAtOpen = String(root._player.track || "");
+        root._positionSample = -1;
         loadTimer.restart();
         probeTimer.restart();
         root._player.OpenUri(root._station.url);
@@ -474,6 +478,7 @@ Item {
         root._pendingStation = null;
         root._userStopping = false;
         root._trackAtOpen = "";
+        root._positionSample = -1;
         root._muted = false;
         root._volume = 0.75;
     }
@@ -496,18 +501,39 @@ Item {
         }
     }
 
-    // Safety net for containers that never emit trackChanged: polls the title
-    // once. A title identical to the one showing before OpenUri is the previous
-    // station's leftover, not a successful load.
+    // Polls the container while loading. A title of its own settles it at once;
+    // a title identical to the one showing before OpenUri is the previous
+    // station's leftover, not a successful load. Reopening the station already
+    // playing is exactly that case and emits no trackChanged either, so the
+    // position is the only evidence left: it moves only when mpv decodes.
     Timer {
         id: probeTimer
         interval: root.probeMs
+        repeat: true
         onTriggered: {
-            if (root._state !== "loading" || !root._player)
+            if (root._state !== "loading" || !root._player) {
+                probeTimer.stop();
                 return;
+            }
             const current = String(root._player.track || "");
-            if (current !== "" && (root._trackAtOpen === "" || current !== root._trackAtOpen))
+            if (current !== "" && (root._trackAtOpen === "" || current !== root._trackAtOpen)) {
                 root._loaded();
+                return;
+            }
+            // A fresh stream restarts from zero, so only a rise counts: a drop
+            // just means the new stream took the old one's place.
+            const position = Number(root._player.position);
+            if (isFinite(position)) {
+                if (root._positionSample >= 0 && position > root._positionSample) {
+                    root._loaded();
+                    return;
+                }
+                root._positionSample = position;
+            }
+            // MPRIS never signals position on its own; ask for a fresh one so
+            // the next tick has something to compare against.
+            if (root._player.updatePosition)
+                root._player.updatePosition();
         }
     }
 
