@@ -127,6 +127,7 @@ TestCase {
         loadTimeoutMs: 60
         attachTimeoutMs: 60
         probeMs: 30
+        recoveryMs: 30
     }
 
     SignalSpy {
@@ -388,6 +389,38 @@ TestCase {
         c.streaming = false;
         tryCompare(player, "state", "error", 1000);
         compare(player.errorKind, "stream");
+    }
+
+    // _loaded() toggles Pause/Play to shake a real status out of mpv-mpris.
+    // The Paused it echoes back is ours, not the user pausing.
+    function test_the_status_workaround_is_not_mistaken_for_a_pause() {
+        const c = startAndAttach(1);
+        c.setTrack("stream");
+        compare(player.state, "playing");
+        verify(c.calls.indexOf("Pause") >= 0);
+        c.setStatus(3);
+        compare(player.state, "playing");
+        c.setStatus(2);
+        compare(player.state, "playing");
+        // A pause asked for afterwards still goes through.
+        player.pause();
+        compare(player.state, "paused");
+    }
+
+    // mpv-mpris lies about the status often enough that an error can land on a
+    // stream that is in fact playing. A position that moves again takes the
+    // player back out of it, without re-announcing the station.
+    function test_a_stream_playing_again_leaves_the_error_state() {
+        const c = startAndAttach(2);
+        c.streaming = false;
+        tryCompare(player, "state", "error", 1000);
+        compare(player.errorKind, "stream");
+        started.clear();
+        // mpv reconnected on its own: the position starts moving again.
+        c.streaming = true;
+        tryCompare(player, "state", "playing", 2000);
+        compare(player.errorKind, "");
+        compare(started.count, 0);
     }
 
     function test_launch_command_buffers_before_playing() {

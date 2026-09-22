@@ -20,6 +20,8 @@ Item {
     property int attachTimeoutMs: 8000
     property int probeMs: 1500
     property int staleTimeoutMs: 5000
+    // How often a stream error is re-checked against mpv's own position.
+    property int recoveryMs: 4000
 
     readonly property int statusStopped: 1
     readonly property int statusPlaying: 2
@@ -56,6 +58,9 @@ Item {
     // Last position seen while loading, in microseconds. -1 until the first
     // poll answers, so the very first sample is never read as progress.
     property real _positionSample: -1
+    // Set while the Pause/Play of _loaded() is in flight: the Paused mpv
+    // echoes back is ours, and must not read as the user pausing.
+    property bool _statusToggle: false
     property var _connectedModel: null
     property int _launchEpoch: 0
 
@@ -387,20 +392,43 @@ Item {
         root._streamRetries = 0;
         if (!root._player)
             return;
-        if (Number(root._player.playbackStatus) !== root.statusPlaying) {
-            // mpv-mpris 0.7.1 keeps "Stopped" after loadfile; a pause toggle
-            // makes it emit the real status. Only valid once the file loaded.
-            root._player.Pause();
-            root._player.Play();
-        }
+        root._shakeStatus();
         root._setState("playing");
         root.playingStarted(root._station);
+    }
+
+    // mpv went on playing behind an error: take the player back to playing
+    // without announcing the station again, it never stopped being the one on.
+    function _recovered() {
+        if (!root._player)
+            return;
+        root._streamRetries = 0;
+        root._shakeStatus();
+        root._setState("playing");
+    }
+
+    function _shakeStatus() {
+        if (Number(root._player.playbackStatus) === root.statusPlaying)
+            return;
+        // mpv-mpris 0.7.1 keeps "Stopped" after loadfile; a pause toggle
+        // makes it emit the real status. Only valid once the file loaded.
+        root._statusToggle = true;
+        root._player.Pause();
+        root._player.Play();
     }
 
     function _onStatusChanged() {
         if (!root._player)
             return;
         const status = Number(root._player.playbackStatus);
+        // Anything but the Paused half of our own toggle disarms it, so a real
+        // pause is never swallowed later on.
+        if (root._statusToggle && status !== root.statusPaused)
+            root._statusToggle = false;
+        if (root._state === "playing" && status === root.statusPaused && root._statusToggle) {
+            root._statusToggle = false;
+            return;
+        }
         if (root._state === "playing" && status === root.statusStopped && !root._userStopping) {
             if (root._streamRetries < root.maxStreamRetries) {
                 root._streamRetries++;
@@ -479,6 +507,7 @@ Item {
         root._userStopping = false;
         root._trackAtOpen = "";
         root._positionSample = -1;
+        root._statusToggle = false;
         root._muted = false;
         root._volume = 0.75;
     }
@@ -532,6 +561,30 @@ Item {
             }
             // MPRIS never signals position on its own; ask for a fresh one so
             // the next tick has something to compare against.
+            if (root._player.updatePosition)
+                root._player.updatePosition();
+        }
+    }
+
+    // mpv-mpris lies about the status often enough that a stream error can
+    // land on a stream that is in fact playing, and mpv reconnects on its own
+    // through the lavf options it was launched with. Keep watching the
+    // position: if it moves, the error was wrong or is over.
+    Timer {
+        id: recoveryTimer
+        interval: root.recoveryMs
+        repeat: true
+        running: root._state === "error" && root._errorKind === "stream" && root._player !== null
+        onRunningChanged: root._positionSample = -1
+        onTriggered: {
+            const position = Number(root._player.position);
+            if (isFinite(position)) {
+                if (root._positionSample >= 0 && position > root._positionSample) {
+                    root._recovered();
+                    return;
+                }
+                root._positionSample = position;
+            }
             if (root._player.updatePosition)
                 root._player.updatePosition();
         }
