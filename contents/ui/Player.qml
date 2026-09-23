@@ -22,6 +22,9 @@ Item {
     property int staleTimeoutMs: 5000
     // How often a stream error is re-checked against mpv's own position.
     property int recoveryMs: 4000
+    // After a transient volume ends, how long mpv's late echoes of the
+    // lowered levels are still ignored.
+    property int volumeHoldMs: 1000
 
     readonly property int statusStopped: 1
     readonly property int statusPlaying: 2
@@ -61,6 +64,9 @@ Item {
     // Set while the Pause/Play of _loaded() is in flight: the Paused mpv
     // echoes back is ours, and must not read as the user pausing.
     property bool _statusToggle: false
+    // True while mpv plays at a level that is not the user's (sleep timer
+    // fade), and for volumeHoldMs after: its volume echoes are not a setting.
+    property bool _volumeHeld: false
     property var _connectedModel: null
     property int _launchEpoch: 0
 
@@ -200,6 +206,23 @@ Item {
             root.cfg.volume = level;
         if (root._player)
             root._player.volume = level;
+    }
+
+    // A level for mpv alone: `volume` and cfg.volume keep the user's own.
+    // endTransientVolume() puts that one back.
+    function setTransientVolume(value) {
+        root._volumeHeld = true;
+        volumeHoldTimer.stop();
+        if (root._player)
+            root._player.volume = root._clamp(Number(value));
+    }
+
+    function endTransientVolume() {
+        if (!root._volumeHeld)
+            return;
+        if (root._player)
+            root._player.volume = root._muted ? 0 : root._volume;
+        volumeHoldTimer.restart();
     }
 
     function toggleMute() {
@@ -450,7 +473,7 @@ Item {
     }
 
     function _onVolumeChanged() {
-        if (!root._player || root._muted)
+        if (!root._player || root._muted || root._volumeHeld)
             return;
         const level = root._clamp(Number(root._player.volume));
         if (Math.abs(level - root._volume) < 0.001)
@@ -498,6 +521,7 @@ Item {
         probeTimer.stop();
         attachTimer.stop();
         staleTimer.stop();
+        volumeHoldTimer.stop();
         root._detach();
         root._state = "idle";
         root._station = null;
@@ -508,6 +532,7 @@ Item {
         root._trackAtOpen = "";
         root._positionSample = -1;
         root._statusToggle = false;
+        root._volumeHeld = false;
         root._muted = false;
         root._volume = 0.75;
     }
@@ -588,6 +613,12 @@ Item {
             if (root._player.updatePosition)
                 root._player.updatePosition();
         }
+    }
+
+    Timer {
+        id: volumeHoldTimer
+        interval: root.volumeHoldMs
+        onTriggered: root._volumeHeld = false
     }
 
     Timer {

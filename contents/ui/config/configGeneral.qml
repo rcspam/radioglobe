@@ -26,6 +26,7 @@ KCM.SimpleKCM {
     property alias cfg_zoomStep: zoomStep.value
     property alias cfg_restoreLastStation: restoreLastStation.checked
     property alias cfg_autoplayLastStation: autoplayLastStation.checked
+    property alias cfg_sleepPersist: sleepPersist.checked
     property string cfg_icon: "map-globe"
     property string cfg_nextPreviousSource: "queue"
     property string cfg_marqueeMode: "loop"
@@ -260,6 +261,12 @@ KCM.SimpleKCM {
             objectName: "autoplayLastStation"
             text: i18n("Start playing it")
             enabled: restoreLastStation.checked
+        }
+        QQC2.CheckBox {
+            id: sleepPersist
+            objectName: "sleepPersist"
+            Kirigami.FormData.label: i18n("Sleep timer:")
+            text: i18n("Keep it running when Plasma restarts")
         }
         QQC2.RadioButton {
             objectName: "nextFromQueue"

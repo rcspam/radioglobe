@@ -23,6 +23,39 @@ TestCase {
         return xhr.responseText;
     }
 
+    // Named mediaPlayer on purpose: a `player: player` binding would resolve
+    // to the timer's own property.
+    function test_main_hands_the_player_and_the_config_to_the_sleep_timer() {
+        const source = String(readFile("../../contents/ui/main.qml"));
+        const start = source.indexOf("SleepTimer {");
+        verify(start >= 0, "no SleepTimer in main.qml");
+        const block = source.slice(start, source.indexOf("}", start));
+        verify(block.indexOf("mediaPlayer: player") >= 0, block);
+        verify(block.indexOf("cfg: Plasmoid.configuration") >= 0, block);
+    }
+
+    // The deadline is a timestamp in ms: past what an Int holds.
+    function test_sleep_timer_keys_in_the_config_schema() {
+        const schema = String(readFile("../../contents/config/main.xml"));
+        verify(/<entry name="sleepUntil" type="Double">\s*<default>0<\/default>/.test(schema), "sleepUntil");
+        verify(/<entry name="sleepPersist" type="Bool">\s*<default>true<\/default>/.test(schema), "sleepPersist");
+    }
+
+    function test_config_page_has_the_sleep_timer_persistence_box() {
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/config/configGeneral.qml"));
+        compare(component.status, Component.Ready, component.errorString());
+        const page = component.createObject(null, {
+            cfg_sleepPersist: false
+        });
+        verify(page !== null, component.errorString());
+        const box = findChild(page, "sleepPersist");
+        verify(box !== null, "sleepPersist not found");
+        compare(box.checked, false);
+        box.toggle();
+        compare(page.cfg_sleepPersist, true);
+        page.destroy();
+    }
+
     function test_config_page_compiles() {
         const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/config/configGeneral.qml"));
         compare(component.status, Component.Ready, component.errorString());

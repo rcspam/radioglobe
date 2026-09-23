@@ -184,6 +184,7 @@ Item {
     }
     function closeMenus() {
         searchBar.closeMenu();
+        sleepMenu.close();
         stationMenu.close();
     }
 
@@ -248,6 +249,13 @@ Item {
                 filtersActive: root.filtersActive
                 onFilterRequested: (key, value) => root.setListFilter(key, value)
                 onFiltersResetRequested: root.resetListFilters()
+            }
+
+            // The player bar has no room left: the sleep timer lives here.
+            SleepMenu {
+                id: sleepMenu
+                objectName: "sleepButton"
+                timer: sleepTimer
             }
 
             // The form lives in the configuration dialog ("Add a station"

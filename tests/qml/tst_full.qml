@@ -187,6 +187,20 @@ TestCase {
         }
     }
 
+    // The real timer, on a clock pinned to 23 September 2026, 22:30.
+    readonly property real evening: new Date(2026, 8, 23, 22, 30).getTime()
+    property var sleepConfig: ({
+            sleepUntil: 0,
+            sleepPersist: true
+        })
+
+    Ui.SleepTimer {
+        id: sleepTimer
+        mediaPlayer: player
+        cfg: sleepConfig
+        fixedNowMs: evening
+    }
+
     Loader {
         id: loader
         width: 700
@@ -200,6 +214,7 @@ TestCase {
         root.calls = [];
         player.calls = [];
         radioBrowser.calls = [];
+        sleepTimer.cancel();
     }
 
     // A missing QML module shows a banner with the packages to install,
@@ -881,6 +896,80 @@ TestCase {
         verify(button !== null, "addStationButton not found");
         mouseClick(button);
         compare(root.calls.indexOf("configure") >= 0, true, JSON.stringify(root.calls));
+    }
+
+    function stopTime(ms) {
+        return new Date(ms).toLocaleTimeString(Qt.locale(), Locale.ShortFormat);
+    }
+
+    // A duration closes the menu and lights the button, whose tooltip tells
+    // when playback stops; the cancel entry shows the same time.
+    function test_sleep_menu_arms_a_duration_and_cancels_it() {
+        const button = findChild(loader.item, "sleepButton");
+        verify(button !== null, "sleepButton not found");
+        const popup = findChild(button, "sleepPopup");
+        root.expanded = true;
+        compare(button.highlighted, false);
+        mouseClick(button);
+        tryCompare(popup, "visible", true);
+        compare(findChild(button, "sleepCancel").visible, false);
+        compare(findChild(button, "sleep-15").text, "15 min");
+        compare(findChild(button, "sleep-60").text, "1 h");
+        compare(findChild(button, "sleep-90").text, "1 h 30");
+        const entry = findChild(button, "sleep-30");
+        mouseMove(entry, 5, 5);
+        mouseClick(entry, 5, 5);
+        compare(sleepTimer.deadline, evening + 30 * 60000);
+        tryCompare(popup, "visible", false);
+        compare(button.highlighted, true);
+        const stop = stopTime(evening + 30 * 60000);
+        verify(button.toolTipText.indexOf(stop) >= 0, button.toolTipText);
+        verify(button.toolTipText.indexOf("30 min") >= 0, button.toolTipText);
+        mouseClick(button);
+        tryCompare(popup, "visible", true);
+        const cancel = findChild(button, "sleepCancel");
+        compare(cancel.visible, true);
+        verify(cancel.text.indexOf(stop) >= 0, cancel.text);
+        mouseMove(cancel, 5, 5);
+        mouseClick(cancel, 5, 5);
+        compare(sleepTimer.active, false);
+        tryCompare(popup, "visible", false);
+        compare(button.highlighted, false);
+    }
+
+    // The field takes an end time; the menu stays open while it is typed,
+    // and something that is not a time is refused.
+    function test_sleep_menu_takes_an_end_time() {
+        const button = findChild(loader.item, "sleepButton");
+        const popup = findChild(button, "sleepPopup");
+        const field = findChild(button, "sleepTime");
+        root.expanded = true;
+        mouseClick(button);
+        tryCompare(popup, "visible", true);
+        mouseClick(field);
+        for (const character of "25:00")
+            keyClick(character);
+        keyClick(Qt.Key_Return);
+        compare(sleepTimer.active, false);
+        compare(popup.visible, true);
+        field.text = "";
+        for (const character of "23h15")
+            keyClick(character);
+        keyClick(Qt.Key_Return);
+        compare(sleepTimer.deadline, new Date(2026, 8, 23, 23, 15).getTime());
+        tryCompare(popup, "visible", false);
+        compare(field.text, "");
+    }
+
+    function test_sleep_menu_closes_with_the_widget() {
+        const button = findChild(loader.item, "sleepButton");
+        const popup = findChild(button, "sleepPopup");
+        root.expanded = true;
+        mouseClick(button);
+        tryCompare(popup, "visible", true);
+        root.expanded = false;
+        tryCompare(popup, "visible", false);
+        root.expanded = true;
     }
 
     function test_zoom_buttons_drive_the_globe() {

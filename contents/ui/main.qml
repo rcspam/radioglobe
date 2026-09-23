@@ -470,6 +470,14 @@ PlasmoidItem {
         }
     }
 
+    // Here rather than in the popup, which may never be opened: a deadline
+    // kept from before a restart has to run all the same.
+    SleepTimer {
+        id: sleepTimer
+        mediaPlayer: player
+        cfg: Plasmoid.configuration
+    }
+
     // Plasma's own tooltip delay; 0 or less means the user turned tooltips
     // off in the workspace settings, and the icon must not open ours either.
     property bool plasmaToolTipsEnabled: true

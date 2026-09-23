@@ -128,6 +128,7 @@ TestCase {
         attachTimeoutMs: 60
         probeMs: 30
         recoveryMs: 30
+        volumeHoldMs: 30
     }
 
     SignalSpy {
@@ -491,6 +492,41 @@ TestCase {
         player.toggleMute();
         compare(player.volume, 0.4);
         compare(c.volume, 0.4);
+    }
+
+    // The sleep timer's fade lowers mpv's volume without touching the level
+    // the user set, including when mpv echoes the lowered levels back.
+    function test_transient_volume_leaves_the_setting_alone() {
+        const c = startAndAttach(2);
+        player.setVolume(0.6);
+        player.setTransientVolume(0.3);
+        compare(c.volume, 0.3);
+        c.volumeChanged.emit();
+        compare(player.volume, 0.6);
+        compare(cfg.volume, 0.6);
+        player.endTransientVolume();
+        compare(c.volume, 0.6);
+        // An echo of a lowered level still on its way: ignored as well.
+        c.volume = 0.1;
+        c.volumeChanged.emit();
+        compare(player.volume, 0.6);
+        compare(cfg.volume, 0.6);
+        // Once the hold is over, a change made elsewhere counts again.
+        wait(player.volumeHoldMs + 50);
+        c.volume = 0.4;
+        c.volumeChanged.emit();
+        compare(player.volume, 0.4);
+        compare(cfg.volume, 0.4);
+    }
+
+    function test_transient_volume_ends_on_silence_when_muted() {
+        const c = startAndAttach(2);
+        player.setVolume(0.6);
+        player.setTransientVolume(0.3);
+        player.toggleMute();
+        player.endTransientVolume();
+        compare(c.volume, 0);
+        compare(cfg.volume, 0.6);
     }
 
     function test_second_play_while_starting_does_not_relaunch() {

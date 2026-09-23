@@ -89,6 +89,15 @@
     <entry name="autoplayLastStation" type="Bool">
       <default>false</default>
     </entry>
+    <!-- Sleep timer: when it stops playback, in ms since the epoch (0: not
+         armed; a Double because an Int cannot hold it), kept only while
+         sleepPersist is on, so a timer survives a plasmashell restart. -->
+    <entry name="sleepUntil" type="Double">
+      <default>0</default>
+    </entry>
+    <entry name="sleepPersist" type="Bool">
+      <default>true</default>
+    </entry>
     <!-- What next / previous walk: "queue" (the list the station was played
          from) or "favorites". -->
     <entry name="nextPreviousSource" type="String">
