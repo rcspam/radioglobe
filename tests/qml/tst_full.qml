@@ -997,11 +997,30 @@ TestCase {
         mouseClick(field);
         for (const character of "1130")
             keyClick(character);
-        compare(field.text, "11:30");
+        compare(field.text, "11:30 ");
         keyClick(Qt.Key_Return);
         compare(sleepTimer.deadline, new Date(2026, 8, 23, 23, 30).getTime());
         tryCompare(popup, "visible", false);
         verify(button.toolTipText.indexOf("11:30 " + Qt.locale().pmText) >= 0, button.toolTipText);
+    }
+
+    function test_sleep_menu_writes_am_pm_on_a_twelve_hour_clock() {
+        const button = findChild(loader.item, "sleepButton");
+        const popup = findChild(button, "sleepPopup");
+        const field = findChild(button, "sleepTime");
+        sleepTimer.twelveHour = true;
+        root.expanded = true;
+        mouseClick(button);
+        tryCompare(popup, "visible", true);
+        mouseClick(field);
+        for (const character of "1111")
+            keyClick(character);
+        compare(field.text, "11:11 ");
+        keyClick("p");
+        compare(field.text, "11:11 " + sleepTimer.pmText);
+        keyClick(Qt.Key_Return);
+        compare(sleepTimer.deadline, new Date(2026, 8, 23, 23, 11).getTime());
+        tryCompare(popup, "visible", false);
     }
 
     function test_sleep_menu_closes_with_the_widget() {

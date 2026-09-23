@@ -113,18 +113,37 @@ Item {
     // What the end time field shows after an edit from `before` to `after`:
     // the ":" goes in once the hour is complete, two digits or one that
     // cannot take a second (3 to 9, or 2 to 9 on a 12-hour clock), and a
-    // separator typed over it is dropped. Erasing is left alone, so the
-    // colon can be taken out.
+    // separator typed over it is dropped. On a 12-hour clock a space follows
+    // the minutes. "a" or "p" writes the locale's AM or PM, minutes included
+    // when there were none, and the "m" typed after it is dropped. Erasing is
+    // left alone, so any of it can be taken out.
     function completeTime(before, after) {
-        const text = String(after);
-        if (text.length <= String(before).length)
+        const previous = String(before);
+        let text = String(after);
+        if (text.length <= previous.length)
             return text;
+        if (text === previous + text.slice(-1) && /[mM]/.test(text.slice(-1)) && root._endsWithMarker(previous))
+            return previous;
         const doubled = /^(\d{1,2}):[:hH.]$/.exec(text);
         if (doubled)
             return doubled[1] + ":";
+        const half = /^(\d{1,2})(?::(\d{2})?)?\s*([aApP])$/.exec(text);
+        if (half) {
+            const marker = /[aA]/.test(half[3]) ? root.amText || "am" : root.pmText || "pm";
+            return half[1] + ":" + (half[2] || "00") + " " + marker;
+        }
         const hours = root.twelveHour ? /^(0\d|1[0-2]|[2-9])(\d{0,2})$/ : /^([01]\d|2[0-3]|[3-9])(\d{0,2})$/;
         const digits = hours.exec(text);
-        return digits ? digits[1] + ":" + digits[2] : text;
+        if (digits)
+            text = digits[1] + ":" + digits[2];
+        if (root.twelveHour && /^\d{1,2}:\d{2}$/.test(text))
+            text += " ";
+        return text;
+    }
+
+    function _endsWithMarker(text) {
+        const lower = String(text).toLowerCase();
+        return [root.amText, root.pmText].some(marker => marker !== "" && lower.endsWith(String(marker).toLowerCase()));
     }
 
     function check() {

@@ -68,6 +68,8 @@ TestCase {
     function init() {
         timer.cancel();
         timer.twelveHour = false;
+        timer.amText = "AM";
+        timer.pmText = "PM";
         timer.fixedNowMs = evening;
         config.sleepUntil = 0;
         config.sleepPersist = true;
@@ -334,8 +336,6 @@ TestCase {
         timer.pmText = "下午";
         compare(timer.parseTime("下午1:25").hour, 13);
         compare(timer.parseTime("1:25 上午").hour, 1);
-        timer.amText = Qt.locale().amText;
-        timer.pmText = Qt.locale().pmText;
     }
 
     // On a 12-hour clock a time without am/pm is the next one the clock
@@ -367,6 +367,31 @@ TestCase {
         compare(timer.completeTime("1", "13"), "13");
         compare(timer.completeTime("0", "07"), "07:");
         compare(timer.completeTime("2:30", "2:30 "), "2:30 ");
+    }
+
+    // After the minutes, a space for am/pm; "a" or "p" writes the whole
+    // word, the way the locale spells it.
+    function test_twelve_hour_clock_writes_the_space_and_am_pm() {
+        timer.twelveHour = true;
+        compare(timer.completeTime("11:1", "11:11"), "11:11 ");
+        compare(timer.completeTime("", "1111"), "11:11 ");
+        compare(timer.completeTime("11:11 ", "11:11 a"), "11:11 AM");
+        compare(timer.completeTime("11:11 ", "11:11 P"), "11:11 PM");
+        compare(timer.completeTime("11:11", "11:11p"), "11:11 PM");
+        // The "m" of a word already written is not doubled.
+        compare(timer.completeTime("11:11 AM", "11:11 AMm"), "11:11 AM");
+        compare(timer.completeTime("11:11 PM", "11:11 PMM"), "11:11 PM");
+        // am/pm straight after the hour.
+        compare(timer.completeTime("7:", "7:p"), "7:00 PM");
+        compare(timer.completeTime("1", "1a"), "1:00 AM");
+        // Erasing is left alone.
+        compare(timer.completeTime("11:11 ", "11:11"), "11:11");
+        compare(timer.completeTime("11:11 AM", "11:11 A"), "11:11 A");
+        compare(timer.parseTime("11:11 A").hour, 11);
+    }
+
+    function test_twenty_four_hour_clock_writes_no_space() {
+        compare(timer.completeTime("23:1", "23:15"), "23:15");
     }
 
     function test_parsing_an_end_time() {
