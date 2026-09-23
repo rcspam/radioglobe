@@ -19,6 +19,10 @@ Item {
     property int offsetRefreshMs: 30 * 60 * 1000
     // Tests pin the clock; negative means Date.now().
     property real fixedNowMs: -1
+    // Qt time format (main.qml's clockFormat), see TimeZones.formatClock.
+    property string format: "HH:mm"
+    property string amText: Qt.locale().amText
+    property string pmText: Qt.locale().pmText
 
     readonly property string zone: root._zone
     // Minutes east of UTC, or null while unknown.
@@ -35,6 +39,9 @@ Item {
 
     onStationChanged: root._pickZone()
     onZonesChanged: root._pickZone()
+    onFormatChanged: root._tick()
+    onAmTextChanged: root._tick()
+    onPmTextChanged: root._tick()
 
     function _pickZone() {
         const next = TimeZones.zoneFor(root.zones, root.station);
@@ -65,7 +72,7 @@ Item {
     }
 
     function _tick() {
-        root._text = TimeZones.formatLocalTime(root._now(), root._offset);
+        root._text = TimeZones.formatLocalTime(root._now(), root._offset, root.format, root.amText, root.pmText);
     }
 
     // Fires just after each minute boundary.

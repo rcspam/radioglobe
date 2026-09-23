@@ -53,6 +53,17 @@ TestCase {
         execLog = [];
         execReplies = [];
         clock.station = null;
+        clock.format = "HH:mm";
+    }
+
+    // The station's time follows the widget's time format.
+    function test_the_time_follows_the_clock_format() {
+        clock.station = fip;
+        compare(clock.text, "14:00");
+        clock.amText = "AM";
+        clock.pmText = "PM";
+        clock.format = "h:mm Ap";
+        compare(clock.text, "2:00 PM");
     }
 
     function test_idle_shows_nothing() {

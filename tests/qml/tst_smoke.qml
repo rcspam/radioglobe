@@ -34,11 +34,60 @@ TestCase {
         verify(block.indexOf("cfg: Plasmoid.configuration") >= 0, block);
     }
 
+    // One time format for every clock the widget shows or reads.
+    function test_main_hands_the_time_format_around() {
+        const source = String(readFile("../../contents/ui/main.qml"));
+        verify(source.indexOf("TimeZones.clockFormat(Plasmoid.configuration.timeFormat") >= 0, "clockFormat");
+        const timer = source.slice(source.indexOf("SleepTimer {"), source.indexOf("}", source.indexOf("SleepTimer {")));
+        verify(timer.indexOf("twelveHour: root.twelveHour") >= 0, timer);
+        const clock = source.slice(source.indexOf("LocalClock {"), source.indexOf("}", source.indexOf("LocalClock {")));
+        verify(clock.indexOf("format: root.clockFormat") >= 0, clock);
+    }
+
+    function test_config_page_picks_the_time_format() {
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/config/configGeneral.qml"));
+        compare(component.status, Component.Ready, component.errorString());
+        const page = component.createObject(null, {
+            cfg_timeFormat: "12"
+        });
+        verify(page !== null, component.errorString());
+        compare(findChild(page, "timeFormat12").checked, true);
+        compare(findChild(page, "timeFormatSystem").checked, false);
+        findChild(page, "timeFormat24").clicked();
+        compare(page.cfg_timeFormat, "24");
+        findChild(page, "timeFormatSystem").clicked();
+        compare(page.cfg_timeFormat, "system");
+        page.destroy();
+    }
+
+    // All the radio buttons share one parent: without a group each, Qt made
+    // them one exclusive set, and a choice in one unticked the others.
+    function test_config_page_radio_groups_are_independent() {
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/config/configGeneral.qml"));
+        compare(component.status, Component.Ready, component.errorString());
+        const page = component.createObject(null, {
+            cfg_nextPreviousSource: "favorites",
+            cfg_marqueeMode: "bounce",
+            cfg_timeFormat: "24"
+        });
+        verify(page !== null, component.errorString());
+        compare(findChild(page, "nextFromFavorites").checked, true);
+        compare(findChild(page, "marqueeBounce").checked, true);
+        compare(findChild(page, "timeFormat24").checked, true);
+        findChild(page, "marqueeNone").clicked();
+        findChild(page, "marqueeNone").checked = true;
+        compare(findChild(page, "nextFromFavorites").checked, true);
+        compare(findChild(page, "timeFormat24").checked, true);
+        compare(findChild(page, "marqueeBounce").checked, false);
+        page.destroy();
+    }
+
     // The deadline is a timestamp in ms: past what an Int holds.
     function test_sleep_timer_keys_in_the_config_schema() {
         const schema = String(readFile("../../contents/config/main.xml"));
         verify(/<entry name="sleepUntil" type="Double">\s*<default>0<\/default>/.test(schema), "sleepUntil");
         verify(/<entry name="sleepPersist" type="Bool">\s*<default>true<\/default>/.test(schema), "sleepPersist");
+        verify(/<entry name="timeFormat" type="String">\s*<default>system<\/default>/.test(schema), "timeFormat");
     }
 
     function test_config_page_has_the_sleep_timer_persistence_box() {

@@ -1141,7 +1141,8 @@ var backupSettingTypes = ({
     listSort: "string",
     codecFilter: "string",
     minBitrate: "number",
-    sleepPersist: "boolean"
+    sleepPersist: "boolean",
+    timeFormat: "string"
 });
 
 function backupSettings(settings) {

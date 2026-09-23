@@ -108,6 +108,12 @@
     <entry name="marqueeMode" type="String">
       <default>loop</default>
     </entry>
+    <!-- How the widget writes and reads times (the station's local time, the
+         sleep timer): "system" (the short format of the locale), "24" or "12"
+         (with AM / PM). -->
+    <entry name="timeFormat" type="String">
+      <default>system</default>
+    </entry>
     <!-- The list's filter menu: sort "popularity" / "votes" / "name" /
          "bitrate", codec "" / "mp3" / "aac", minimum bitrate in kbps. -->
     <entry name="listSort" type="String">

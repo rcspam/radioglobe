@@ -91,3 +91,40 @@ test("formatLocalTime and formatOffset", () => {
   assert.equal(tz.formatOffset(345), "UTC+5:45");
   assert.equal(tz.formatOffset(null), "");
 });
+
+// Qt time formats, as QLocale.timeFormat(Locale.ShortFormat) gives them.
+test("usesTwelveHour reads the AM/PM marker, not quoted text", () => {
+  assert.equal(tz.usesTwelveHour("h:mm Ap"), true);
+  assert.equal(tz.usesTwelveHour("Aph:mm"), true);
+  assert.equal(tz.usesTwelveHour("HH:mm"), false);
+  assert.equal(tz.usesTwelveHour("HH 'h' mm"), false);
+  assert.equal(tz.usesTwelveHour("HH 'am' mm"), false);
+  assert.equal(tz.usesTwelveHour("HH:mm:ss"), false);
+});
+
+test("clockFormat follows the setting, and the system without seconds", () => {
+  assert.equal(tz.clockFormat("24", "h:mm Ap"), "HH:mm");
+  assert.equal(tz.clockFormat("12", "HH:mm"), "h:mm Ap");
+  assert.equal(tz.clockFormat("system", "Aph:mm"), "Aph:mm");
+  assert.equal(tz.clockFormat("system", "HH:mm:ss"), "HH:mm");
+  assert.equal(tz.clockFormat("", "HH 'h' mm"), "HH 'h' mm");
+  assert.equal(tz.clockFormat("system", ""), "HH:mm");
+});
+
+test("formatClock writes hours and minutes the way the format says", () => {
+  assert.equal(tz.formatClock("HH:mm", 1, 5, "AM", "PM"), "01:05");
+  assert.equal(tz.formatClock("H:mm", 1, 5, "AM", "PM"), "1:05");
+  assert.equal(tz.formatClock("h:mm Ap", 13, 25, "AM", "PM"), "1:25 PM");
+  assert.equal(tz.formatClock("h:mm Ap", 0, 30, "am", "pm"), "12:30 am");
+  assert.equal(tz.formatClock("h:mm Ap", 12, 0, "AM", "PM"), "12:00 PM");
+  assert.equal(tz.formatClock("hh:mm AP", 9, 0, "a.m.", "p.m."), "09:00 A.M.");
+  assert.equal(tz.formatClock("h:mm ap", 21, 0, "AM", "PM"), "9:00 pm");
+  assert.equal(tz.formatClock("Aph:mm", 1, 25, "上午", "下午"), "上午1:25");
+  assert.equal(tz.formatClock("HH 'h' mm", 1, 25, "a.m.", "p.m."), "01 h 25");
+});
+
+test("formatLocalTime takes a clock format", () => {
+  const noonUtc = Date.UTC(2026, 8, 18, 12, 0, 0);
+  assert.equal(tz.formatLocalTime(noonUtc, 120, "h:mm Ap", "AM", "PM"), "2:00 PM");
+  assert.equal(tz.formatLocalTime(noonUtc, 120), "14:00");
+});

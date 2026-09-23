@@ -25,6 +25,12 @@ Item {
     property int startupGraceMs: 15000
     // Tests pin the clock; negative means Date.now().
     property real fixedNowMs: -1
+    // The clock the user reads (the "timeFormat" setting, see main.qml): on
+    // a 12-hour one, a time typed without am/pm can be either half.
+    property bool twelveHour: false
+    // Accepted after (or before) a typed time, next to am, pm, a.m., p.m.
+    property string amText: Qt.locale().amText
+    property string pmText: Qt.locale().pmText
 
     // ms since the epoch, 0 while nothing is armed.
     readonly property real deadline: root._deadline
@@ -46,14 +52,14 @@ Item {
         root._arm(root._now() + Number(minutes) * 60000);
     }
 
-    // The next hour:minute to come, today or tomorrow.
-    function armUntil(hour, minute) {
-        const now = root._now();
-        const target = new Date(now);
-        target.setHours(hour, minute, 0, 0);
-        if (target.getTime() <= now)
-            target.setDate(target.getDate() + 1);
-        root._arm(target.getTime());
+    // The next hour:minute to come, today or tomorrow. With eitherHalf, the
+    // sooner of the morning and the evening one (11:30 on a 12-hour clock).
+    function armUntil(hour, minute, eitherHalf) {
+        if (!eitherHalf) {
+            root._arm(root._next(hour, minute));
+            return;
+        }
+        root._arm(Math.min(root._next(hour % 12, minute), root._next(hour % 12 + 12, minute)));
     }
 
     function cancel() {
@@ -63,25 +69,52 @@ Item {
         root._save(0);
     }
 
-    // "23:30", "23h30", "23h", "23", "0.45" -> {hour, minute}; null otherwise.
+    // "23:30", "23h30", "23h", "23", "0.45", "1:25 pm", "7p", "下午1:25"
+    // -> {hour (0-23), minute, eitherHalf}; null otherwise. eitherHalf: a
+    // 1 to 12 o'clock with no am/pm, typed on a 12-hour clock.
     function parseTime(text) {
-        const match = /^\s*(\d{1,2})\s*(?:[:hH.]\s*(\d{2})?)?\s*$/.exec(String(text || ""));
+        let rest = String(text || "").trim();
+        let half = "";
+        const markers = [[root.amText, "am"], [root.pmText, "pm"], ["a.m.", "am"], ["p.m.", "pm"], ["am", "am"], ["pm", "pm"], ["a", "am"], ["p", "pm"]];
+        for (const [marker, meaning] of markers) {
+            const word = String(marker || "").toLowerCase();
+            if (word === "")
+                continue;
+            const lower = rest.toLowerCase();
+            if (lower.endsWith(word)) {
+                rest = rest.slice(0, rest.length - word.length).trim();
+            } else if (lower.startsWith(word) && /^\D+$/.test(word)) {
+                rest = rest.slice(word.length).trim();
+            } else {
+                continue;
+            }
+            half = meaning;
+            break;
+        }
+        const match = /^(\d{1,2})\s*(?:[:hH.]\s*(\d{2})?)?$/.exec(rest);
         if (!match)
             return null;
-        const hour = parseInt(match[1], 10);
+        let hour = parseInt(match[1], 10);
         const minute = match[2] ? parseInt(match[2], 10) : 0;
         if (hour > 23 || minute > 59)
             return null;
+        if (half !== "") {
+            if (hour < 1 || hour > 12)
+                return null;
+            hour = hour % 12 + (half === "pm" ? 12 : 0);
+        }
         return {
             hour: hour,
-            minute: minute
+            minute: minute,
+            eitherHalf: half === "" && root.twelveHour && hour >= 1 && hour <= 12
         };
     }
 
     // What the end time field shows after an edit from `before` to `after`:
     // the ":" goes in once the hour is complete, two digits or one that
-    // cannot take a second (3 to 9), and a separator typed over it is
-    // dropped. Erasing is left alone, so the colon can be taken out.
+    // cannot take a second (3 to 9, or 2 to 9 on a 12-hour clock), and a
+    // separator typed over it is dropped. Erasing is left alone, so the
+    // colon can be taken out.
     function completeTime(before, after) {
         const text = String(after);
         if (text.length <= String(before).length)
@@ -89,7 +122,8 @@ Item {
         const doubled = /^(\d{1,2}):[:hH.]$/.exec(text);
         if (doubled)
             return doubled[1] + ":";
-        const digits = /^([01]\d|2[0-3]|[3-9])(\d{0,2})$/.exec(text);
+        const hours = root.twelveHour ? /^(0\d|1[0-2]|[2-9])(\d{0,2})$/ : /^([01]\d|2[0-3]|[3-9])(\d{0,2})$/;
+        const digits = hours.exec(text);
         return digits ? digits[1] + ":" + digits[2] : text;
     }
 
@@ -99,6 +133,15 @@ Item {
         root._nowMs = root._now();
         if (root._nowMs >= root._deadline)
             root._expire();
+    }
+
+    function _next(hour, minute) {
+        const now = root._now();
+        const target = new Date(now);
+        target.setHours(hour, minute, 0, 0);
+        if (target.getTime() <= now)
+            target.setDate(target.getDate() + 1);
+        return target.getTime();
     }
 
     function _arm(deadline) {

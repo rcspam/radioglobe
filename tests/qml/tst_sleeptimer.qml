@@ -67,6 +67,7 @@ TestCase {
 
     function init() {
         timer.cancel();
+        timer.twelveHour = false;
         timer.fixedNowMs = evening;
         config.sleepUntil = 0;
         config.sleepPersist = true;
@@ -309,26 +310,90 @@ TestCase {
         compare(timer.completeTime("", "2315"), "23:15");
     }
 
+    function test_parsing_am_and_pm() {
+        compare(timer.parseTime("1:25 pm"), {
+            hour: 13,
+            minute: 25,
+            eitherHalf: false
+        });
+        compare(timer.parseTime("1:25AM"), {
+            hour: 1,
+            minute: 25,
+            eitherHalf: false
+        });
+        compare(timer.parseTime("12 am").hour, 0);
+        compare(timer.parseTime("12:15 p.m.").hour, 12);
+        compare(timer.parseTime("7p").hour, 19);
+        compare(timer.parseTime("13:00 pm"), null);
+        compare(timer.parseTime("0:30 am"), null);
+    }
+
+    // The locale's own words, before or after the time.
+    function test_parsing_the_locale_am_and_pm() {
+        timer.amText = "上午";
+        timer.pmText = "下午";
+        compare(timer.parseTime("下午1:25").hour, 13);
+        compare(timer.parseTime("1:25 上午").hour, 1);
+        timer.amText = Qt.locale().amText;
+        timer.pmText = Qt.locale().pmText;
+    }
+
+    // On a 12-hour clock a time without am/pm is the next one the clock
+    // shows: 11:30 typed at 22:30 is in an hour, not tomorrow morning.
+    function test_twelve_hour_clock_takes_the_next_matching_half() {
+        timer.twelveHour = true;
+        compare(timer.parseTime("11:30"), {
+            hour: 11,
+            minute: 30,
+            eitherHalf: true
+        });
+        compare(timer.parseTime("15:00").eitherHalf, false);
+        compare(timer.parseTime("0:30").eitherHalf, false);
+        compare(timer.parseTime("11:30 am").eitherHalf, false);
+        timer.armUntil(11, 30, true);
+        compare(timer.deadline, new Date(2026, 8, 23, 23, 30).getTime());
+        timer.armUntil(10, 0, true);
+        compare(timer.deadline, new Date(2026, 8, 24, 10, 0).getTime());
+        timer.armUntil(12, 15, true);
+        compare(timer.deadline, new Date(2026, 8, 24, 0, 15).getTime());
+    }
+
+    // No 24-hour hours to wait for: the colon comes after 2 to 9 at once.
+    function test_twelve_hour_clock_completes_sooner() {
+        timer.twelveHour = true;
+        compare(timer.completeTime("", "2"), "2:");
+        compare(timer.completeTime("", "1"), "1");
+        compare(timer.completeTime("1", "12"), "12:");
+        compare(timer.completeTime("1", "13"), "13");
+        compare(timer.completeTime("0", "07"), "07:");
+        compare(timer.completeTime("2:30", "2:30 "), "2:30 ");
+    }
+
     function test_parsing_an_end_time() {
         compare(timer.parseTime("23:30"), {
             hour: 23,
-            minute: 30
+            minute: 30,
+            eitherHalf: false
         });
         compare(timer.parseTime(" 7h05 "), {
             hour: 7,
-            minute: 5
+            minute: 5,
+            eitherHalf: false
         });
         compare(timer.parseTime("23h"), {
             hour: 23,
-            minute: 0
+            minute: 0,
+            eitherHalf: false
         });
         compare(timer.parseTime("7"), {
             hour: 7,
-            minute: 0
+            minute: 0,
+            eitherHalf: false
         });
         compare(timer.parseTime("0.45"), {
             hour: 0,
-            minute: 45
+            minute: 45,
+            eitherHalf: false
         });
         compare(timer.parseTime("24:00"), null);
         compare(timer.parseTime("12:60"), null);

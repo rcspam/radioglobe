@@ -256,6 +256,7 @@ Item {
                 id: sleepMenu
                 objectName: "sleepButton"
                 timer: sleepTimer
+                clockFormat: root.clockFormat
             }
 
             // The form lives in the configuration dialog ("Add a station"

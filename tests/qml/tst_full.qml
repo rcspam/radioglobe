@@ -60,6 +60,7 @@ TestCase {
         property var currentCountry: null
         property string searchText: ""
         property bool loadingCountry: false
+        property string clockFormat: "HH:mm"
         property var favorites: []
         property bool approximateLocations: false
         property bool showDayNight: true
@@ -215,6 +216,8 @@ TestCase {
         player.calls = [];
         radioBrowser.calls = [];
         sleepTimer.cancel();
+        sleepTimer.twelveHour = false;
+        root.clockFormat = "HH:mm";
     }
 
     // A missing QML module shows a banner with the packages to install,
@@ -898,10 +901,6 @@ TestCase {
         compare(root.calls.indexOf("configure") >= 0, true, JSON.stringify(root.calls));
     }
 
-    function stopTime(ms) {
-        return new Date(ms).toLocaleTimeString(Qt.locale(), Locale.ShortFormat);
-    }
-
     // A duration closes the menu and lights the button, whose tooltip tells
     // when playback stops; the cancel entry shows the same time.
     function test_sleep_menu_arms_a_duration_and_cancels_it() {
@@ -922,7 +921,7 @@ TestCase {
         compare(sleepTimer.deadline, evening + 30 * 60000);
         tryCompare(popup, "visible", false);
         compare(button.highlighted, true);
-        const stop = stopTime(evening + 30 * 60000);
+        const stop = "23:00";
         verify(button.toolTipText.indexOf(stop) >= 0, button.toolTipText);
         verify(button.toolTipText.indexOf("30 min") >= 0, button.toolTipText);
         mouseClick(button);
@@ -981,6 +980,28 @@ TestCase {
         keyClick(Qt.Key_Return);
         compare(sleepTimer.deadline, new Date(2026, 8, 23, 23, 15).getTime());
         tryCompare(popup, "visible", false);
+    }
+
+    // With a 12-hour clock: am/pm in the hint and the times shown, and a
+    // time without either is the next one the clock reads.
+    function test_sleep_menu_on_a_twelve_hour_clock() {
+        const button = findChild(loader.item, "sleepButton");
+        const popup = findChild(button, "sleepPopup");
+        const field = findChild(button, "sleepTime");
+        root.clockFormat = "h:mm Ap";
+        sleepTimer.twelveHour = true;
+        root.expanded = true;
+        mouseClick(button);
+        tryCompare(popup, "visible", true);
+        compare(field.placeholderText, "hh:mm am/pm");
+        mouseClick(field);
+        for (const character of "1130")
+            keyClick(character);
+        compare(field.text, "11:30");
+        keyClick(Qt.Key_Return);
+        compare(sleepTimer.deadline, new Date(2026, 8, 23, 23, 30).getTime());
+        tryCompare(popup, "visible", false);
+        verify(button.toolTipText.indexOf("11:30 " + Qt.locale().pmText) >= 0, button.toolTipText);
     }
 
     function test_sleep_menu_closes_with_the_widget() {

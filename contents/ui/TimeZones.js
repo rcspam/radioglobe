@@ -116,12 +116,75 @@ function parseUtcOffset(text) {
     return match[1] === "-" ? -minutes : minutes;
 }
 
-// "HH:MM" at the given offset, or "" without one.
-function formatLocalTime(nowMs, offsetMinutes) {
+// The time at the given offset, written with a Qt time format (see
+// formatClock; "HH:mm" when none is given), or "" without an offset.
+function formatLocalTime(nowMs, offsetMinutes, format, amText, pmText) {
     if (offsetMinutes === null || offsetMinutes === undefined || !isFinite(offsetMinutes))
         return "";
     var shifted = new Date(Number(nowMs) + offsetMinutes * 60000);
-    return pad2(shifted.getUTCHours()) + ":" + pad2(shifted.getUTCMinutes());
+    return formatClock(format || "HH:mm", shifted.getUTCHours(), shifted.getUTCMinutes(), amText || "AM", pmText || "PM");
+}
+
+// Whether a Qt time format ("h:mm Ap", "HH:mm") shows AM/PM. Quoted text
+// ("HH 'h' mm") is not a marker.
+function usesTwelveHour(format) {
+    return /a/i.test(String(format || "").replace(/'[^']*'/g, ""));
+}
+
+// The format for the "timeFormat" setting: "24", "12", or anything else for
+// the system's own short format (seconds dropped, the clocks tick by minute).
+function clockFormat(setting, systemFormat) {
+    if (setting === "24")
+        return "HH:mm";
+    if (setting === "12")
+        return "h:mm Ap";
+    var format = String(systemFormat || "").replace(/[:.]ss?/g, "");
+    return format || "HH:mm";
+}
+
+// Hours and minutes written with a Qt time format: H/HH (0-23), h/hh (1-12
+// when the format shows AM/PM), m/mm, AP/A (upper case), ap/a (lower case),
+// Ap (as the locale writes it), 'quoted text'. JavaScript cannot convert to
+// another zone, so Qt's own formatting is of no use for a station's time.
+function formatClock(format, hours, minutes, amText, pmText) {
+    var text = String(format || "");
+    var twelve = usesTwelveHour(text);
+    var marker = hours < 12 ? String(amText) : String(pmText);
+    var hour12 = hours % 12 === 0 ? 12 : hours % 12;
+    var out = "";
+    var i = 0;
+    while (i < text.length) {
+        var c = text.charAt(i);
+        var pair = text.substr(i, 2);
+        if (c === "'") {
+            var end = text.indexOf("'", i + 1);
+            if (end < 0)
+                end = text.length;
+            out += text.substring(i + 1, end);
+            i = end + 1;
+        } else if (pair === "AP") {
+            out += marker.toUpperCase();
+            i += 2;
+        } else if (pair === "ap") {
+            out += marker.toLowerCase();
+            i += 2;
+        } else if (pair === "Ap" || pair === "aP") {
+            out += marker;
+            i += 2;
+        } else if (c === "A" || c === "a") {
+            out += c === "A" ? marker.toUpperCase() : marker.toLowerCase();
+            i += 1;
+        } else if (c === "H" || c === "h" || c === "m") {
+            var value = c === "m" ? minutes : (c === "h" && twelve ? hour12 : hours);
+            var padded = pair === c + c;
+            out += padded ? pad2(value) : String(value);
+            i += padded ? 2 : 1;
+        } else {
+            out += c;
+            i += 1;
+        }
+    }
+    return out;
 }
 
 // "UTC", "UTC+2", "UTC-3:30", or "" without an offset.

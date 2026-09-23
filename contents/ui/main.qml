@@ -59,6 +59,10 @@ PlasmoidItem {
     readonly property bool approximateLocations: Plasmoid.configuration.approximateLocations
     readonly property bool showDayNight: Plasmoid.configuration.showDayNight
     readonly property int zoomStep: Plasmoid.configuration.zoomStep
+    // Every time the widget shows or reads: the station's local time, the
+    // sleep timer's stop time and its end time field.
+    readonly property string clockFormat: TimeZones.clockFormat(Plasmoid.configuration.timeFormat, Qt.locale().timeFormat(Locale.ShortFormat))
+    readonly property bool twelveHour: TimeZones.usesTwelveHour(root.clockFormat)
 
     function setPinned(value) {
         Plasmoid.configuration.pinned = value;
@@ -476,6 +480,7 @@ PlasmoidItem {
         id: sleepTimer
         mediaPlayer: player
         cfg: Plasmoid.configuration
+        twelveHour: root.twelveHour
     }
 
     // Plasma's own tooltip delay; 0 or less means the user turned tooltips
@@ -488,6 +493,7 @@ PlasmoidItem {
         id: localClock
         station: player.station
         exec: root.exec.run
+        format: root.clockFormat
     }
     readonly property string marqueeMode: Plasmoid.configuration.marqueeMode
     readonly property string stationLocalTime: localClock.text

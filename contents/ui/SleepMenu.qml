@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.kirigami as Kirigami
+import "TimeZones.js" as TimeZones
 
 // The sleep timer's button and menu. The button stays lit while a timer runs,
 // and its tooltip says when playback stops.
@@ -11,11 +12,18 @@ PlasmaComponents3.ToolButton {
 
     // SleepTimer.qml.
     property var timer: null
+    // Qt time format for the stop time (main.qml's clockFormat).
+    property string clockFormat: "HH:mm"
     // The window the button lives in, for keeping the menu inside it.
     readonly property var hostWindow: Window.window
 
     readonly property bool timerActive: button.timer ? button.timer.active : false
-    readonly property string stopTime: button.timerActive ? new Date(button.timer.deadline).toLocaleTimeString(Qt.locale(), Locale.ShortFormat) : ""
+    readonly property string stopTime: {
+        if (!button.timerActive)
+            return "";
+        const stop = new Date(button.timer.deadline);
+        return TimeZones.formatClock(button.clockFormat, stop.getHours(), stop.getMinutes(), Qt.locale().amText, Qt.locale().pmText);
+    }
     readonly property string toolTipText: {
         if (!button.timerActive)
             return i18n("Sleep timer");
@@ -167,13 +175,13 @@ PlasmaComponents3.ToolButton {
                 Layout.leftMargin: Kirigami.Units.smallSpacing * 2
                 Layout.rightMargin: Kirigami.Units.smallSpacing * 2
                 Layout.bottomMargin: Kirigami.Units.smallSpacing
-                placeholderText: i18n("hh:mm")
+                placeholderText: button.timer && button.timer.twelveHour ? i18n("hh:mm am/pm") : i18n("hh:mm")
                 inputMethodHints: Qt.ImhPreferNumbers
                 color: text === "" || time ? Kirigami.Theme.textColor : Kirigami.Theme.negativeTextColor
                 onAccepted: {
                     if (!time)
                         return;
-                    button.timer.armUntil(time.hour, time.minute);
+                    button.timer.armUntil(time.hour, time.minute, time.eitherHalf);
                     sleepPopup.close();
                 }
             }
