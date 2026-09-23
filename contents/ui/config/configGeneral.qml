@@ -287,6 +287,29 @@ KCM.SimpleKCM {
             Kirigami.FormData.label: i18n("Sleep timer:")
             text: i18n("Keep it running when Plasma restarts")
         }
+        // Each choice shows what 13:25 looks like with it.
+        QQC2.RadioButton {
+            objectName: "timeFormatSystem"
+            QQC2.ButtonGroup.group: timeFormatGroup
+            Kirigami.FormData.label: i18n("Times (station, sleep timer):")
+            text: i18n("As in the system settings (%1)", page.exampleTime("system"))
+            checked: page.cfg_timeFormat !== "24" && page.cfg_timeFormat !== "12"
+            onClicked: page.cfg_timeFormat = "system"
+        }
+        QQC2.RadioButton {
+            objectName: "timeFormat24"
+            QQC2.ButtonGroup.group: timeFormatGroup
+            text: i18n("24-hour (%1)", page.exampleTime("24"))
+            checked: page.cfg_timeFormat === "24"
+            onClicked: page.cfg_timeFormat = "24"
+        }
+        QQC2.RadioButton {
+            objectName: "timeFormat12"
+            QQC2.ButtonGroup.group: timeFormatGroup
+            text: i18n("12-hour, AM / PM (%1)", page.exampleTime("12"))
+            checked: page.cfg_timeFormat === "12"
+            onClicked: page.cfg_timeFormat = "12"
+        }
         QQC2.RadioButton {
             objectName: "nextFromQueue"
             QQC2.ButtonGroup.group: nextGroup
@@ -349,29 +372,6 @@ KCM.SimpleKCM {
             text: i18n("Cut with an ellipsis")
             checked: page.cfg_marqueeMode === "none"
             onClicked: page.cfg_marqueeMode = "none"
-        }
-        // Each choice shows what 13:25 looks like with it.
-        QQC2.RadioButton {
-            objectName: "timeFormatSystem"
-            QQC2.ButtonGroup.group: timeFormatGroup
-            Kirigami.FormData.label: i18n("Times (station, sleep timer):")
-            text: i18n("As in the system settings (%1)", page.exampleTime("system"))
-            checked: page.cfg_timeFormat !== "24" && page.cfg_timeFormat !== "12"
-            onClicked: page.cfg_timeFormat = "system"
-        }
-        QQC2.RadioButton {
-            objectName: "timeFormat24"
-            QQC2.ButtonGroup.group: timeFormatGroup
-            text: i18n("24-hour (%1)", page.exampleTime("24"))
-            checked: page.cfg_timeFormat === "24"
-            onClicked: page.cfg_timeFormat = "24"
-        }
-        QQC2.RadioButton {
-            objectName: "timeFormat12"
-            QQC2.ButtonGroup.group: timeFormatGroup
-            text: i18n("12-hour, AM / PM (%1)", page.exampleTime("12"))
-            checked: page.cfg_timeFormat === "12"
-            onClicked: page.cfg_timeFormat = "12"
         }
         RowLayout {
             Kirigami.FormData.label: i18n("Panel icon:")

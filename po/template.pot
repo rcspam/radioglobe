@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-23 16:19+0200\n"
+"POT-Creation-Date: 2026-09-23 16:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,7 +66,7 @@ msgstr[1] ""
 msgid "%1 min"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:318
+#: contents/ui/config/configGeneral.qml:341
 msgid "%1 ms"
 msgstr ""
 
@@ -90,11 +90,11 @@ msgid_plural "%2 · %1 stations after filters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/config/configGeneral.qml:372
+#: contents/ui/config/configGeneral.qml:309
 msgid "12-hour, AM / PM (%1)"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:365
+#: contents/ui/config/configGeneral.qml:302
 msgid "24-hour (%1)"
 msgstr ""
 
@@ -159,11 +159,11 @@ msgstr ""
 msgid "Any codec"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:329
+#: contents/ui/config/configGeneral.qml:352
 msgid "Appearance"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:358
+#: contents/ui/config/configGeneral.qml:295
 msgid "As in the system settings (%1)"
 msgstr ""
 
@@ -276,7 +276,7 @@ msgstr ""
 msgid "Custom"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:349
+#: contents/ui/config/configGeneral.qml:372
 msgid "Cut with an ellipsis"
 msgstr ""
 
@@ -353,7 +353,7 @@ msgstr ""
 msgid "Icon colour:"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:313
+#: contents/ui/config/configGeneral.qml:336
 msgid "Icon tooltip appears after:"
 msgstr ""
 
@@ -369,7 +369,7 @@ msgstr ""
 msgid "Install the QtLocation QML module (qml6-module-qtlocation on Debian and Ubuntu) to pick the location on a map."
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:308
+#: contents/ui/config/configGeneral.qml:331
 msgid "Invert the direction for the volume"
 msgstr ""
 
@@ -466,7 +466,7 @@ msgid ""
 "Fedora: sudo dnf install %4"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:307
+#: contents/ui/config/configGeneral.qml:330
 msgid "Mouse wheel on the icon:"
 msgstr ""
 
@@ -483,7 +483,7 @@ msgstr ""
 msgid "Name:"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:334
+#: contents/ui/config/configGeneral.qml:357
 msgid "Names and titles too long to fit:"
 msgstr ""
 
@@ -491,7 +491,7 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:293
+#: contents/ui/config/configGeneral.qml:316
 msgid "Next and previous walk:"
 msgstr ""
 
@@ -633,7 +633,7 @@ msgstr ""
 msgid "Radio Browser unreachable. Kept locally only."
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:323
+#: contents/ui/config/configGeneral.qml:346
 msgid "Radio Browser:"
 msgstr ""
 
@@ -677,7 +677,7 @@ msgstr ""
 msgid "Replaces the current favourites and history. Nothing is changed until you apply."
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:324
+#: contents/ui/config/configGeneral.qml:347
 msgid "Report played stations to the click counter"
 msgstr ""
 
@@ -709,11 +709,11 @@ msgstr ""
 msgid "Saving…"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:342
+#: contents/ui/config/configGeneral.qml:365
 msgid "Scroll back and forth"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:335
+#: contents/ui/config/configGeneral.qml:358
 msgid "Scroll in a loop"
 msgstr ""
 
@@ -826,11 +826,11 @@ msgstr ""
 msgid "Tags:"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:301
+#: contents/ui/config/configGeneral.qml:324
 msgid "The favorites"
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:294
+#: contents/ui/config/configGeneral.qml:317
 msgid "The list the station was played from"
 msgstr ""
 
@@ -850,7 +850,7 @@ msgstr ""
 msgid "This station could not be played. It may be offline; retry or pick another one."
 msgstr ""
 
-#: contents/ui/config/configGeneral.qml:357
+#: contents/ui/config/configGeneral.qml:294
 msgid "Times (station, sleep timer):"
 msgstr ""
 
