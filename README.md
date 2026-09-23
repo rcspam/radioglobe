@@ -155,4 +155,4 @@ kpackagetool6 --type Plasma/Applet --install .   # quick dev loop, see below
 
 ## License
 
-MIT, with copyright split between Akshar Patel (Radio Atlas code reused here) and Rapha (rcspam) for RadioGlobe. See [LICENSE](LICENSE).
+MIT, with copyright split between Akshar Patel (Radio Atlas code reused here) and rcspam for RadioGlobe. See [LICENSE](LICENSE).
