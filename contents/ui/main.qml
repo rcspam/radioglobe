@@ -65,7 +65,7 @@ PlasmoidItem {
     }
 
     // Opens the configuration dialog on the "Add a station" page. Plasma
-    // opens on the first visible category, so config.qml lists that page
+    // opens on the first category declared, so config.qml puts that page
     // first only while configStartPage says so; the page clears the flag
     // once it is up, and the sidebar falls back to its normal order.
     function openConfiguration() {

@@ -56,6 +56,30 @@ TestCase {
         page.destroy();
     }
 
+    // Plasma opens the dialog on the first category declared, hidden or not
+    // (AppletConfiguration.qml: open(configModel.get(0))). That one must be
+    // General, unless the popup's "+" asked for the "Add a station" page.
+    function test_config_dialog_opens_on_general_unless_adding_a_station() {
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/config/config.qml"));
+        compare(component.status, Component.Ready, component.errorString());
+        const model = component.createObject(null);
+        verify(model !== null, component.errorString());
+        compare(model.get(0).source, "config/configGeneral.qml");
+        const sources = [];
+        for (let row = 0; row < model.count; row++) {
+            compare(model.get(row).visible, true, model.get(row).source);
+            sources.push(model.get(row).source);
+        }
+        compare(sources.slice().sort(), ["config/configAddStation.qml", "config/configBackup.qml", "config/configGeneral.qml"]);
+        model.startPage = "addStation";
+        compare(model.get(0).source, "config/configAddStation.qml");
+        compare(model.get(0).name, "Add a station");
+        compare(model.get(1).source, "config/configGeneral.qml");
+        model.startPage = "";
+        compare(model.get(0).source, "config/configGeneral.qml");
+        model.destroy();
+    }
+
     function test_config_page_compiles() {
         const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/config/configGeneral.qml"));
         compare(component.status, Component.Ready, component.errorString());

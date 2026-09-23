@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RadioGlobe 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rcspam/radioglobe/issues\n"
-"POT-Creation-Date: 2026-09-23 15:52+0200\n"
+"POT-Creation-Date: 2026-09-23 16:04+0200\n"
 "PO-Revision-Date: 2026-09-14 11:03+0200\n"
 "Last-Translator: rcspam\n"
 "Language-Team: French\n"
@@ -29,7 +29,7 @@ msgstr "%1 (%2 stations)"
 msgid "%1 (approximate, inside the country)"
 msgstr "%1 (approximative, à l'intérieur du pays)"
 
-#: contents/ui/config/configBackup.qml:86
+#: contents/ui/config/configBackup.qml:93
 msgid "%1 favourite imported. Apply to keep it."
 msgid_plural "%1 favourites imported. Apply to keep them."
 msgstr[0] "%1 favori importé. Appliquez pour le garder."
@@ -101,7 +101,7 @@ msgstr "Chemin absolu, ou laisser vide pour utiliser mpv depuis le PATH"
 msgid "Add"
 msgstr "Ajouter"
 
-#: contents/config/config.qml:11 contents/config/config.qml:22
+#: contents/config/config.qml:23
 msgid "Add a station"
 msgstr "Ajouter une radio"
 
@@ -122,7 +122,7 @@ msgstr "Ajoutée à vos favoris."
 msgid "Address search unavailable (OpenStreetMap did not answer)."
 msgstr "Recherche d'adresse indisponible (OpenStreetMap n'a pas répondu)."
 
-#: contents/ui/config/configBackup.qml:138
+#: contents/ui/config/configBackup.qml:145
 msgid "All files (*)"
 msgstr "Tous les fichiers (*)"
 
@@ -166,7 +166,7 @@ msgstr "Auto (%1 selon votre locale)"
 msgid "Available"
 msgstr "Disponible"
 
-#: contents/config/config.qml:28
+#: contents/config/config.qml:41
 msgid "Backup"
 msgstr "Sauvegarde"
 
@@ -242,11 +242,11 @@ msgstr "Copier la commande d'installation"
 msgid "Could not check (the command did not return). Try again."
 msgstr "Vérification impossible (la commande n’a pas répondu). Réessayer."
 
-#: contents/ui/config/configBackup.qml:116
+#: contents/ui/config/configBackup.qml:123
 msgid "Could not read %1."
 msgstr "Impossible de lire %1."
 
-#: contents/ui/config/configBackup.qml:101
+#: contents/ui/config/configBackup.qml:108
 msgid "Could not write %1."
 msgstr "Impossible d'écrire %1."
 
@@ -291,11 +291,11 @@ msgstr "Indiquez une URL de flux http(s) valide."
 msgid "Enter both latitude and longitude, or leave both empty."
 msgstr "Indiquez la latitude et la longitude, ou laissez les deux vides."
 
-#: contents/ui/config/configBackup.qml:125
+#: contents/ui/config/configBackup.qml:132
 msgid "Export RadioGlobe settings"
 msgstr "Exporter les réglages de RadioGlobe"
 
-#: contents/ui/config/configBackup.qml:153
+#: contents/ui/config/configBackup.qml:160
 msgid "Export:"
 msgstr "Exporter :"
 
@@ -303,7 +303,7 @@ msgstr "Exporter :"
 msgid "Favorites"
 msgstr "Favoris"
 
-#: contents/ui/config/configBackup.qml:159
+#: contents/ui/config/configBackup.qml:166
 msgid "Favourites, history, home country, panel icon and the other options. Not the volume or the station being played."
 msgstr "Favoris, historique, pays d'origine, icône du panneau et les autres options. Ni le volume ni la station en cours."
 
@@ -316,7 +316,7 @@ msgstr "Format"
 msgid "Found: %1"
 msgstr "Trouvé : %1"
 
-#: contents/config/config.qml:17
+#: contents/config/config.qml:18
 msgid "General"
 msgstr "Général"
 
@@ -344,11 +344,11 @@ msgstr "Couleur de l'icône :"
 msgid "Icon tooltip appears after:"
 msgstr "Infobulle de l'icône après :"
 
-#: contents/ui/config/configBackup.qml:136
+#: contents/ui/config/configBackup.qml:143
 msgid "Import RadioGlobe settings"
 msgstr "Importer les réglages de RadioGlobe"
 
-#: contents/ui/config/configBackup.qml:174
+#: contents/ui/config/configBackup.qml:181
 msgid "Import:"
 msgstr "Importer :"
 
@@ -360,8 +360,8 @@ msgstr "Installez le module QML QtLocation (qml6-module-qtlocation sur Debian et
 msgid "Invert the direction for the volume"
 msgstr "Inverser le sens pour le volume"
 
-#: contents/ui/config/configBackup.qml:128
-#: contents/ui/config/configBackup.qml:138
+#: contents/ui/config/configBackup.qml:135
+#: contents/ui/config/configBackup.qml:145
 msgid "JSON files (*.json)"
 msgstr "Fichiers JSON (*.json)"
 
@@ -395,7 +395,7 @@ msgstr "Quitter %1"
 msgid "Live"
 msgstr "En direct"
 
-#: contents/ui/config/configBackup.qml:175
+#: contents/ui/config/configBackup.qml:182
 msgid "Load from a file…"
 msgstr "Charger depuis un fichier…"
 
@@ -561,7 +561,7 @@ msgstr "En pause"
 msgid "Pick a signal on the globe or a station in the list"
 msgstr "Choisissez un signal sur le globe ou une station dans la liste"
 
-#: contents/ui/config/configBackup.qml:145
+#: contents/ui/config/configBackup.qml:152
 msgid "Plasma forgets a widget's settings when the widget is removed from the panel. Save them to a file to restore them later or on another computer."
 msgstr "Plasma oublie les réglages d'un composant graphique quand on le retire du panneau. Enregistrez-les dans un fichier pour les restaurer plus tard ou sur un autre ordinateur."
 
@@ -642,7 +642,7 @@ msgstr "Aléatoire"
 msgid "Random station"
 msgstr "Station aléatoire"
 
-#: contents/ui/config/configBackup.qml:113
+#: contents/ui/config/configBackup.qml:120
 msgid "Reading…"
 msgstr "Lecture…"
 
@@ -666,7 +666,7 @@ msgstr "Retirer des récents"
 msgid "Rename"
 msgstr "Renommer"
 
-#: contents/ui/config/configBackup.qml:180
+#: contents/ui/config/configBackup.qml:187
 msgid "Replaces the current favourites and history. Nothing is changed until you apply."
 msgstr "Remplace les favoris et l'historique actuels. Rien ne change avant d'appliquer."
 
@@ -686,11 +686,11 @@ msgstr "Réessayer"
 msgid "Save"
 msgstr "Enregistrer"
 
-#: contents/ui/config/configBackup.qml:154
+#: contents/ui/config/configBackup.qml:161
 msgid "Save to a file…"
 msgstr "Enregistrer dans un fichier…"
 
-#: contents/ui/config/configBackup.qml:105
+#: contents/ui/config/configBackup.qml:112
 msgid "Saved to %1"
 msgstr "Enregistré dans %1"
 
@@ -698,7 +698,7 @@ msgstr "Enregistré dans %1"
 msgid "Saved. The change is local to this widget: Radio Browser cannot be edited."
 msgstr "Enregistré. La modification reste locale à ce widget : Radio Browser ne peut pas être modifié."
 
-#: contents/ui/config/configBackup.qml:93
+#: contents/ui/config/configBackup.qml:100
 msgid "Saving…"
 msgstr "Enregistrement…"
 
@@ -831,11 +831,11 @@ msgstr "La liste d'où la radio a été lancée"
 msgid "This Plasma version does not provide the MPRIS module (org.kde.plasma.private.mpris) RadioGlobe needs to control mpv."
 msgstr "Cette version de Plasma ne fournit pas le module MPRIS (org.kde.plasma.private.mpris) dont RadioGlobe a besoin pour contrôler mpv."
 
-#: contents/ui/config/configBackup.qml:79
+#: contents/ui/config/configBackup.qml:86
 msgid "This file is not a RadioGlobe backup."
 msgstr "Ce fichier n'est pas une sauvegarde RadioGlobe."
 
-#: contents/ui/config/configBackup.qml:79
+#: contents/ui/config/configBackup.qml:86
 msgid "This file is not valid JSON."
 msgstr "Ce fichier n'est pas du JSON valide."
 
