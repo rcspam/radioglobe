@@ -961,6 +961,28 @@ TestCase {
         compare(field.text, "");
     }
 
+    // Hours, then minutes: the colon puts itself in, and can be erased.
+    function test_sleep_menu_puts_the_colon_in() {
+        const button = findChild(loader.item, "sleepButton");
+        const popup = findChild(button, "sleepPopup");
+        const field = findChild(button, "sleepTime");
+        root.expanded = true;
+        mouseClick(button);
+        tryCompare(popup, "visible", true);
+        mouseClick(field);
+        keyClick("2");
+        keyClick("3");
+        compare(field.text, "23:");
+        keyClick(Qt.Key_Backspace);
+        compare(field.text, "23");
+        keyClick("1");
+        keyClick("5");
+        compare(field.text, "23:15");
+        keyClick(Qt.Key_Return);
+        compare(sleepTimer.deadline, new Date(2026, 8, 23, 23, 15).getTime());
+        tryCompare(popup, "visible", false);
+    }
+
     function test_sleep_menu_closes_with_the_widget() {
         const button = findChild(loader.item, "sleepButton");
         const popup = findChild(button, "sleepPopup");

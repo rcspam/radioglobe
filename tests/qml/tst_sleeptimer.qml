@@ -287,6 +287,28 @@ TestCase {
         started.destroy();
     }
 
+    // The ":" comes by itself once the hour is complete: two digits, or
+    // one that cannot take a second (3 to 9). Erasing is left alone.
+    function test_completing_a_typed_time() {
+        compare(timer.completeTime("", "7"), "7:");
+        compare(timer.completeTime("", "1"), "1");
+        compare(timer.completeTime("", "2"), "2");
+        compare(timer.completeTime("1", "12"), "12:");
+        compare(timer.completeTime("2", "23"), "23:");
+        compare(timer.completeTime("2", "24"), "24");
+        compare(timer.completeTime("23:", "23:1"), "23:1");
+        compare(timer.completeTime("23:1", "23:15"), "23:15");
+        // A separator typed over the one already there.
+        compare(timer.completeTime("23:", "23::"), "23:");
+        compare(timer.completeTime("23:", "23:h"), "23:");
+        compare(timer.completeTime("7:", "7:h"), "7:");
+        // Erasing the colon, then typing on.
+        compare(timer.completeTime("23:", "23"), "23");
+        compare(timer.completeTime("23", "234"), "23:4");
+        // Pasted.
+        compare(timer.completeTime("", "2315"), "23:15");
+    }
+
     function test_parsing_an_end_time() {
         compare(timer.parseTime("23:30"), {
             hour: 23,

@@ -78,6 +78,21 @@ Item {
         };
     }
 
+    // What the end time field shows after an edit from `before` to `after`:
+    // the ":" goes in once the hour is complete, two digits or one that
+    // cannot take a second (3 to 9), and a separator typed over it is
+    // dropped. Erasing is left alone, so the colon can be taken out.
+    function completeTime(before, after) {
+        const text = String(after);
+        if (text.length <= String(before).length)
+            return text;
+        const doubled = /^(\d{1,2}):[:hH.]$/.exec(text);
+        if (doubled)
+            return doubled[1] + ":";
+        const digits = /^([01]\d|2[0-3]|[3-9])(\d{0,2})$/.exec(text);
+        return digits ? digits[1] + ":" + digits[2] : text;
+    }
+
     function check() {
         if (root._deadline <= 0 || root._fading)
             return;

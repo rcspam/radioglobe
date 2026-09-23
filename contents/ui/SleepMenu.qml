@@ -154,6 +154,15 @@ PlasmaComponents3.ToolButton {
                 id: timeField
                 objectName: "sleepTime"
                 readonly property var time: button.timer ? button.timer.parseTime(text) : null
+                // The text before the edit being handled: Qt emits
+                // textEdited before textChanged.
+                property string shownText: ""
+                onTextChanged: shownText = text
+                onTextEdited: {
+                    const completed = button.timer.completeTime(shownText, text);
+                    if (completed !== text)
+                        text = completed;
+                }
                 Layout.fillWidth: true
                 Layout.leftMargin: Kirigami.Units.smallSpacing * 2
                 Layout.rightMargin: Kirigami.Units.smallSpacing * 2
