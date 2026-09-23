@@ -1116,7 +1116,9 @@ function pushHistory(history, station, nowMs, maximum) {
 }
 
 // Settings the backup file carries, with the type each value must have.
-// Runtime state (mpv pid, last station, volume, pinned) stays out.
+// Runtime state (mpv pid, last station, volume, pinned, popup size, the
+// running sleep timer) stays out; tests/node/backup.test.mjs checks that
+// every other key of main.xml is here.
 var backupSettingTypes = ({
     homeCountry: "string",
     maxWorldStations: "number",
@@ -1132,7 +1134,14 @@ var backupSettingTypes = ({
     maxSearchStations: "number",
     restoreLastStation: "boolean",
     autoplayLastStation: "boolean",
-    nextPreviousSource: "string"
+    nextPreviousSource: "string",
+    toolTipDelay: "number",
+    zoomStep: "number",
+    marqueeMode: "string",
+    listSort: "string",
+    codecFilter: "string",
+    minBitrate: "number",
+    sleepPersist: "boolean"
 });
 
 function backupSettings(settings) {

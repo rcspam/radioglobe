@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { test } from "node:test";
 import { loadQmlJs } from "./qmljs.mjs";
 
@@ -25,7 +26,15 @@ test("buildBackup wraps favourites, history and the known settings only", () => 
         restoreLastStation: true,
         autoplayLastStation: false,
         nextPreviousSource: "favorites",
+        toolTipDelay: 150,
+        zoomStep: 30,
+        marqueeMode: "bounce",
+        listSort: "votes",
+        codecFilter: "mp3,aac",
+        minBitrate: 128,
+        sleepPersist: false,
         mpvPid: 4242,
+        sleepUntil: 1790198123456,
         lastStation: "{}",
     });
     assert.deepEqual(plain(backup), {
@@ -48,6 +57,13 @@ test("buildBackup wraps favourites, history and the known settings only", () => 
             restoreLastStation: true,
             autoplayLastStation: false,
             nextPreviousSource: "favorites",
+            toolTipDelay: 150,
+            zoomStep: 30,
+            marqueeMode: "bounce",
+            listSort: "votes",
+            codecFilter: "mp3,aac",
+            minBitrate: 128,
+            sleepPersist: false,
         },
     });
 });
@@ -83,4 +99,21 @@ test("parseBackup drops station rows without a uuid and unknown or mistyped sett
     assert.deepEqual(plain(result.favorites), [fip]);
     assert.deepEqual(plain(result.history), []);
     assert.deepEqual(plain(result.settings), { invertWheel: true });
+});
+
+// Keys of the schema the backup leaves out on purpose: what the widget
+// writes by itself as it runs. Favourites and history travel on their own.
+const notSettings = ["favorites", "history", "lastStation", "volume", "mpvPid", "pinned", "sleepUntil",
+    "popupWidth", "popupHeight", "configStartPage", "editStation"];
+
+test("every option of the schema is in the backup, with its type", () => {
+    const schema = fs.readFileSync(new URL("../../contents/config/main.xml", import.meta.url), "utf8");
+    const jsType = { Bool: "boolean", Int: "number", Double: "number", String: "string" };
+    const wrong = [];
+    for (const [, name, type] of schema.matchAll(/<entry name="([^"]+)" type="([^"]+)"/g)) {
+        const carried = model.backupSettingTypes[name];
+        if (notSettings.includes(name) ? carried !== undefined : carried !== jsType[type])
+            wrong.push(name + " (" + type + ")");
+    }
+    assert.deepEqual(wrong, []);
 });

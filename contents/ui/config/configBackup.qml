@@ -36,6 +36,13 @@ KCM.SimpleKCM {
     property bool cfg_restoreLastStation: true
     property bool cfg_autoplayLastStation: false
     property string cfg_nextPreviousSource: "queue"
+    property int cfg_toolTipDelay: 300
+    property int cfg_zoomStep: 20
+    property string cfg_marqueeMode: "loop"
+    property string cfg_listSort: "popularity"
+    property string cfg_codecFilter: ""
+    property int cfg_minBitrate: 0
+    property bool cfg_sleepPersist: true
 
     property string exportStatus: ""
     property string importStatus: ""

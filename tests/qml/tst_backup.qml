@@ -1,6 +1,7 @@
 import QtQuick
 import QtTest
 import "../../contents/ui" as Ui
+import "../../contents/ui/RadioModel.js" as RadioModel
 
 TestCase {
     name: "Backup"
@@ -42,6 +43,8 @@ TestCase {
         page.cfg_maxWorldStations = 2500;
         page.cfg_invertWheel = true;
         page.cfg_showDayNight = false;
+        page.cfg_listSort = "votes";
+        page.cfg_sleepPersist = false;
         const backup = JSON.parse(page.backupText());
         compare(backup.radioglobe, 1);
         compare(backup.favorites.length, 1);
@@ -51,6 +54,17 @@ TestCase {
         compare(backup.settings.maxWorldStations, 2500);
         compare(backup.settings.invertWheel, true);
         compare(backup.settings.showDayNight, false);
+        compare(backup.settings.listSort, "votes");
+        compare(backup.settings.sleepPersist, false);
+        page.destroy();
+    }
+
+    // A setting the backup carries but the page does not hold would be
+    // exported as undefined and dropped without a word.
+    function test_page_holds_every_setting_the_backup_carries() {
+        const page = createPage();
+        for (const key in RadioModel.backupSettingTypes)
+            compare(typeof page["cfg_" + key], RadioModel.backupSettingTypes[key], key);
         page.destroy();
     }
 
