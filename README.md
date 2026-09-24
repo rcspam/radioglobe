@@ -1,6 +1,6 @@
 # RadioGlobe
 
-A KDE Plasma 6 widget to explore live radio stations on a rotatable globe and play them through mpv.
+A KDE Plasma 6 widget to explore live radio from all over the Earth.
 
 After seeing [Radio Atlas](https://github.com/AksharP5/omarchy-radio-atlas) on Omarchy, I wanted the same idea as a Plasma widget. RadioGlobe is an independent plasmoid inspired by it (credited in [LICENSE](LICENSE)).
 
@@ -8,19 +8,18 @@ After seeing [Radio Atlas](https://github.com/AksharP5/omarchy-radio-atlas) on O
 
 ## Features
 
-The globe, the [Radio Browser](https://www.radio-browser.info/) directory, favorites, history, random tuning, volume and keyboard controls work as in Radio Atlas: see [its features](https://github.com/AksharP5/omarchy-radio-atlas#features). Its Omarchy-specific parts, such as the audio output picker, are not in the widget.
+Everything works as in Radio Atlas, the globe, the [Radio Browser](https://www.radio-browser.info/) directory, favorites, history, random tuning, volume and keyboard controls: see [its features](https://github.com/AksharP5/omarchy-radio-atlas#features). Its Omarchy-specific parts, such as the audio output picker, are not in the widget.
 
 What RadioGlobe adds:
 
-- A Plasma widget: a panel or system tray icon with a playing badge and a tooltip with the station, its title, transport buttons and the volume, or a widget on the desktop.
-- A sort and filter menu next to the search field: popularity, votes, name, bitrate, codecs (MP3, AAC, OGG), minimum bitrate. The globe follows.
-- During a search, or inside a country, the globe shows only those stations: type "jazz" and see where jazz is played.
+- A Plasma widget with a badge while playing, which you can even drive from its tooltip: the station, its title, the playback buttons and the volume. And of course a widget on the desktop.
+- Sorting of the lists. The globe follows.
+- During a search, or inside a country, the globe shows only those stations.
 - A right-click menu on every station: copy the stream URL, open its homepage, vote for it on Radio Browser, show its properties.
-- The night side of the Earth, following the real position of the Sun.
+- Night on Earth, shown on the globe.
 - + / - zoom buttons, and wheel zoom on the point under the cursor.
 - The local time where the station broadcasts, on a 12 or 24-hour clock.
 - A sleep timer: stop playback in 15 minutes to 2 hours, or at a given time, after a 20-second fade out.
-- A stream cut while playing is reopened once, silently.
 - The last station played is back in the player at startup, and can start on its own.
 - Your own stations, placed on an OpenStreetMap view and optionally published to Radio Browser. Existing stations can be corrected locally.
 - Favorites you can rename, and export and import of your favorites, history and settings.
@@ -39,7 +38,9 @@ What RadioGlobe adds:
 
 On openSUSE, the player packages are `mpv mpv-mpris` too.
 
-You do not have to check this by hand. At startup the widget looks for every module it uses and, if one is missing, shows a banner with the command to install it for your distribution. The settings page also says whether mpv and mpv-mpris were found. Without the offline cache, station lists are fetched again at every start. Without QtLocation, the "Add a station" page takes the latitude and longitude as numbers.
+**You do not have to check this by hand. At startup the widget looks for every module it uses and, if one is missing, shows a banner with the command to install it for your distribution.**
+
+The settings page also says whether mpv and mpv-mpris were found. Without the offline cache, station lists are fetched again at every start. Without QtLocation, the "Add a station" page takes the latitude and longitude as numbers.
 
 ## Install
 
@@ -105,7 +106,7 @@ Hovering the icon shows the current station with previous / play-pause / next / 
 
 ## Sleep timer
 
-The chronometer button at the top of the popup opens the timer. Pick a duration, or type the time playback should stop: hours, then minutes, the colon comes by itself. A time already gone today means tomorrow. On a 12-hour clock, type "a" or "p" for AM or PM; without either, the timer takes the next time the clock shows that hour.
+The chronometer button opens the timer. Pick a duration, or type the time playback should stop: hours, then minutes, the colon comes by itself. A time already gone today means tomorrow. On a 12-hour clock, type "a" or "p" for AM or PM; without either, the timer takes the next time the clock shows that hour.
 
 At the deadline the station fades out over 20 seconds and stops. While a timer runs, the button stays lit and its tooltip gives the stop time and what is left. The timer survives a Plasma restart; this can be turned off in the settings.
 
