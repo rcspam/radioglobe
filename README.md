@@ -8,17 +8,23 @@ After seeing [Radio Atlas](https://github.com/AksharP5/omarchy-radio-atlas) on O
 
 ## Features
 
-- A globe with one dot per live station. Drag to spin it, use the wheel or the + / - buttons to zoom, click a dot to play, click a country to browse its stations. The night side follows the real position of the Sun.
-- Stations from the [Radio Browser](https://www.radio-browser.info/) community directory: a world view, per-country lists, and a search by name, country or tag. During a search, or inside a country, the globe shows only those stations, so typing "jazz" maps where jazz is played.
-- A filter menu next to the search field sorts the list (popularity, votes, name, bitrate) and keeps only some codecs (MP3, AAC, OGG) or a minimum bitrate. The globe follows.
-- Favorites you can rename, the last 20 stations played, and a right-click menu on every station: play, favorite, copy the stream URL, open its homepage, vote for it on Radio Browser, show its properties.
-- Playback in a separate mpv process driven over MPRIS. A broken stream never freezes the widget, playback survives a Plasma restart, and the multimedia keys and Plasma's Media Player widget work with it.
-- The local time where the station broadcasts, next to its name.
+The globe, the [Radio Browser](https://www.radio-browser.info/) directory, favorites, history, random tuning, volume and keyboard controls work as in Radio Atlas: see [its features](https://github.com/AksharP5/omarchy-radio-atlas#features). Its Omarchy-specific parts, such as the audio output picker, are not in the widget.
+
+What RadioGlobe adds:
+
+- A Plasma widget: a panel or system tray icon with a playing badge and a tooltip with the station, its title, transport buttons and the volume, or a widget on the desktop.
+- A sort and filter menu next to the search field: popularity, votes, name, bitrate, codecs (MP3, AAC, OGG), minimum bitrate. The globe follows.
+- During a search, or inside a country, the globe shows only those stations: type "jazz" and see where jazz is played.
+- A right-click menu on every station: copy the stream URL, open its homepage, vote for it on Radio Browser, show its properties.
+- The night side of the Earth, following the real position of the Sun.
+- + / - zoom buttons, and wheel zoom on the point under the cursor.
+- The local time where the station broadcasts, on a 12 or 24-hour clock.
 - A sleep timer: stop playback in 15 minutes to 2 hours, or at a given time, after a 20-second fade out.
-- A panel or system tray icon with a playing badge, and a tooltip with the station, its title, transport buttons and the volume.
-- Your own stations, placed on an OpenStreetMap view, optionally published to Radio Browser. Existing stations can be corrected too (their location above all).
-- Export and import of your favorites, history and settings.
-- Full keyboard control. English and French, other languages welcome in `po/`.
+- A stream cut while playing is reopened once, silently.
+- The last station played is back in the player at startup, and can start on its own.
+- Your own stations, placed on an OpenStreetMap view and optionally published to Radio Browser. Existing stations can be corrected locally.
+- Favorites you can rename, and export and import of your favorites, history and settings.
+- English and French, other languages welcome in `po/`.
 
 ## Requirements
 
