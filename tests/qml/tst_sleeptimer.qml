@@ -71,6 +71,7 @@ TestCase {
         timer.amText = "AM";
         timer.pmText = "PM";
         timer.fixedNowMs = evening;
+        timer.fadeMs = 100;
         config.sleepUntil = 0;
         config.sleepPersist = true;
         fakePlayer.state = "playing";
@@ -182,6 +183,16 @@ TestCase {
             compare(fakePlayer.calls, ["stop"], state);
             compare(fakePlayer.levels, [], state);
         }
+    }
+
+    // A fade set to nothing in the settings: straight to the stop.
+    function test_without_a_fade_playback_stops_at_once() {
+        timer.fadeMs = 0;
+        timer.armFor(15);
+        passTime(15);
+        compare(timer.active, false);
+        compare(fakePlayer.calls, ["stop"]);
+        compare(fakePlayer.levels, []);
     }
 
     // Raising the volume of a muted player would make it heard again.

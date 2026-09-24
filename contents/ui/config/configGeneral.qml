@@ -33,6 +33,7 @@ KCM.SimpleKCM {
     property alias cfg_restoreLastStation: restoreLastStation.checked
     property alias cfg_autoplayLastStation: autoplayLastStation.checked
     property alias cfg_sleepPersist: sleepPersist.checked
+    property alias cfg_sleepFadeSeconds: sleepFade.value
     property string cfg_icon: "map-globe"
     property string cfg_nextPreviousSource: "queue"
     property string cfg_marqueeMode: "loop"
@@ -286,6 +287,16 @@ KCM.SimpleKCM {
             objectName: "sleepPersist"
             Kirigami.FormData.label: i18n("Sleep timer:")
             text: i18n("Keep it running when Plasma restarts")
+        }
+        QQC2.SpinBox {
+            id: sleepFade
+            objectName: "sleepFadeSeconds"
+            Kirigami.FormData.label: i18n("Fade out before stopping:")
+            from: 0
+            to: 300
+            stepSize: 5
+            textFromValue: (value, locale) => value === 0 ? i18n("No fade") : i18n("%1 s", value)
+            valueFromText: (text, locale) => parseInt(text, 10) || 0
         }
         // Each choice shows what 13:25 looks like with it.
         QQC2.RadioButton {

@@ -14,6 +14,7 @@ Item {
     // main.qml's id would resolve to this very property inside the block.
     property var mediaPlayer: null
     property var cfg: null
+    // The sleepFadeSeconds setting, in ms; 0 stops without a fade.
     property int fadeMs: 20000
     property int fadeStepMs: 250
     // How often the deadline is compared with the wall clock. A clock rather

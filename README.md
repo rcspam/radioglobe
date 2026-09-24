@@ -19,7 +19,7 @@ What RadioGlobe adds:
 - Night on Earth, shown on the globe.
 - + / - zoom buttons, and wheel zoom on the point under the cursor.
 - The local time where the station broadcasts, on a 12 or 24-hour clock.
-- A sleep timer: stop playback in 15 minutes to 2 hours, or at a given time, after a 20-second fade out.
+- A sleep timer: stop playback in 15 minutes to 2 hours, or at a given time, after a fade out you can set.
 - The last station played is back in the player at startup, and can start on its own.
 - Your own stations, placed on an OpenStreetMap view and optionally published to Radio Browser. Existing stations can be corrected locally.
 - Favorites you can rename, and export and import of your favorites, history and settings.
@@ -108,7 +108,7 @@ Hovering the icon shows the current station with previous / play-pause / next / 
 
 The chronometer button opens the timer. Pick a duration, or type the time playback should stop: hours, then minutes, the colon comes by itself. A time already gone today means tomorrow. On a 12-hour clock, type "a" or "p" for AM or PM; without either, the timer takes the next time the clock shows that hour.
 
-At the deadline the station fades out over 20 seconds and stops. While a timer runs, the button stays lit and its tooltip gives the stop time and what is left. The timer survives a Plasma restart; this can be turned off in the settings.
+At the deadline the station fades out, over 20 seconds by default (0 to 300 in the settings), and stops. While a timer runs, the button stays lit and its tooltip gives the stop time and what is left. The timer survives a Plasma restart; this can be turned off in the settings.
 
 ## Adding or fixing a station
 

@@ -480,6 +480,7 @@ PlasmoidItem {
         id: sleepTimer
         mediaPlayer: player
         cfg: Plasmoid.configuration
+        fadeMs: Plasmoid.configuration.sleepFadeSeconds * 1000
         twelveHour: root.twelveHour
     }
 

@@ -43,6 +43,7 @@ KCM.SimpleKCM {
     property string cfg_codecFilter: ""
     property int cfg_minBitrate: 0
     property bool cfg_sleepPersist: true
+    property int cfg_sleepFadeSeconds: 20
     property string cfg_timeFormat: "system"
 
     property string exportStatus: ""

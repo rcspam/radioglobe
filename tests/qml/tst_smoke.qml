@@ -32,6 +32,7 @@ TestCase {
         const block = source.slice(start, source.indexOf("}", start));
         verify(block.indexOf("mediaPlayer: player") >= 0, block);
         verify(block.indexOf("cfg: Plasmoid.configuration") >= 0, block);
+        verify(block.indexOf("fadeMs: Plasmoid.configuration.sleepFadeSeconds * 1000") >= 0, block);
     }
 
     // One time format for every clock the widget shows or reads.
@@ -88,6 +89,26 @@ TestCase {
         verify(/<entry name="sleepUntil" type="Double">\s*<default>0<\/default>/.test(schema), "sleepUntil");
         verify(/<entry name="sleepPersist" type="Bool">\s*<default>true<\/default>/.test(schema), "sleepPersist");
         verify(/<entry name="timeFormat" type="String">\s*<default>system<\/default>/.test(schema), "timeFormat");
+        verify(/<entry name="sleepFadeSeconds" type="Int">\s*<default>20<\/default>/.test(schema), "sleepFadeSeconds");
+    }
+
+    // 0 means no fade at all: playback stops at the deadline.
+    function test_config_page_sets_the_sleep_fade() {
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/config/configGeneral.qml"));
+        compare(component.status, Component.Ready, component.errorString());
+        const page = component.createObject(null, {
+            cfg_sleepFadeSeconds: 45
+        });
+        verify(page !== null, component.errorString());
+        const spin = findChild(page, "sleepFadeSeconds");
+        verify(spin !== null, "sleepFadeSeconds not found");
+        compare(spin.value, 45);
+        compare(spin.from, 0);
+        compare(spin.to, 300);
+        compare(spin.textFromValue(0, Qt.locale()), "No fade");
+        spin.value = 90;
+        compare(page.cfg_sleepFadeSeconds, 90);
+        page.destroy();
     }
 
     function test_config_page_has_the_sleep_timer_persistence_box() {

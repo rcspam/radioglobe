@@ -1142,6 +1142,7 @@ var backupSettingTypes = ({
     codecFilter: "string",
     minBitrate: "number",
     sleepPersist: "boolean",
+    sleepFadeSeconds: "number",
     timeFormat: "string"
 });
 

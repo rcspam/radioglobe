@@ -98,6 +98,10 @@
     <entry name="sleepPersist" type="Bool">
       <default>true</default>
     </entry>
+    <!-- Seconds the sleep timer fades out over before stopping (0: none). -->
+    <entry name="sleepFadeSeconds" type="Int">
+      <default>20</default>
+    </entry>
     <!-- What next / previous walk: "queue" (the list the station was played
          from) or "favorites". -->
     <entry name="nextPreviousSource" type="String">
