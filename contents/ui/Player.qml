@@ -69,6 +69,8 @@ Item {
     property bool _volumeHeld: false
     property var _connectedModel: null
     property int _launchEpoch: 0
+    // An idle mpv is being launched ahead of the first play: state stays "idle".
+    property bool _warming: false
 
     onMprisChanged: {
         root._watchModel();
@@ -99,6 +101,13 @@ Item {
         root._errorKind = "";
         root._userStopping = false;
         root._streamRetries = 0;
+        if (root._warming) {
+            // The pre-launched mpv is on its way: the attach will open this station.
+            root._warming = false;
+            root._pendingStation = station;
+            root._setState("starting");
+            return;
+        }
         if (root._state === "starting") {
             // mpv is already being launched: the attach will open this station.
             root._pendingStation = station;
@@ -126,6 +135,14 @@ Item {
     function startIfIdle() {
         if (root._state === "idle" && root._station && !root._player)
             root.play(root._station);
+    }
+
+    // Starts an idle mpv in the background so the first play only needs OpenUri.
+    function warmUp() {
+        if (root._state !== "idle" || root._player || root.currentPid() > 0 || !root.mpris || !root.exec)
+            return;
+        root._warming = true;
+        root._ensureMpv();
     }
 
     function retry() {
@@ -237,6 +254,12 @@ Item {
             root._player.volume = 0;
     }
 
+    // --audio-client-name makes mpv-mpris report its identity as "RadioGlobe",
+    // so the PID alone identifies our mpv.
+    function _isOurMpv(container, pid) {
+        return (Number(container.instancePid) || 0) === pid;
+    }
+
     // Looks for the PlayerContainer whose D-Bus peer PID is our mpv.
     function rescan() {
         const pid = root.currentPid();
@@ -245,7 +268,7 @@ Item {
             const count = root.mpris.rowCount();
             for (let row = 0; row < count; row++) {
                 const container = root.mpris.data(root.mpris.index(row, 0), 257);
-                if (container && Number(container.instancePid) === pid && String(container.identity) === "mpv") {
+                if (container && root._isOurMpv(container, pid)) {
                     found = container;
                     break;
                 }
@@ -300,22 +323,23 @@ Item {
             root._fail("mpv-missing");
             return;
         }
-        root._setState("starting");
+        if (!root._warming)
+            root._setState("starting");
         // Each start gets an epoch: a later start invalidates the replies of an
         // earlier one, which "starting" alone cannot tell apart.
         root._launchEpoch += 1;
         const epoch = root._launchEpoch;
         const binary = root._mpvBinary();
         root.exec("command -v " + RadioModel.shellQuote(binary), (exitCode, stdout) => {
-            if (root._state !== "starting" || epoch !== root._launchEpoch)
+            if (!root._launching(epoch))
                 return;
             if (exitCode !== 0) {
-                root._fail("mpv-missing");
+                root._launchFailed("mpv-missing");
                 return;
             }
             root.exec(root._launchCommand(binary), (launchCode, output) => {
                 const pid = parseInt(String(output).trim(), 10);
-                if (root._state !== "starting" || epoch !== root._launchEpoch) {
+                if (!root._launching(epoch)) {
                     // Stopped, quit or superseded by a newer start: kill the
                     // latecomer instead of leaving a process nobody knows about.
                     if (pid > 0)
@@ -323,7 +347,7 @@ Item {
                     return;
                 }
                 if (launchCode !== 0 || !(pid > 0)) {
-                    root._fail("mpv-missing");
+                    root._launchFailed("mpv-missing");
                     return;
                 }
                 root._setPid(pid);
@@ -331,6 +355,20 @@ Item {
                 root.rescan();
             });
         });
+    }
+
+    function _launching(epoch) {
+        return epoch === root._launchEpoch && (root._state === "starting" || root._warming);
+    }
+
+    // A failed pre-launch stays silent: the next play retries and reports.
+    function _launchFailed(kind) {
+        if (root._warming) {
+            root._warming = false;
+            root._setPid(0);
+            return;
+        }
+        root._fail(kind);
     }
 
     function _mpvBinary() {
@@ -359,6 +397,11 @@ Item {
             root._pendingStation = null;
             container.volume = root._volume;
             root._openUri();
+            return;
+        }
+        if (root._warming) {
+            root._warming = false;
+            container.volume = root._volume;
             return;
         }
         // Reattaching to an mpv that outlived plasmashell: adopt its state.
@@ -631,12 +674,16 @@ Item {
         id: attachTimer
         interval: root.attachTimeoutMs
         onTriggered: {
-            if (root._state !== "starting" || root._player)
+            if ((root._state !== "starting" && !root._warming) || root._player)
                 return;
+            const wasWarming = root._warming;
+            root._warming = false;
             const pid = root.currentPid();
             if (pid > 0 && root.exec)
                 root.exec("kill " + pid, function () {});
             root._setPid(0);
+            if (wasWarming)
+                return;
             root._fail("mpris-missing");
         }
     }

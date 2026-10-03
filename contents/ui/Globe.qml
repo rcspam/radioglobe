@@ -575,20 +575,11 @@ Item {
             var bucketDepth = (b + 0.5) / bucketCount;
             var bucketRadius = 1.7 + bucketDepth * 1.25;
             ctx.fillStyle = withAlpha(signalColor, 0.42 + bucketDepth * 0.48);
-            // While the globe moves, each dot is a blit of its bucket's
-            // pre-rendered sprite: no path to build, a fraction of the raster
-            // cost of an arc. At rest, one arc per dot, painted once.
-            if (moving) {
-                var cell = dotSpriteCell;
-                var half = cell / 2;
-                for (var e = 0; e < entries.length; e += 2)
-                    ctx.drawImage(dotSprites, b * cell, 0, cell, cell, entries[e] - half, entries[e + 1] - half, cell, cell);
-            } else {
-                for (var d = 0; d < entries.length; d += 2) {
-                    ctx.beginPath();
-                    ctx.arc(entries[d], entries[d + 1], bucketRadius, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+            // Sprite blits doubled the dots while dragging, so arcs are always used.
+            for (var d = 0; d < entries.length; d += 2) {
+                ctx.beginPath();
+                ctx.arc(entries[d], entries[d + 1], bucketRadius, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
         // Last, so the crowd never covers the playing or hovered station.

@@ -19,6 +19,16 @@
     <entry name="volume" type="Double">
       <default>0.75</default>
     </entry>
+    <!-- Globe view, saved when it stops moving; scale 0 means never saved. -->
+    <entry name="globeLatitude" type="Double">
+      <default>18</default>
+    </entry>
+    <entry name="globeLongitude" type="Double">
+      <default>-20</default>
+    </entry>
+    <entry name="globeScale" type="Double">
+      <default>0</default>
+    </entry>
     <entry name="mpvPid" type="Int">
       <default>0</default>
     </entry>

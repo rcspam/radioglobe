@@ -328,6 +328,17 @@ Item {
                         fontFamily: Kirigami.Theme.defaultFont.family
                         showDayNight: root.showDayNight
                         zoomStep: root.zoomStep
+                        Component.onCompleted: {
+                            // Plasmoid is not imported here: tests give `root` no saved view.
+                            if (typeof root.savedGlobeView !== "function")
+                                return;
+                            const saved = root.savedGlobeView();
+                            if (saved) {
+                                centreLatitude = saved.latitude;
+                                centreLongitude = saved.longitude;
+                                globeScale = saved.scale;
+                            }
+                        }
                         // Darker than the sphere in both light and dark
                         // themes, so the night side reads as a shadow.
                         nightColor: Qt.darker(Kirigami.Theme.backgroundColor, 3)
@@ -336,6 +347,14 @@ Item {
                         // The sea, or space: out of the country.
                         onEmptyActivated: if (root.currentCountry)
                             root.clearCountry()
+                    }
+
+                    Connections {
+                        target: globe
+                        function onMovingChanged() {
+                            if (!globe.moving && typeof root.saveGlobeView === "function")
+                                root.saveGlobeView(globe.centreLatitude, globe.centreLongitude, globe.globeScale);
+                        }
                     }
 
                     // Wheel-less zoom, over the globe's bottom-right corner.

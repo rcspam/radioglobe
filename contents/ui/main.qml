@@ -59,6 +59,23 @@ PlasmoidItem {
     readonly property bool approximateLocations: Plasmoid.configuration.approximateLocations
     readonly property bool showDayNight: Plasmoid.configuration.showDayNight
     readonly property int zoomStep: Plasmoid.configuration.zoomStep
+
+    function savedGlobeView() {
+        const scale = Plasmoid.configuration.globeScale;
+        if (!(scale > 0))
+            return null;
+        return {
+            latitude: Plasmoid.configuration.globeLatitude,
+            longitude: Plasmoid.configuration.globeLongitude,
+            scale: scale
+        };
+    }
+
+    function saveGlobeView(latitude, longitude, scale) {
+        Plasmoid.configuration.globeLatitude = latitude;
+        Plasmoid.configuration.globeLongitude = longitude;
+        Plasmoid.configuration.globeScale = scale;
+    }
     // Every time the widget shows or reads: the station's local time, the
     // sleep timer's stop time and its end time field.
     readonly property string clockFormat: TimeZones.clockFormat(Plasmoid.configuration.timeFormat, Qt.locale().timeFormat(Locale.ShortFormat))
@@ -531,6 +548,14 @@ PlasmoidItem {
         id: autoplayTimer
         interval: 2500
         onTriggered: player.startIfIdle()
+    }
+
+    Timer {
+        id: warmUpTimer
+        // After the stale-PID check, so a surviving mpv is reattached, not duplicated.
+        interval: 6000
+        running: true
+        onTriggered: player.warmUp()
     }
 
     Component.onCompleted: {
