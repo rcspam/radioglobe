@@ -28,7 +28,7 @@ What RadioGlobe adds:
 ## Requirements
 
 - Plasma 6.1 or newer (developed and tested on Plasma 6.6 with Qt 6.10)
-- [mpv](https://mpv.io/) and the [mpv-mpris](https://github.com/hoyon/mpv-mpris) script. Both are required: without mpv-mpris, mpv still plays but RadioGlobe has no way to drive it.
+- [mpv](https://mpv.io/) and the [mpv-mpris](https://github.com/hoyon/mpv-mpris) script. Both are required: without mpv-mpris, mpv still plays but RadioGlobe has no way to drive it. mpv-mpris 1.3, in Arch since September 2026, works from RadioGlobe 0.3.1 on.
 
 | | Debian / Ubuntu / Kubuntu | Arch Linux | Fedora |
 |---|---|---|---|
