@@ -23,10 +23,11 @@ TestCase {
     }
 
     // name: the bus name as Plasma reports it in objectName. A bare "mpv" is
-    // what mpv-mpris before 1.2 always uses.
-    function makeContainer(pid, status, name) {
+    // what mpv-mpris before 1.2 always uses. identity: "mpv" up to mpv-mpris
+    // 1.2; from 1.3 on, whatever --audio-client-name says.
+    function makeContainer(pid, status, name, identity) {
         const c = {
-            identity: "mpv",
+            identity: identity === undefined ? "mpv" : identity,
             objectName: name === undefined ? "mpv" : name,
             instancePid: pid,
             playbackStatus: status,
@@ -839,6 +840,36 @@ TestCase {
         compare(c.volumeChanged.count(), 0);
         compare(model.rowsInserted.count(), insertedBefore);
         compare(model.rowsRemoved.count(), removedBefore);
+    }
+
+    // mpv-mpris 1.3 reports --audio-client-name as its identity: the mpv
+    // RadioGlobe launched calls itself "RadioGlobe" (issue #1, PR #3).
+    function test_mpv_mpris_1_3_identity_is_recognised() {
+        const pid = launchUntilPid("/usr/bin/mpv\n");
+        const c = makeContainer(pid, 1, "mpv.RadioGlobe", "RadioGlobe");
+        addContainer(c);
+        compare(player.attached, true);
+        compare(player.state, "loading");
+        compare(c.calls[c.calls.length - 1], "OpenUri:https://s/fip-midfi.mp3");
+    }
+
+    // The same with the mpv Flatpak, which ships mpv-mpris 1.3 sooner or
+    // later: no PID to go by, the tagged bus name alone.
+    function test_mpv_mpris_1_3_identity_is_recognised_by_bus_name() {
+        launchUntilPid("flatpak\n");
+        const c = makeContainer(9999, 1, "mpv.RadioGlobe", "RadioGlobe");
+        addContainer(c);
+        compare(player.attached, true);
+        compare(cfg.mpvBusName, "mpv.RadioGlobe");
+    }
+
+    // A PID stored before a reboot may now belong to any program on MPRIS:
+    // only an mpv, by either identity, can be ours.
+    function test_another_player_with_our_pid_is_never_taken() {
+        cfg.mpvPid = 900;
+        containers = [makeContainer(900, 2, "firefox.instance900", "Firefox")];
+        player.rescan();
+        compare(player.attached, false);
     }
 
     function test_missing_custom_mpv_names_its_source() {

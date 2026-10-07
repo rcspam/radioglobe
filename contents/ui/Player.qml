@@ -306,8 +306,12 @@ Item {
     // that appeared during the current launch, 0 for anyone else's. A
     // Flatpak's mpv only ever reaches 2 or 1: Plasma sees the PID of its
     // D-Bus proxy, which is not even a child of the process we launched.
+    // mpv-mpris up to 1.2 says "mpv"; 1.3 and later report the
+    // --audio-client-name instead. Any other identity is another program,
+    // whatever its PID.
     function _matchRank(container, pid) {
-        if (!container || String(container.identity) !== "mpv" || !(pid > 0))
+        const identity = container ? String(container.identity) : "";
+        if ((identity !== "mpv" && identity !== RadioModel.mpvClientName) || !(pid > 0))
             return 0;
         if (Number(container.instancePid) === pid)
             return 3;
