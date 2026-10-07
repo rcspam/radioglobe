@@ -18,6 +18,8 @@ Item {
     // A cold mpv start (disk cache, audio device probing) regularly needs more
     // than 3 s before mpv-mpris registers on the bus.
     property int attachTimeoutMs: 8000
+    // A Flatpak builds its sandbox before mpv even starts.
+    property int flatpakAttachTimeoutMs: 15000
     property int probeMs: 1500
     property int staleTimeoutMs: 5000
     // How often a stream error is re-checked against mpv's own position.
@@ -37,6 +39,9 @@ Item {
     readonly property bool muted: root._muted
     readonly property string errorKind: root._errorKind
     readonly property bool attached: root._player !== null
+    // Which mpv the last start used: "path" (distro package or Snap),
+    // "custom" (the settings' path), "flatpak", or "" when unknown.
+    readonly property string mpvSource: root._mpvSource
 
     signal playingStarted(var station)
 
@@ -69,11 +74,24 @@ Item {
     property bool _volumeHeld: false
     property var _connectedModel: null
     property int _launchEpoch: 0
+    property string _mpvSource: ""
+    // Tagged bus names already present when the current launch went out:
+    // none of them can be the mpv being launched.
+    property var _namesBeforeLaunch: []
+    // The PID this session launched and stored. Only this one is ever killed:
+    // a PID read back from the settings may name any process after a reboot.
+    property int _launchedPid: 0
 
     onMprisChanged: {
         root._watchModel();
         // A model that arrives after the player was created still needs a scan.
         root.rescan();
+    }
+    // Removing the widget destroys this player while Plasma's MPRIS model and
+    // its containers live on: none of their signals may still point here.
+    Component.onDestruction: {
+        root._detach();
+        root._unwatchModel();
     }
     Component.onCompleted: {
         root._watchModel();
@@ -87,6 +105,10 @@ Item {
     // Read on demand: cfg may be a plain object whose writes notify nothing.
     function currentPid() {
         return root.cfg ? Number(root.cfg.mpvPid) || 0 : 0;
+    }
+
+    function currentBusName() {
+        return root.cfg ? String(root.cfg.mpvBusName || "") : "";
     }
 
     function play(station) {
@@ -189,9 +211,10 @@ Item {
         root._pendingStation = null;
         if (root._player) {
             root._player.Quit();
-        } else if (root.currentPid() > 0 && root.exec) {
+        } else if (root.currentPid() > 0 && root.currentPid() === root._launchedPid) {
             // Launched but never seen on the bus: only its PID can stop it.
-            root.exec("kill " + root.currentPid(), function () {});
+            // One inherited from the settings is only forgotten.
+            root._killLaunched(root.currentPid());
         }
         root._detach();
         root._setPid(0);
@@ -237,17 +260,19 @@ Item {
             root._player.volume = 0;
     }
 
-    // Looks for the PlayerContainer whose D-Bus peer PID is our mpv.
+    // Looks for the PlayerContainer of our mpv, the surest match first.
     function rescan() {
         const pid = root.currentPid();
         let found = null;
+        let foundRank = 0;
         if (root.mpris && pid > 0) {
             const count = root.mpris.rowCount();
             for (let row = 0; row < count; row++) {
                 const container = root.mpris.data(root.mpris.index(row, 0), 257);
-                if (container && Number(container.instancePid) === pid && String(container.identity) === "mpv") {
+                const rank = root._matchRank(container, pid);
+                if (rank > foundRank) {
                     found = container;
-                    break;
+                    foundRank = rank;
                 }
             }
         }
@@ -276,13 +301,51 @@ Item {
             root._setPid(0);
     }
 
+    // How surely a PlayerContainer is the mpv we drive: 3 for our PID, 2 for
+    // the tagged bus name stored when it was attached, 1 for a tagged name
+    // that appeared during the current launch, 0 for anyone else's. A
+    // Flatpak's mpv only ever reaches 2 or 1: Plasma sees the PID of its
+    // D-Bus proxy, which is not even a child of the process we launched.
+    function _matchRank(container, pid) {
+        if (!container || String(container.identity) !== "mpv" || !(pid > 0))
+            return 0;
+        if (Number(container.instancePid) === pid)
+            return 3;
+        const name = String(container.objectName || "");
+        if (!RadioModel.isRadioGlobeBusName(name))
+            return 0;
+        if (name === root.currentBusName())
+            return 2;
+        if (root._state === "starting" && root._namesBeforeLaunch.indexOf(name) < 0)
+            return 1;
+        return 0;
+    }
+
+    function _taggedNames() {
+        const names = [];
+        if (!root.mpris)
+            return names;
+        const count = root.mpris.rowCount();
+        for (let row = 0; row < count; row++) {
+            const container = root.mpris.data(root.mpris.index(row, 0), 257);
+            const name = container ? String(container.objectName || "") : "";
+            if (RadioModel.isRadioGlobeBusName(name))
+                names.push(name);
+        }
+        return names;
+    }
+
+    // The launched PID leads a process group holding everything started with
+    // it: a Flatpak's mpv survives a kill of that PID alone.
+    function _killLaunched(pid) {
+        if (pid > 0 && root.exec)
+            root.exec("kill -- -" + pid, function () {});
+    }
+
     function _watchModel() {
         if (root._connectedModel === root.mpris)
             return;
-        if (root._connectedModel) {
-            root._connectedModel.rowsInserted.disconnect(root.rescan);
-            root._connectedModel.rowsRemoved.disconnect(root.rescan);
-        }
+        root._unwatchModel();
         root._connectedModel = root.mpris;
         if (root.mpris) {
             root.mpris.rowsInserted.connect(root.rescan);
@@ -305,27 +368,31 @@ Item {
         // earlier one, which "starting" alone cannot tell apart.
         root._launchEpoch += 1;
         const epoch = root._launchEpoch;
-        const binary = root._mpvBinary();
-        root.exec("command -v " + RadioModel.shellQuote(binary), (exitCode, stdout) => {
+        const custom = root.cfg ? String(root.cfg.mpvPath || "").trim() : "";
+        root.exec(RadioModel.mpvProbeScript(custom), (exitCode, stdout) => {
             if (root._state !== "starting" || epoch !== root._launchEpoch)
                 return;
-            if (exitCode !== 0) {
+            const probe = RadioModel.parseMpvProbe(custom, exitCode, stdout);
+            if (probe.kind === "missing") {
+                root._mpvSource = custom ? "custom" : "";
                 root._fail("mpv-missing");
                 return;
             }
-            root.exec(root._launchCommand(binary), (launchCode, output) => {
+            root._mpvSource = probe.kind;
+            root._namesBeforeLaunch = root._taggedNames();
+            root.exec(RadioModel.mpvLaunchCommand(probe, root._mpvOptions()), (launchCode, output) => {
                 const pid = parseInt(String(output).trim(), 10);
                 if (root._state !== "starting" || epoch !== root._launchEpoch) {
                     // Stopped, quit or superseded by a newer start: kill the
                     // latecomer instead of leaving a process nobody knows about.
-                    if (pid > 0)
-                        root.exec("kill " + pid, function () {});
+                    root._killLaunched(pid);
                     return;
                 }
                 if (launchCode !== 0 || !(pid > 0)) {
                     root._fail("mpv-missing");
                     return;
                 }
+                root._launchedPid = pid;
                 root._setPid(pid);
                 attachTimer.restart();
                 root.rescan();
@@ -333,23 +400,31 @@ Item {
         });
     }
 
-    function _mpvBinary() {
-        const custom = root.cfg ? String(root.cfg.mpvPath || "").trim() : "";
-        return custom ? custom : "mpv";
+    function _mpvOptions() {
+        return ["--idle=yes", "--no-video", "--no-terminal", "--force-window=no", "--audio-display=no", "--ytdl=no", "--cache=yes", "--cache-pause-initial=yes", "--cache-pause-wait=2", "--demuxer-readahead-secs=10", "--stream-lavf-o=reconnect=1,reconnect_streamed=1,reconnect_delay_max=5", "--audio-client-name=" + RadioModel.mpvClientName, "--user-agent=" + root.userAgent];
     }
 
-    function _launchCommand(binary) {
-        const options = ["--idle=yes", "--no-video", "--no-terminal", "--force-window=no", "--audio-display=no", "--ytdl=no", "--cache=yes", "--cache-pause-initial=yes", "--cache-pause-wait=2", "--demuxer-readahead-secs=10", "--stream-lavf-o=reconnect=1,reconnect_streamed=1,reconnect_delay_max=5", "--audio-client-name=RadioGlobe", "--user-agent=" + root.userAgent];
-        const quoted = options.map(option => RadioModel.shellQuote(option)).join(" ");
-        // Backgrounded from a non-interactive sh, the child is not a process-group
-        // leader, so setsid execs mpv in place: $! is mpv's own PID.
-        const script = "setsid " + RadioModel.shellQuote(binary) + " " + quoted + " >/dev/null 2>&1 & echo $!";
-        return "sh -c " + RadioModel.shellQuote(script);
+    function _unwatchModel() {
+        const model = root._connectedModel;
+        root._connectedModel = null;
+        if (!model)
+            return;
+        // As in _detach(): at plasmashell's exit the model may be gone already.
+        try {
+            model.rowsInserted.disconnect(root.rescan);
+            model.rowsRemoved.disconnect(root.rescan);
+        } catch (error) {}
     }
 
     function _attach(container) {
         root._detach();
         root._player = container;
+        root._namesBeforeLaunch = [];
+        // Only a tagged name is kept to find this mpv again: a bare "mpv" is
+        // what every mpv of the user is called before mpv-mpris 1.2.
+        const name = String(container.objectName || "");
+        if (root.cfg)
+            root.cfg.mpvBusName = RadioModel.isRadioGlobeBusName(name) ? name : "";
         container.trackChanged.connect(root._onTrackChanged);
         container.playbackStatusChanged.connect(root._onStatusChanged);
         container.volumeChanged.connect(root._onVolumeChanged);
@@ -504,9 +579,16 @@ Item {
         root._state = next;
     }
 
+    // The bus name only means something next to the PID it was found with,
+    // so both are forgotten together.
     function _setPid(pid) {
-        if (root.cfg)
-            root.cfg.mpvPid = pid;
+        if (!(pid > 0))
+            root._launchedPid = 0;
+        if (!root.cfg)
+            return;
+        root.cfg.mpvPid = pid;
+        if (!(pid > 0))
+            root.cfg.mpvBusName = "";
     }
 
     function _clamp(value) {
@@ -535,6 +617,9 @@ Item {
         root._volumeHeld = false;
         root._muted = false;
         root._volume = 0.75;
+        root._mpvSource = "";
+        root._namesBeforeLaunch = [];
+        root._launchedPid = 0;
     }
 
     function resetRetriesForTests(count) {
@@ -629,13 +714,13 @@ Item {
 
     Timer {
         id: attachTimer
-        interval: root.attachTimeoutMs
+        interval: root._mpvSource === "flatpak" ? root.flatpakAttachTimeoutMs : root.attachTimeoutMs
         onTriggered: {
             if (root._state !== "starting" || root._player)
                 return;
             const pid = root.currentPid();
-            if (pid > 0 && root.exec)
-                root.exec("kill " + pid, function () {});
+            if (pid === root._launchedPid)
+                root._killLaunched(pid);
             root._setPid(0);
             root._fail("mpris-missing");
         }

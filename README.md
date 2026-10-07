@@ -38,6 +38,8 @@ What RadioGlobe adds:
 
 On openSUSE, the player packages are `mpv mpv-mpris` too.
 
+The mpv Flatpak (`flatpak install flathub io.mpv.Mpv`) or the mpv snap (`sudo snap install mpv`) works as well, instead of the packages: both include mpv-mpris. RadioGlobe takes mpv from `PATH` first, then the Flatpak. An mpv AppImage can be set in the settings if it includes mpv-mpris.
+
 **You do not have to check this by hand. At startup the widget looks for every module it uses and, if one is missing, shows a banner with the command to install it for your distribution.**
 
 The settings page also says whether mpv and mpv-mpris were found. Without the offline cache, station lists are fetched again at every start. Without QtLocation, the "Add a station" page takes the latitude and longitude as numbers.
@@ -133,9 +135,9 @@ Tick "Also publish on Radio Browser" to share a new station with everyone. If a 
 
 ## Troubleshooting
 
-**mpv is not found**: the player shows a message with the install command for your distribution. Install mpv, or give the absolute path to it in the settings (for example `/usr/bin/mpv`, not `~/bin/mpv`).
+**mpv is not found**: the player says how to install it. Install the `mpv` and `mpv-mpris` packages or the mpv Flatpak, or give the absolute path to an mpv in the settings (for example `/opt/mpv.AppImage`, not `~/bin/mpv`).
 
-**mpv-mpris is not found**: RadioGlobe starts mpv, waits a few seconds for it to show up on MPRIS, then stops it and shows how to install mpv-mpris. Once installed, `playerctl -l` should list `mpv` while a station plays.
+**mpv-mpris is not found**: RadioGlobe starts mpv, waits a few seconds for it to show up on MPRIS, then stops it and shows how to install mpv-mpris. Once installed, `playerctl -l` should list `mpv` while a station plays. An mpv set by path in the settings has to include mpv-mpris itself; if it does not, clear the path to use the distribution's mpv or the Flatpak.
 
 **mpv keeps playing after Plasma restarts**: this is on purpose, so a Plasma crash or restart does not cut the radio. The widget finds mpv again on its own. To stop it for good, use "Stop and quit mpv" or hold down the stop button.
 

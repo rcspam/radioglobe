@@ -275,6 +275,34 @@ TestCase {
         verify(bar.errorText.indexOf("org.kde.plasma.private.mpris") >= 0, bar.errorText);
     }
 
+    // The advice depends on which mpv RadioGlobe tried: installing a package
+    // is no answer for an AppImage set in the settings, nor for the Flatpak.
+    function test_player_bar_error_messages_follow_the_mpv_source() {
+        function errorFor(kind, source) {
+            bar.player = ({
+                    state: "error",
+                    station: null,
+                    track: "",
+                    volume: 0.5,
+                    muted: false,
+                    errorKind: kind,
+                    mpvSource: source
+                });
+            return bar.errorText;
+        }
+        let text = errorFor("mpv-missing", "");
+        verify(text.indexOf("mpv-mpris") >= 0 && text.indexOf("io.mpv.Mpv") >= 0, text);
+        text = errorFor("mpv-missing", "custom");
+        verify(text.indexOf("settings") >= 0 && text.indexOf("io.mpv.Mpv") < 0, text);
+        text = errorFor("mpris-missing", "path");
+        verify(text.indexOf("Install the “mpv-mpris” package") >= 0, text);
+        text = errorFor("mpris-missing", "custom");
+        verify(text.indexOf("settings") >= 0 && text.indexOf("MPRIS") >= 0 && text.indexOf("io.mpv.Mpv") >= 0, text);
+        text = errorFor("mpris-missing", "flatpak");
+        verify(text.indexOf("flatpak update io.mpv.Mpv") >= 0, text);
+        bar.player = fakePlayer;
+    }
+
     // The percent label used to be three different widths, and the spacer in
     // the transport row absorbed the difference: the slider moved sideways
     // under the cursor while it was being dragged.

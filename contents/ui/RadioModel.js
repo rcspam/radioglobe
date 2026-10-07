@@ -1116,7 +1116,7 @@ function pushHistory(history, station, nowMs, maximum) {
 }
 
 // Settings the backup file carries, with the type each value must have.
-// Runtime state (mpv pid, last station, volume, pinned, popup size, the
+// Runtime state (mpv pid and bus name, last station, volume, pinned, popup size, the
 // running sleep timer) stays out; tests/node/backup.test.mjs checks that
 // every other key of main.xml is here.
 var backupSettingTypes = ({
@@ -1207,6 +1207,50 @@ function isRawTitle(track, url) {
 // embedded quote is closed, escaped and reopened.
 function shellQuote(value) {
     return "'" + String(value).replace(/'/g, "'\\''") + "'";
+}
+
+// mpv's --audio-client-name. mpv-mpris 1.2 and later put it in the bus name.
+var mpvClientName = "RadioGlobe";
+var mpvFlatpakId = "io.mpv.Mpv";
+
+// Shell script naming the mpv to launch, read back by parseMpvProbe(). A path
+// set in the settings is the only candidate; otherwise mpv from PATH (distro
+// package or Snap) comes before the Flatpak.
+function mpvProbeScript(customPath) {
+    var custom = String(customPath || "").trim();
+    if (custom)
+        return "command -v " + shellQuote(custom);
+    return "command -v mpv || { command -v flatpak >/dev/null && flatpak info " + mpvFlatpakId + " >/dev/null 2>&1 && echo flatpak; }";
+}
+
+function parseMpvProbe(customPath, exitCode, stdout) {
+    var out = String(stdout || "").trim();
+    if (Number(exitCode) !== 0 || !out)
+        return { kind: "missing", path: "" };
+    if (String(customPath || "").trim())
+        return { kind: "custom", path: out };
+    if (out === "flatpak")
+        return { kind: "flatpak", path: "" };
+    return { kind: "path", path: out };
+}
+
+// Backgrounded from a non-interactive sh, the child is not a process-group
+// leader, so setsid execs in place: $! is the launched process, and the
+// leader of a group holding everything it starts (a Flatpak's sandbox too).
+function mpvLaunchCommand(probe, options) {
+    var head = probe.kind === "flatpak" ? ["flatpak", "run", mpvFlatpakId] : [probe.path];
+    var words = head.concat(options).map(shellQuote).join(" ");
+    return "sh -c " + shellQuote("setsid " + words + " >/dev/null 2>&1 & echo $!");
+}
+
+// The bus names mpv-mpris gives an mpv launched by RadioGlobe, as Plasma's
+// MPRIS model reports them: "mpv.RadioGlobe", or "mpv.RadioGlobe.instance-…"
+// when another one holds that name. A bare "mpv" says nothing about who
+// started it.
+function isRadioGlobeBusName(name) {
+    var text = String(name || "");
+    var tag = "mpv." + mpvClientName;
+    return text === tag || text.indexOf(tag + ".") === 0;
 }
 
 function validMirrorName(name) {

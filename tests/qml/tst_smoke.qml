@@ -4,8 +4,8 @@ import QtTest
 TestCase {
     name: "Smoke"
 
-    function i18n(text) {
-        return text;
+    function i18n(text, ...args) {
+        return args.reduce((out, arg, index) => out.replace("%" + (index + 1), arg), text);
     }
 
     // Player has its own "exec" property: inside its block a bare "exec" is
@@ -148,6 +148,40 @@ TestCase {
         model.startPage = "";
         compare(model.get(0).source, "config/configGeneral.qml");
         model.destroy();
+    }
+
+    // The settings say which mpv RadioGlobe will use and where its mpv-mpris
+    // is: built into the Flatpak and the snap, a separate package otherwise,
+    // and out of reach for an mpv of the user's own.
+    function test_config_page_reports_the_mpv_it_will_use() {
+        const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/config/configGeneral.qml"));
+        compare(component.status, Component.Ready, component.errorString());
+        const page = component.createObject(null);
+        verify(page !== null, component.errorString());
+        page.applyMpvProbe({
+            kind: "flatpak",
+            path: ""
+        });
+        verify(page.mpvStatus.indexOf("io.mpv.Mpv") >= 0, page.mpvStatus);
+        verify(page.mprisStatus.indexOf("Flatpak") >= 0, page.mprisStatus);
+        page.applyMpvProbe({
+            kind: "path",
+            path: "/snap/bin/mpv"
+        });
+        verify(page.mpvStatus.indexOf("/snap/bin/mpv") >= 0, page.mpvStatus);
+        verify(page.mprisStatus.indexOf("snap") >= 0, page.mprisStatus);
+        page.applyMpvProbe({
+            kind: "custom",
+            path: "/opt/mpv.AppImage"
+        });
+        verify(page.mpvStatus.indexOf("/opt/mpv.AppImage") >= 0, page.mpvStatus);
+        verify(page.mprisStatus.indexOf("MPRIS") >= 0, page.mprisStatus);
+        page.applyMpvProbe({
+            kind: "missing",
+            path: ""
+        });
+        verify(page.mpvStatus.indexOf("io.mpv.Mpv") >= 0, page.mpvStatus);
+        page.destroy();
     }
 
     function test_config_page_compiles() {

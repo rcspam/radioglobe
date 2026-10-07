@@ -115,14 +115,41 @@ KCM.SimpleKCM {
         }
     }
 
+    // Same probe as the player, so the page names the mpv a start would use.
     function probe() {
         page.mpvStatus = page.checkingText;
         page.mprisStatus = page.checkingText;
         probeTimeout.restart();
-        const binary = mpvPath.text.trim() || "mpv";
-        exec.run("command -v " + RadioModel.shellQuote(binary), (code, out) => {
-            page.mpvStatus = code === 0 ? i18n("Found: %1", out.trim()) : i18n("Not found. Install the “mpv” package.");
+        const custom = mpvPath.text.trim();
+        exec.run(RadioModel.mpvProbeScript(custom), (code, out) => {
+            page.applyMpvProbe(RadioModel.parseMpvProbe(custom, code, out));
         });
+    }
+
+    // Where mpv-mpris lives depends on the mpv found: inside the Flatpak and
+    // the snap, in a package of its own next to a distro mpv. For an mpv set
+    // by hand there is nowhere to look; the player says so if it stays off
+    // MPRIS.
+    function applyMpvProbe(probe) {
+        switch (probe.kind) {
+        case "flatpak":
+            page.mpvStatus = i18n("Found: Flatpak %1", "io.mpv.Mpv");
+            page.mprisStatus = i18n("Included in the Flatpak.");
+            return;
+        case "custom":
+            page.mpvStatus = i18n("Found: %1", probe.path);
+            page.mprisStatus = i18n("Cannot be checked for this mpv. If it does not answer on MPRIS, the player says so when a station starts.");
+            return;
+        case "path":
+            page.mpvStatus = i18n("Found: %1", probe.path);
+            if (probe.path.indexOf("/snap/") === 0) {
+                page.mprisStatus = i18n("Included in the snap.");
+                return;
+            }
+            break;
+        default:
+            page.mpvStatus = mpvPath.text.trim() ? i18n("Not found at this path.") : i18n("Not found. Install the “mpv” package, or the mpv Flatpak (io.mpv.Mpv).");
+        }
         exec.run("for f in /etc/mpv/scripts/mpris.so /usr/lib/mpv-mpris/mpris.so /usr/lib64/mpv-mpris/mpris.so /usr/lib/x86_64-linux-gnu/mpv-mpris/mpris.so \"$HOME/.config/mpv/scripts/mpris.so\"; do [ -e \"$f\" ] && echo \"$f\" && exit 0; done; exit 1", (code, out) => {
             page.mprisStatus = code === 0 ? i18n("Found: %1", out.trim()) : i18n("Not found. Install the “mpv-mpris” package (media keys and the Media Player widget need it).");
         });

@@ -60,10 +60,19 @@ ColumnLayout {
     readonly property string errorText: {
         if (bar.state !== "error")
             return "";
+        // Which mpv was tried decides the advice: a package to install means
+        // nothing for an AppImage set in the settings, nor for the Flatpak.
+        const source = String(bar.player.mpvSource || "");
         switch (bar.player.errorKind) {
         case "mpv-missing":
-            return i18n("mpv is not installed. Install the “mpv” and “mpv-mpris” packages, then try again.");
+            if (source === "custom")
+                return i18n("The mpv set in the settings cannot be found. Check its path, or clear it to use the installed mpv.");
+            return i18n("mpv is not installed. Install the “mpv” and “mpv-mpris” packages, or the mpv Flatpak (io.mpv.Mpv), then try again.");
         case "mpris-missing":
+            if (source === "custom")
+                return i18n("The mpv set in the settings did not appear on MPRIS: it lacks the mpv-mpris script. Clear its path to use your distribution's mpv or the mpv Flatpak (io.mpv.Mpv).");
+            if (source === "flatpak")
+                return i18n("The mpv Flatpak did not appear on MPRIS. Update it with “flatpak update io.mpv.Mpv”, then try again.");
             return i18n("mpv started but did not appear on MPRIS. Install the “mpv-mpris” package.");
         case "mpris-module-missing":
             return i18n("This Plasma version does not provide the MPRIS module (org.kde.plasma.private.mpris) RadioGlobe needs to control mpv.");

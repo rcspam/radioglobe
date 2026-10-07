@@ -1,6 +1,7 @@
 import QtQuick
 import QtTest
 import "../../contents/ui" as Ui
+import "../../contents/ui/RadioModel.js" as RadioModel
 
 TestCase {
     name: "Player"
@@ -16,13 +17,17 @@ TestCase {
                 if (i >= 0)
                     listeners.splice(i, 1);
             },
-            emit: () => listeners.slice().forEach(fn => fn())
+            emit: () => listeners.slice().forEach(fn => fn()),
+            count: () => listeners.length
         };
     }
 
-    function makeContainer(pid, status) {
+    // name: the bus name as Plasma reports it in objectName. A bare "mpv" is
+    // what mpv-mpris before 1.2 always uses.
+    function makeContainer(pid, status, name) {
         const c = {
             identity: "mpv",
+            objectName: name === undefined ? "mpv" : name,
             instancePid: pid,
             playbackStatus: status,
             track: "",
@@ -114,6 +119,7 @@ TestCase {
 
     property var cfg: ({
             mpvPid: 0,
+            mpvBusName: "",
             mpvPath: "",
             volume: 0.75
         })
@@ -126,6 +132,7 @@ TestCase {
         userAgent: "RadioGlobe/test"
         loadTimeoutMs: 60
         attachTimeoutMs: 60
+        flatpakAttachTimeoutMs: 60
         probeMs: 30
         recoveryMs: 30
         volumeHoldMs: 30
@@ -149,6 +156,7 @@ TestCase {
         execReplies = [];
         cfg = ({
                 mpvPid: 0,
+                mpvBusName: "",
                 mpvPath: "",
                 volume: 0.75
             });
@@ -191,12 +199,12 @@ TestCase {
         const pid = ++nextPid;
         player.play(fip);
         compare(player.state, "starting");
-        compare(execLog[execLog.length - 1], "command -v 'mpv'");
+        compare(execLog[execLog.length - 1], RadioModel.mpvProbeScript(""));
         replyExec(0, "/usr/bin/mpv\n");
         const launch = execLog[execLog.length - 1];
         verify(launch.indexOf("sh -c ") === 0, launch);
         verify(launch.indexOf("setsid '") > 0, launch);
-        verify(launch.indexOf("'mpv'") > 0, launch);
+        verify(launch.indexOf("'/usr/bin/mpv'") > 0, launch);
         verify(launch.indexOf("'--idle=yes'") > 0, launch);
         verify(launch.indexOf("'--no-video'") > 0, launch);
         verify(launch.indexOf("'--no-terminal'") > 0, launch);
@@ -236,7 +244,7 @@ TestCase {
         compare(player.station.uuid, fip.uuid);
         player.togglePause();
         compare(player.state, "starting");
-        compare(execLog[execLog.length - 1], "command -v 'mpv'");
+        compare(execLog[execLog.length - 1], RadioModel.mpvProbeScript(""));
     }
 
     // And so does startIfIdle(), the autoplay at startup.
@@ -318,7 +326,7 @@ TestCase {
         replyExec(0, "77");
         tryCompare(player, "state", "error", 1000);
         compare(player.errorKind, "mpris-missing");
-        compare(execLog[2], "kill 77");
+        compare(execLog[2], "kill -- -77");
         compare(cfg.mpvPid, 0);
     }
 
@@ -555,7 +563,7 @@ TestCase {
         replyExec(0, "/usr/bin/mpv\n");
         player.quit();
         replyExec(0, "555\n");
-        compare(execLog[execLog.length - 1], "kill 555");
+        compare(execLog[execLog.length - 1], "kill -- -555");
         compare(cfg.mpvPid, 0);
         compare(player.state, "idle");
     }
@@ -605,7 +613,7 @@ TestCase {
         compare(execLog.length, first + 1);
         // The first launch answers late: same state, older epoch.
         replyExec(0, "111\n");
-        compare(execLog[execLog.length - 1], "kill 111");
+        compare(execLog[execLog.length - 1], "kill -- -111");
         compare(player.state, "starting");
         compare(cfg.mpvPid, 0);
         replyExec(0, "/usr/bin/mpv\n");
@@ -619,7 +627,7 @@ TestCase {
         replyExec(0, "333\n");
         compare(cfg.mpvPid, 333);
         player.quit();
-        compare(execLog[execLog.length - 1], "kill 333");
+        compare(execLog[execLog.length - 1], "kill -- -333");
         compare(cfg.mpvPid, 0);
         compare(player.state, "idle");
     }
@@ -657,5 +665,188 @@ TestCase {
         compare(player.attached, false);
         compare(player.state, "idle");
         compare(cfg.mpvPid, 0);
+    }
+
+    // Up to the PID: mpv found, launched, PID stored. Returns the PID.
+    function launchUntilPid(probeOutput) {
+        const pid = ++nextPid;
+        player.play(fip);
+        replyExec(0, probeOutput);
+        replyExec(0, pid + "\n");
+        compare(cfg.mpvPid, pid);
+        return pid;
+    }
+
+    // The mpv Flatpak talks to the bus through xdg-dbus-proxy: Plasma reports
+    // the proxy's PID, never the launched one. The bus name, which mpv-mpris
+    // 1.2 builds from --audio-client-name, is what identifies it.
+    function test_flatpak_mpv_is_launched_and_recognised_by_its_bus_name() {
+        player.play(fip);
+        compare(execLog[execLog.length - 1], RadioModel.mpvProbeScript(""));
+        replyExec(0, "flatpak\n");
+        const launch = execLog[execLog.length - 1];
+        // The script sh -c receives, out of its own single quotes.
+        verify(launch.indexOf("sh -c '") === 0 && launch.endsWith("'"), launch);
+        const script = launch.slice(7, -1).split("'\\''").join("'");
+        verify(script.indexOf("setsid 'flatpak' 'run' 'io.mpv.Mpv' '--idle=yes' ") === 0, script);
+        verify(script.indexOf(" '--audio-client-name=RadioGlobe' ") > 0, script);
+        verify(script.endsWith(" >/dev/null 2>&1 & echo $!"), script);
+        compare(player.mpvSource, "flatpak");
+        replyExec(0, "500\n");
+        const c = makeContainer(9999, 1, "mpv.RadioGlobe");
+        addContainer(c);
+        compare(player.attached, true);
+        compare(player.state, "loading");
+        compare(cfg.mpvPid, 500);
+        compare(cfg.mpvBusName, "mpv.RadioGlobe");
+        compare(c.calls[c.calls.length - 1], "OpenUri:https://s/fip-midfi.mp3");
+    }
+
+    // An mpv RadioGlobe left behind already holds "mpv.RadioGlobe": the new
+    // one gets a suffixed name, and only a name that was not there before the
+    // launch can be the new one.
+    function test_tagged_orphan_present_before_launch_is_not_taken() {
+        const orphan = makeContainer(1234, 2, "mpv.RadioGlobe");
+        containers = [orphan];
+        launchUntilPid("flatpak\n");
+        compare(player.attached, false);
+        compare(player.state, "starting");
+        const ours = makeContainer(9999, 1, "mpv.RadioGlobe.instance-x7k2");
+        addContainer(ours);
+        compare(player.attached, true);
+        compare(cfg.mpvBusName, "mpv.RadioGlobe.instance-x7k2");
+        compare(ours.calls[ours.calls.length - 1], "OpenUri:https://s/fip-midfi.mp3");
+        compare(orphan.calls.length, 0);
+    }
+
+    // A tagged name showing up before the launch has even answered cannot be
+    // matched yet: attaching then would make the late PID look superseded,
+    // and it would be killed. The rescan that follows the PID picks it up.
+    function test_tagged_name_waits_for_the_launched_pid() {
+        player.play(fip);
+        replyExec(0, "flatpak\n");
+        const c = makeContainer(9999, 1, "mpv.RadioGlobe");
+        addContainer(c);
+        compare(player.attached, false);
+        replyExec(0, "501\n");
+        compare(player.attached, true);
+        compare(player.state, "loading");
+        compare(execLog.filter(cmd => cmd.indexOf("kill ") === 0).length, 0);
+    }
+
+    // During a launch, an mpv with neither our PID nor our tag is someone
+    // else's, whatever its timing.
+    function test_untagged_mpv_with_another_pid_is_never_taken() {
+        launchUntilPid("/usr/bin/mpv\n");
+        const stranger = makeContainer(1, 2, "mpv");
+        addContainer(stranger);
+        compare(player.attached, false);
+        compare(player.state, "starting");
+    }
+
+    // After a plasmashell restart: the Flatpak mpv is found again by the bus
+    // name stored when it was attached.
+    function test_reattaches_by_stored_bus_name() {
+        cfg.mpvPid = 900;
+        cfg.mpvBusName = "mpv.RadioGlobe";
+        const ours = makeContainer(77, 2, "mpv.RadioGlobe");
+        ours.track = "Some Song";
+        containers = [makeContainer(1, 2, "mpv"), ours];
+        player.rescan();
+        compare(player.attached, true);
+        compare(player.state, "playing");
+    }
+
+    // A bare "mpv" is every mpv of the user before mpv-mpris 1.2: it is never
+    // stored, and a stored one is never trusted, or a video playing elsewhere
+    // could be taken over.
+    function test_bare_mpv_bus_name_is_neither_stored_nor_adopted() {
+        const c = startAndAttach(1);
+        compare(c.objectName, "mpv");
+        compare(cfg.mpvBusName, "");
+        player.quit();
+        containers = [];
+        player.resetForTests();
+        cfg.mpvPid = 900;
+        cfg.mpvBusName = "mpv";
+        containers = [makeContainer(77, 2, "mpv")];
+        player.rescan();
+        compare(player.attached, false);
+    }
+
+    function test_bus_name_is_forgotten_with_the_pid() {
+        launchUntilPid("flatpak\n");
+        addContainer(makeContainer(9999, 2, "mpv.RadioGlobe"));
+        compare(cfg.mpvBusName, "mpv.RadioGlobe");
+        player.quit();
+        compare(cfg.mpvPid, 0);
+        compare(cfg.mpvBusName, "");
+        cfg.mpvPid = 900;
+        cfg.mpvBusName = "mpv.RadioGlobe";
+        containers = [];
+        player.checkStalePid();
+        compare(cfg.mpvPid, 0);
+        compare(cfg.mpvBusName, "");
+    }
+
+    // A PID stored by an earlier session may belong to anything since a
+    // reboot: quitting forgets it, it never kills it.
+    function test_quit_never_kills_an_inherited_pid() {
+        cfg.mpvPid = 900;
+        player.quit();
+        compare(execLog.filter(cmd => cmd.indexOf("kill") === 0).length, 0);
+        compare(cfg.mpvPid, 0);
+        compare(player.state, "idle");
+    }
+
+    // Creating the sandbox makes a Flatpak slow to reach the bus: it gets its
+    // own, longer, attach timeout.
+    function test_flatpak_gets_its_own_attach_timeout() {
+        player.flatpakAttachTimeoutMs = 400;
+        launchUntilPid("flatpak\n");
+        wait(150);
+        compare(player.state, "starting");
+        tryCompare(player, "state", "error", 1000);
+        compare(player.errorKind, "mpris-missing");
+        compare(player.mpvSource, "flatpak");
+        player.flatpakAttachTimeoutMs = 60;
+    }
+
+    // Removing the widget destroys its player while Plasma's MPRIS model and
+    // its containers live on: nothing of the player may stay connected to
+    // them, or every later signal runs into a destroyed object.
+    function test_a_destroyed_player_leaves_no_handler_behind() {
+        const component = Qt.createComponent("../../contents/ui/Player.qml");
+        compare(component.status, Component.Ready, component.errorString());
+        cfg.mpvPid = 900;
+        const c = makeContainer(900, 2, "mpv");
+        containers = [c];
+        const insertedBefore = model.rowsInserted.count();
+        const removedBefore = model.rowsRemoved.count();
+        const other = component.createObject(null, {
+            mpris: model,
+            exec: fakeExec,
+            cfg: cfg
+        });
+        verify(other !== null, component.errorString());
+        compare(other.attached, true);
+        compare(c.playbackStatusChanged.count(), 1);
+        compare(model.rowsInserted.count(), insertedBefore + 1);
+        other.destroy();
+        wait(10);
+        compare(c.trackChanged.count(), 0);
+        compare(c.playbackStatusChanged.count(), 0);
+        compare(c.volumeChanged.count(), 0);
+        compare(model.rowsInserted.count(), insertedBefore);
+        compare(model.rowsRemoved.count(), removedBefore);
+    }
+
+    function test_missing_custom_mpv_names_its_source() {
+        cfg.mpvPath = "/opt/mpv.AppImage";
+        player.play(fip);
+        compare(execLog[0], RadioModel.mpvProbeScript("/opt/mpv.AppImage"));
+        replyExec(1, "");
+        compare(player.errorKind, "mpv-missing");
+        compare(player.mpvSource, "custom");
     }
 }
