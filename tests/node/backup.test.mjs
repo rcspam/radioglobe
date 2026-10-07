@@ -103,7 +103,7 @@ test("parseBackup drops station rows without a uuid and unknown or mistyped sett
 
 // Keys of the schema the backup leaves out on purpose: what the widget
 // writes by itself as it runs. Favourites and history travel on their own.
-const notSettings = ["favorites", "history", "lastStation", "volume", "mpvPid", "mpvBusName", "pinned", "sleepUntil",
+const notSettings = ["favorites", "history", "lastStation", "volume", "mpvPid", "mpvBusName", "globeLatitude", "globeLongitude", "globeScale", "pinned", "sleepUntil",
     "popupWidth", "popupHeight", "configStartPage", "editStation"];
 
 test("every option of the schema is in the backup, with its type", () => {

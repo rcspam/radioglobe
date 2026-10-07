@@ -336,6 +336,44 @@ Item {
                         // The sea, or space: out of the country.
                         onEmptyActivated: if (root.currentCountry)
                             root.clearCountry()
+                        // Where the globe was left before Plasma restarted.
+                        Component.onCompleted: {
+                            const view = root.savedGlobeView(minimumScale, maximumScale);
+                            if (view) {
+                                centreLatitude = view.latitude;
+                                centreLongitude = view.longitude;
+                                globeScale = view.scale;
+                            }
+                        }
+                    }
+
+                    // The view is saved once it stays put. Jumps to a country
+                    // or a station do not animate and never set `moving`, so
+                    // every change restarts the wait; a drag or a zoom only
+                    // gets written when it is over, never once per frame.
+                    Timer {
+                        id: globeViewSaver
+                        objectName: "globeViewSaver"
+                        interval: 1000
+                        onTriggered: {
+                            if (globe.moving)
+                                restart();
+                            else
+                                root.saveGlobeView(globe.centreLatitude, globe.centreLongitude, globe.globeScale);
+                        }
+                    }
+
+                    Connections {
+                        target: globe
+                        function onCentreLatitudeChanged() {
+                            globeViewSaver.restart();
+                        }
+                        function onCentreLongitudeChanged() {
+                            globeViewSaver.restart();
+                        }
+                        function onGlobeScaleChanged() {
+                            globeViewSaver.restart();
+                        }
                     }
 
                     // Wheel-less zoom, over the globe's bottom-right corner.

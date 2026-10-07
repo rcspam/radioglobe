@@ -184,6 +184,17 @@ TestCase {
         page.destroy();
     }
 
+    // The real root behind the popup's saved globe view: read through the
+    // clamping helper, written to the three keys of the schema.
+    function test_main_keeps_the_globe_view_in_the_settings() {
+        const source = String(readFile("../../contents/ui/main.qml"));
+        const read = source.slice(source.indexOf("function savedGlobeView("), source.indexOf("function saveGlobeView("));
+        verify(read.indexOf("RadioModel.restoredGlobeView(Plasmoid.configuration.globeLatitude, Plasmoid.configuration.globeLongitude, Plasmoid.configuration.globeScale") >= 0, read);
+        const write = source.slice(source.indexOf("function saveGlobeView("), source.indexOf("}", source.indexOf("function saveGlobeView(")));
+        for (const key of ["globeLatitude", "globeLongitude", "globeScale"])
+            verify(write.indexOf("Plasmoid.configuration." + key + " = ") >= 0, key);
+    }
+
     function test_config_page_compiles() {
         const component = Qt.createComponent(Qt.resolvedUrl("../../contents/ui/config/configGeneral.qml"));
         compare(component.status, Component.Ready, component.errorString());

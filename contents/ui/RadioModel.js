@@ -16,6 +16,23 @@ function wrapLongitude(value) {
   return wrapped - 180
 }
 
+// The globe view saved in the settings, held to what the globe itself
+// allows (the latitude limit of a drag, its zoom range). A scale of 0, the
+// schema default, means no view was ever saved: null.
+function restoredGlobeView(latitude, longitude, scale, minimumScale, maximumScale) {
+  var lat = Number(latitude)
+  var lon = Number(longitude)
+  var zoom = Number(scale)
+  if (!(zoom > 0) || !isFinite(zoom) || !isFinite(lat) || !isFinite(lon)) return null
+  return {
+    latitude: clamp(lat, -78, 78),
+    // Wrapped only when out of range: the modulo would nudge a valid value,
+    // and the drift would build up over the restarts.
+    longitude: lon >= -180 && lon <= 180 ? lon : wrapLongitude(lon),
+    scale: clamp(zoom, minimumScale, maximumScale)
+  }
+}
+
 function limitKineticVelocity(x, y, maximumSpeed) {
   var velocityX = Number(x)
   var velocityY = Number(y)
@@ -1116,7 +1133,7 @@ function pushHistory(history, station, nowMs, maximum) {
 }
 
 // Settings the backup file carries, with the type each value must have.
-// Runtime state (mpv pid and bus name, last station, volume, pinned, popup size, the
+// Runtime state (mpv pid and bus name, globe view, last station, volume, pinned, popup size, the
 // running sleep timer) stays out; tests/node/backup.test.mjs checks that
 // every other key of main.xml is here.
 var backupSettingTypes = ({

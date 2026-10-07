@@ -516,6 +516,18 @@ PlasmoidItem {
     onMissingModulesChanged: root.detectDistro()
 
     // The last station played, parsed from the configuration, or null.
+    // The globe's last view, kept across Plasma restarts; null until one was
+    // saved. The bounds are the globe's own, passed in by the popup.
+    function savedGlobeView(minimumScale, maximumScale) {
+        return RadioModel.restoredGlobeView(Plasmoid.configuration.globeLatitude, Plasmoid.configuration.globeLongitude, Plasmoid.configuration.globeScale, minimumScale, maximumScale);
+    }
+
+    function saveGlobeView(latitude, longitude, scale) {
+        Plasmoid.configuration.globeLatitude = latitude;
+        Plasmoid.configuration.globeLongitude = longitude;
+        Plasmoid.configuration.globeScale = scale;
+    }
+
     function lastStation() {
         try {
             const last = JSON.parse(Plasmoid.configuration.lastStation || "null");

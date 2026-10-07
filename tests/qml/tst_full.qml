@@ -98,6 +98,17 @@ TestCase {
             root.calls.push("clearSearch");
         }
 
+        property string marqueeMode: "loop"
+        property string stationLocalTime: ""
+        property string stationLocalTimeDescription: ""
+        // The view main.qml reads back from the settings; null: none saved.
+        property var savedView: null
+        function savedGlobeView(minimumScale, maximumScale) {
+            return root.savedView;
+        }
+        function saveGlobeView(latitude, longitude, scale) {
+            root.calls.push("view:" + latitude + "," + longitude + "," + scale);
+        }
         function playRandom() {
             root.calls.push("random");
         }
@@ -1069,5 +1080,65 @@ TestCase {
         button.clicked();
         compare(radioBrowser.calls.indexOf("refresh") >= 0, true, JSON.stringify(radioBrowser.calls));
         radioBrowser.lastError = "";
+    }
+
+    function savedViews() {
+        return root.calls.filter(call => call.indexOf("view:") === 0);
+    }
+
+    // Lets the new popup finish building before anything else happens: one
+    // destroyed while Kirigami still incubates its toolbar only makes noise.
+    function reloadPopup() {
+        loader.active = false;
+        loader.active = true;
+        waitForRendering(loader.item);
+        return findChild(loader.item, "globe");
+    }
+
+    // A restart of Plasma reopens the globe where it was left.
+    function test_globe_reopens_on_the_saved_view() {
+        root.savedView = {
+            latitude: 48.85,
+            longitude: 2.35,
+            scale: 6
+        };
+        let globe = reloadPopup();
+        compare(globe.centreLatitude, 48.85);
+        compare(globe.centreLongitude, 2.35);
+        compare(globe.globeScale, 6);
+        root.savedView = null;
+        globe = reloadPopup();
+        compare(globe.centreLatitude, 18);
+        compare(globe.globeScale, 1);
+    }
+
+    // Jumps to a country or a station do not animate: the view is saved once
+    // it has stayed put, whatever moved it.
+    function test_globe_view_is_saved_once_it_settles() {
+        const globe = findChild(loader.item, "globe");
+        const saver = findChild(loader.item, "globeViewSaver");
+        verify(saver !== null, "globeViewSaver not found");
+        saver.interval = 50;
+        globe.focusCoordinate(40, 10);
+        compare(savedViews().length, 0);
+        tryVerify(() => savedViews().length === 1, 1000);
+        compare(savedViews()[0], "view:40,10," + globe.globeScale);
+        saver.interval = 1000;
+    }
+
+    // Never a write per frame: nothing is saved while the globe moves.
+    function test_globe_view_is_not_saved_while_moving() {
+        const globe = findChild(loader.item, "globe");
+        const saver = findChild(loader.item, "globeViewSaver");
+        saver.interval = 50;
+        globe.zoomIn();
+        verify(globe.moving);
+        while (globe.moving) {
+            compare(savedViews().length, 0);
+            wait(20);
+        }
+        tryVerify(() => savedViews().length === 1, 1000);
+        compare(savedViews()[0], "view:" + globe.centreLatitude + "," + globe.centreLongitude + "," + globe.globeScale);
+        saver.interval = 1000;
     }
 }

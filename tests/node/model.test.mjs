@@ -573,3 +573,17 @@ test("codecChoices sums the directory's counts per family", () => {
     assert.deepEqual(JSON.parse(JSON.stringify(model.codecChoices(null))).map(c => c.count), [0, 0, 0]);
     assert.deepEqual(JSON.parse(JSON.stringify(model.defaultCodecChoices())).map(c => c.name), ["mp3", "aac", "ogg"]);
 });
+
+test("restoredGlobeView is null until a view was saved", () => {
+    assert.equal(model.restoredGlobeView(18, -20, 0, 0.72, 1024), null);
+    assert.equal(model.restoredGlobeView(18, -20, undefined, 0.72, 1024), null);
+    assert.equal(model.restoredGlobeView(18, -20, Number.NaN, 0.72, 1024), null);
+    assert.equal(model.restoredGlobeView(Number.NaN, -20, 2, 0.72, 1024), null);
+    assert.equal(model.restoredGlobeView(18, Infinity, 2, 0.72, 1024), null);
+});
+
+test("restoredGlobeView keeps a saved view inside what the globe allows", () => {
+    assert.deepEqual({ ...model.restoredGlobeView(48.85, 2.35, 6, 0.72, 1024) }, { latitude: 48.85, longitude: 2.35, scale: 6 });
+    assert.deepEqual({ ...model.restoredGlobeView(89, 190, 5000, 0.72, 1024) }, { latitude: 78, longitude: -170, scale: 1024 });
+    assert.deepEqual({ ...model.restoredGlobeView(-89, -200, 0.1, 0.72, 1024) }, { latitude: -78, longitude: 160, scale: 0.72 });
+});
