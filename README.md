@@ -8,6 +8,8 @@ After seeing [Radio Atlas](https://github.com/AksharP5/omarchy-radio-atlas) on O
 
 ## Features
 
+**New in 0.3.1: works with mpv-mpris 1.3, in Arch since September 2026.**
+
 Everything works as in Radio Atlas, the globe, the [Radio Browser](https://www.radio-browser.info/) directory, favorites, history, random tuning, volume and keyboard controls: see [its features](https://github.com/AksharP5/omarchy-radio-atlas#features). Its Omarchy-specific parts, such as the audio output picker, are not in the widget.
 
 What RadioGlobe adds:
@@ -28,7 +30,7 @@ What RadioGlobe adds:
 ## Requirements
 
 - Plasma 6.1 or newer (developed and tested on Plasma 6.6 with Qt 6.10)
-- [mpv](https://mpv.io/) and the [mpv-mpris](https://github.com/hoyon/mpv-mpris) script. Both are required: without mpv-mpris, mpv still plays but RadioGlobe has no way to drive it. mpv-mpris 1.3, in Arch since September 2026, works from RadioGlobe 0.3.1 on.
+- [mpv](https://mpv.io/) and the [mpv-mpris](https://github.com/hoyon/mpv-mpris) script. Both are required: without mpv-mpris, mpv still plays but RadioGlobe has no way to drive it.
 
 | | Debian / Ubuntu / Kubuntu | Arch Linux | Fedora |
 |---|---|---|---|
