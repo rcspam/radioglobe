@@ -689,9 +689,12 @@ TestCase {
         // The script sh -c receives, out of its own single quotes.
         verify(launch.indexOf("sh -c '") === 0 && launch.endsWith("'"), launch);
         const script = launch.slice(7, -1).split("'\\''").join("'");
-        verify(script.indexOf("setsid 'flatpak' 'run' 'io.mpv.Mpv' '--idle=yes' ") === 0, script);
+        // Both ways of starting it, in a scope of its own or plain: the
+        // script itself runs in tests/node/mpv.test.mjs.
+        verify(script.indexOf("then setsid systemd-run --user --scope --quiet -- 'flatpak' 'run' 'io.mpv.Mpv' '--idle=yes' ") > 0, script);
+        verify(script.indexOf("else setsid 'flatpak' 'run' 'io.mpv.Mpv' '--idle=yes' ") > 0, script);
         verify(script.indexOf(" '--audio-client-name=RadioGlobe' ") > 0, script);
-        verify(script.endsWith(" >/dev/null 2>&1 & echo $!"), script);
+        verify(script.endsWith(" fi; echo $!"), script);
         compare(player.mpvSource, "flatpak");
         replyExec(0, "500\n");
         const c = makeContainer(9999, 1, "mpv.RadioGlobe");

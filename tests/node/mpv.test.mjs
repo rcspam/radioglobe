@@ -53,12 +53,65 @@ test("a custom path is the only mpv considered, with no fallback", () => {
     assert.deepEqual(plain(model.parseMpvProbe(" /bin/sh ", found.exitCode, found.stdout)), { kind: "custom", path: "/bin/sh" });
 });
 
-test("the launch command starts the probed mpv detached and prints its PID", () => {
-    const options = ["--idle=yes", "--user-agent=It's mine"];
-    assert.equal(model.mpvLaunchCommand({ kind: "path", path: "/usr/bin/mpv" }, options),
-        "sh -c " + model.shellQuote("setsid '/usr/bin/mpv' '--idle=yes' '--user-agent=It'\\''s mine' >/dev/null 2>&1 & echo $!"));
-    assert.equal(model.mpvLaunchCommand({ kind: "flatpak", path: "" }, ["--idle=yes"]),
-        "sh -c " + model.shellQuote("setsid 'flatpak' 'run' 'io.mpv.Mpv' '--idle=yes' >/dev/null 2>&1 & echo $!"));
+// Runs a launch command with PATH limited to fake commands that log how they
+// were called. The fake mpv logs its own arguments, so quoting is checked on
+// what actually arrives. Returns the PID printed and the log once it is in.
+function runLaunch(probeFor, commands) {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "radioglobe-launch-"));
+    const log = path.join(dir, "log");
+    const fake = {
+        sh: 'exec /bin/sh "$@"',
+        mpv: 'for a in "$@"; do printf "%s\\n" "mpv:$a" >> "' + log + '"; done',
+        setsid: 'printf "%s\\n" "setsid:$1" >> "' + log + '"; exec "$@"',
+        ...commands(log)
+    };
+    for (const [name, body] of Object.entries(fake)) {
+        const file = path.join(dir, name);
+        fs.writeFileSync(file, "#!/bin/sh\n" + body + "\n");
+        fs.chmodSync(file, 0o755);
+    }
+    const command = model.mpvLaunchCommand(probeFor(dir), ["--idle=yes", "--user-agent=It's mine"]);
+    assert.equal(command.indexOf("sh -c "), 0, command);
+    const stdout = execFileSync("/bin/sh", ["-c", command], { env: { PATH: dir }, encoding: "utf8" });
+    let lines = [];
+    for (let i = 0; i < 100 && !lines.includes("mpv:--user-agent=It's mine"); i++) {
+        execFileSync("/bin/sleep", ["0.02"]);
+        lines = fs.existsSync(log) ? fs.readFileSync(log, "utf8").split("\n").filter(Boolean) : [];
+    }
+    return { pid: stdout.trim(), lines, dir };
+}
+
+const withSystemd = log => ({
+    systemctl: '[ "$1 $2" = "--user show-environment" ]',
+    "systemd-run": 'printf "%s\\n" "systemd-run:$1 $2 $3 $4" >> "' + log + '"; shift 4; exec "$@"'
+});
+
+test("mpv is started in a scope of its own when the user's systemd answers", () => {
+    const run = runLaunch(dir => ({ kind: "path", path: path.join(dir, "mpv") }), withSystemd);
+    assert.match(run.pid, /^[0-9]+$/);
+    assert.deepEqual(run.lines, ["setsid:systemd-run", "systemd-run:--user --scope --quiet --",
+        "mpv:--idle=yes", "mpv:--user-agent=It's mine"]);
+});
+
+test("without systemd-run, mpv is started the plain way", () => {
+    const run = runLaunch(dir => ({ kind: "path", path: path.join(dir, "mpv") }), () => ({}));
+    assert.match(run.pid, /^[0-9]+$/);
+    assert.deepEqual(run.lines, ["setsid:" + path.join(run.dir, "mpv"), "mpv:--idle=yes", "mpv:--user-agent=It's mine"]);
+});
+
+test("with no user systemd running, mpv is started the plain way", () => {
+    const run = runLaunch(dir => ({ kind: "path", path: path.join(dir, "mpv") }),
+        log => ({ ...withSystemd(log), systemctl: "exit 1" }));
+    assert.deepEqual(run.lines, ["setsid:" + path.join(run.dir, "mpv"), "mpv:--idle=yes", "mpv:--user-agent=It's mine"]);
+});
+
+test("the mpv Flatpak is started through flatpak run", () => {
+    const run = runLaunch(() => ({ kind: "flatpak", path: "" }), log => ({
+        ...withSystemd(log),
+        flatpak: 'printf "%s\\n" "flatpak:$1 $2" >> "' + log + '"; shift 2; exec mpv "$@"'
+    }));
+    assert.deepEqual(run.lines, ["setsid:systemd-run", "systemd-run:--user --scope --quiet --",
+        "flatpak:run io.mpv.Mpv", "mpv:--idle=yes", "mpv:--user-agent=It's mine"]);
 });
 
 test("only the bus names mpv-mpris gives RadioGlobe's mpv carry the tag", () => {

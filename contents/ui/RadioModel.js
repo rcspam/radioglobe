@@ -1254,10 +1254,16 @@ function parseMpvProbe(customPath, exitCode, stdout) {
 // Backgrounded from a non-interactive sh, the child is not a process-group
 // leader, so setsid execs in place: $! is the launched process, and the
 // leader of a group holding everything it starts (a Flatpak's sandbox too).
+// Started by plasmashell, mpv would sit in the cgroup of its systemd service,
+// which a restart or a crash kills whole: systemd-run moves it to a scope of
+// its own first, then execs it, so $! stays mpv's PID. Without a user
+// systemd, mpv is started the plain way and shares plasmashell's fate.
 function mpvLaunchCommand(probe, options) {
     var head = probe.kind === "flatpak" ? ["flatpak", "run", mpvFlatpakId] : [probe.path];
     var words = head.concat(options).map(shellQuote).join(" ");
-    return "sh -c " + shellQuote("setsid " + words + " >/dev/null 2>&1 & echo $!");
+    return "sh -c " + shellQuote("if command -v systemd-run >/dev/null 2>&1 && systemctl --user show-environment >/dev/null 2>&1; "
+        + "then setsid systemd-run --user --scope --quiet -- " + words + " >/dev/null 2>&1 & "
+        + "else setsid " + words + " >/dev/null 2>&1 & fi; echo $!");
 }
 
 // The bus names mpv-mpris gives an mpv launched by RadioGlobe, as Plasma's
