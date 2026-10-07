@@ -42,7 +42,8 @@ Instead of the packages, any of these works too:
 
 - the mpv Flatpak, `flatpak install flathub io.mpv.Mpv`: it includes mpv-mpris, and RadioGlobe uses it when there is no mpv on `PATH`;
 - the mpv snap, `sudo snap install mpv`: it includes mpv-mpris;
-- an mpv AppImage, with its path set in the settings: the common one from pkgforge-dev loads your distribution's `mpv-mpris` package, version 1.2 or later.
+- an mpv AppImage, with its path set in the settings: the common one from pkgforge-dev loads your distribution's `mpv-mpris` package, version 1.2 or later;
+- an mpv built from source in `/usr/local/bin`: it comes first on `PATH` but reads `/usr/local/etc/mpv`, not the distribution's `/etc/mpv`, so build it with the `cplugins` option and install mpv-mpris with `make install`, which puts it in `~/.config/mpv/scripts`.
 
 **You do not have to check this by hand. At startup the widget looks for every module it uses and, if one is missing, shows a banner with the command to install it for your distribution.**
 
