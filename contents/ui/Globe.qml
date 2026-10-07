@@ -61,7 +61,7 @@ Item {
     property var preparedStations: []
     readonly property int signalDepthBuckets: 8
     // One round dot per depth bucket, in the signal colour and alpha of that
-    // bucket, side by side in a small canvas the moving paint blits from.
+    // bucket, each in a small canvas of its own the moving paint blits from.
     readonly property int dotSpriteCell: 8
     property bool paintDirty: false
     // While the globe moves the canvas paints without antialiasing (about a
@@ -578,11 +578,15 @@ Item {
             // While the globe moves, each dot is a blit of its bucket's
             // pre-rendered sprite: no path to build, a fraction of the raster
             // cost of an arc. At rest, one arc per dot, painted once.
+            // Only the three-argument drawImage: Qt reads a source rectangle
+            // and a target size in device pixels, which cut the dots in two
+            // on scaled screens (issue #2). Drawn whole, a sprite keeps its
+            // size in units at any scale.
             if (moving) {
-                var cell = dotSpriteCell;
-                var half = cell / 2;
+                var sprite = dotSprites.itemAt(b);
+                var half = dotSpriteCell / 2;
                 for (var e = 0; e < entries.length; e += 2)
-                    ctx.drawImage(dotSprites, b * cell, 0, cell, cell, entries[e] - half, entries[e + 1] - half, cell, cell);
+                    ctx.drawImage(sprite, entries[e] - half, entries[e + 1] - half);
             } else {
                 for (var d = 0; d < entries.length; d += 2) {
                     ctx.beginPath();
@@ -772,10 +776,7 @@ Item {
         sphereCanvas.requestPaint();
         root.schedulePaint();
     }
-    onSignalColorChanged: {
-        dotSprites.requestPaint();
-        root.schedulePaint();
-    }
+    onSignalColorChanged: root.schedulePaint()
     onAccentColorChanged: root.schedulePaint()
     onShowDayNightChanged: {
         if (showDayNight)
@@ -869,24 +870,29 @@ Item {
     }
 
     // Repainted on a signal colour change only; drawn from by paintSignals.
-    Canvas {
+    Repeater {
         id: dotSprites
-        width: root.dotSpriteCell * root.signalDepthBuckets
-        height: root.dotSpriteCell
-        visible: false
-        renderStrategy: Canvas.Immediate
-        onPaint: {
-            var ctx = getContext("2d");
-            if (!ctx)
-                return;
-            ctx.reset();
-            ctx.clearRect(0, 0, width, height);
-            var cell = root.dotSpriteCell;
-            for (var b = 0; b < root.signalDepthBuckets; b++) {
-                var bucketDepth = (b + 0.5) / root.signalDepthBuckets;
-                ctx.fillStyle = root.withAlpha(root.signalColor, 0.42 + bucketDepth * 0.48);
+        model: root.signalDepthBuckets
+
+        delegate: Canvas {
+            required property int index
+            readonly property color tint: root.signalColor
+
+            onTintChanged: requestPaint()
+            width: root.dotSpriteCell
+            height: root.dotSpriteCell
+            visible: false
+            renderStrategy: Canvas.Immediate
+            onPaint: {
+                var ctx = getContext("2d");
+                if (!ctx)
+                    return;
+                ctx.reset();
+                ctx.clearRect(0, 0, width, height);
+                var bucketDepth = (index + 0.5) / root.signalDepthBuckets;
+                ctx.fillStyle = root.withAlpha(tint, 0.42 + bucketDepth * 0.48);
                 ctx.beginPath();
-                ctx.arc(b * cell + cell / 2, cell / 2, 1.7 + bucketDepth * 1.25, 0, Math.PI * 2);
+                ctx.arc(width / 2, height / 2, 1.7 + bucketDepth * 1.25, 0, Math.PI * 2);
                 ctx.fill();
             }
         }

@@ -28,4 +28,7 @@ done < <(find "$root/contents" "$root/tests/qml" -name '*.qml' -print0)
 
 echo "== qmltestrunner"
 dbus-run-session -- "$QMLTESTRUNNER" -silent -input "$root/tests/qml"
+
+echo "== qmltestrunner at scale 1.5"
+QT_SCALE_FACTOR=1.5 "$QMLTESTRUNNER" -silent -input "$root/tests/qml/tst_globe_scaled.qml"
 echo "All tests passed"
