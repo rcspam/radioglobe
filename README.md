@@ -8,7 +8,7 @@ After seeing [Radio Atlas](https://github.com/AksharP5/omarchy-radio-atlas) on O
 
 ## Features
 
-**New in 0.3.1: works with mpv-mpris 1.3, in Arch since September 2026.**
+**New in 0.3.1: works with the new mpv-mpris 1.3 (Released in September 2026)**
 
 Everything works as in Radio Atlas, the globe, the [Radio Browser](https://www.radio-browser.info/) directory, favorites, history, random tuning, volume and keyboard controls: see [its features](https://github.com/AksharP5/omarchy-radio-atlas#features). Its Omarchy-specific parts, such as the audio output picker, are not in the widget.
 
